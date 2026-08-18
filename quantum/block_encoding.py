@@ -1,133 +1,124 @@
 #!/usr/bin/env python3
 """
-Level 6: Grand Linear System Assembly, Final-State Idling, and Quantum Block Encoding Oracle.
+Quantum Block Encoding Module for Carleman LBM Matrices using Qiskit.
 
-Theoretical Basis:
-- Jennings et al. (PsiQuantum/Airbus 2025) & Ueno et al. (QunaSys/Univ Tokyo 2026)
-- Discrete time-marching Carleman grand linear system: A * Y = B
-- Final-state idling stabilization against amplitude decay
-- (alpha, a, epsilon)-Block encoding of A into unitary oracle U_A
+Given matrix A in C^(d x d):
+Constructs unitary U_A in C^(2d x 2d) on (a=1 + n) qubits such that:
+<0| U_A |0> = A / alpha
+within machine precision.
 """
 
 import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg as spla
+import scipy.linalg as la
+from qiskit import QuantumCircuit
+from qiskit.circuit.library import UnitaryGate
+from qiskit.quantum_info import Operator
 
 class QuantumBlockEncoding:
-    def __init__(self, A_step, y_init, b_force=None,
-                 T_sim=10, T_idle=5):
+    def __init__(self, A, alpha=None):
         """
-        A_step: Sparse one-step Carleman evolution matrix in R^(D x D)
-        y_init: Initial state vector in R^D
-        b_force: Constant/affine forcing vector in R^D
-        T_sim: Number of physical simulation steps
-        T_idle: Number of final-state idling steps (Ueno 2026)
+        A: Real or complex matrix (d x d)
+        alpha: Subnormalization constant (if None, set to 1.05 * ||A||_2)
         """
-        self.A_step = A_step
-        self.D = A_step.shape[0]
-        self.y_init = y_init
-        self.b_force = b_force if b_force is not None else np.zeros(self.D, dtype=np.float64)
-        self.T_sim = T_sim
-        self.T_idle = T_idle
-        self.T_total = T_sim + T_idle
-        self.dim_grand = (self.T_total + 1) * self.D
+        self.A_orig = np.array(A, dtype=np.complex128)
+        self.d_orig = self.A_orig.shape[0]
 
-        print(f"Constructing Grand Linear System: T_sim={T_sim}, T_idle={T_idle} (Total Steps={self.T_total})")
-        print(f"One-Step State Dimension D = {self.D} | Grand Matrix Dimension N_grand = {self.dim_grand}")
+        # Pad to next power of 2: d = 2^n
+        self.n_sys = int(np.ceil(np.log2(max(self.d_orig, 2))))
+        self.d = 1 << self.n_sys
+        self.n_ancilla = 1
+        self.total_qubits = self.n_ancilla + self.n_sys
 
-        # Assemble grand sparse matrix A_grand
-        self.A_grand = self._build_grand_matrix()
-        # Assemble right-hand side vector B_grand
-        self.B_grand = self._build_rhs_vector()
+        # Padded matrix A_pad
+        self.A = np.zeros((self.d, self.d), dtype=np.complex128)
+        self.A[:self.d_orig, :self.d_orig] = self.A_orig
+        # Identity padding for unused subspace
+        if self.d > self.d_orig:
+            for i in range(self.d_orig, self.d):
+                self.A[i, i] = 1.0
 
-        # Compute block encoding parameters
-        self.alpha_A, self.n_state_qubits, self.n_ancilla_qubits = self._compute_block_encoding_parameters()
+        # Spectral norm and subnormalization alpha
+        norm_A = float(la.norm(self.A, 2))
+        if alpha is None:
+            self.alpha = max(norm_A * 1.05, 1.0)
+        else:
+            if alpha < norm_A:
+                raise ValueError(f"alpha ({alpha}) must be >= ||A||_2 ({norm_A:.4f})")
+            self.alpha = float(alpha)
 
-    def _build_grand_matrix(self):
+        self.A_norm = self.A / self.alpha
+
+        # Construct exact dilated unitary matrix U_A (2d x 2d)
+        self.U_matrix = self._build_dilated_unitary()
+
+        # Build Qiskit QuantumCircuit
+        self.circuit = self._build_qiskit_circuit()
+
+    def _build_dilated_unitary(self):
         """
-        Assembles block lower-triangular matrix A_grand:
-        [ I          0          0      ...   0 ]
-        [ -A^(1)     I          0      ...   0 ]
-        [ 0         -A^(1)      I      ...   0 ]
-        [ ...       ...        ...     ...   0 ]
-        [ 0          0         -I_idle ...   I ]
+        Constructs canonical CS-decomposition / Halmos dilation:
+        U_A = [[ A_norm,           sqrt(I - A_norm * A_norm^dagger) ],
+               [ sqrt(I - A_norm^dagger * A_norm), -A_norm^dagger ]]
         """
-        I_block = sp.eye(self.D, dtype=np.float64, format='csr')
+        d = self.d
+        I_d = np.eye(d, dtype=np.complex128)
 
-        block_rows = []
-        for t in range(self.T_total + 1):
-            row_blocks = [None] * (self.T_total + 1)
-            # Diagonal identity
-            row_blocks[t] = I_block
-            
-            if t > 0:
-                if t <= self.T_sim:
-                    # Physical transition step: -A_step
-                    row_blocks[t - 1] = -self.A_step
-                else:
-                    # Idling transition step: -I (Ueno 2026)
-                    row_blocks[t - 1] = -I_block
-                    
-            block_rows.append(row_blocks)
+        # Singular Value Decomposition: A_norm = U * S * Vh
+        U, S, Vh = la.svd(self.A_norm)
+        # S is array of singular values in [0, 1]
+        S_clamped = np.clip(S, 0.0, 1.0)
+        C = np.sqrt(np.maximum(0.0, 1.0 - S_clamped**2))
 
-        A_grand = sp.bmat(block_rows, format='csr', dtype=np.float64)
-        return A_grand
+        # Dilation components
+        Sigma = np.diag(S_clamped)
+        Cosine = np.diag(C)
 
-    def _build_rhs_vector(self):
+        R_sigma = np.block([
+            [Sigma, Cosine],
+            [Cosine, -Sigma]
+        ])
+
+        U_ext = la.block_diag(U, np.eye(d, dtype=np.complex128))
+        Vh_ext = la.block_diag(Vh, np.eye(d, dtype=np.complex128))
+
+        U_A = U_ext @ R_sigma @ Vh_ext
+        return U_A
+
+    def _build_qiskit_circuit(self):
+        """Builds Qiskit QuantumCircuit for U_A."""
+        qc = QuantumCircuit(self.total_qubits, name="U_A")
+        # System qubits: 0..(n_sys - 1), Ancilla qubit: n_sys
+        unitary_gate = UnitaryGate(self.U_matrix, label="Block_Enc_A")
+        qc.append(unitary_gate, range(self.total_qubits))
+        return qc
+
+    def extract_block(self):
         """
-        Assembles right-hand side vector B_grand in R^dim_grand:
-        B = [ y_init; b_force; b_force; ... ; 0 ]
+        Classically extracts top-left block:
+        <0| U_A |0> = U_A[:d, :d]
         """
-        B = np.zeros(self.dim_grand, dtype=np.float64)
-        # Initial condition at t=0
-        B[:self.D] = self.y_init
+        op = Operator(self.circuit)
+        u_sim = op.data
+        extracted = u_sim[:self.d, :self.d][:self.d_orig, :self.d_orig]
+        return extracted
 
-        # Body force injections at physical time steps
-        for t in range(1, self.T_sim + 1):
-            B[t * self.D : (t + 1) * self.D] = self.b_force
-
-        return B
-
-    def _compute_block_encoding_parameters(self):
+    def verify_encoding(self):
         """
-        Computes (alpha, a, epsilon) quantum block encoding specifications:
-        - alpha: Subnormalization constant (1-norm / maximum absolute row sum)
-        - n_state_qubits: ceil(log2(dim_grand))
-        - n_ancilla_qubits: Ancilla qubits required for sparse oracle encoding
+        Calculates L_inf error and Frobenius relative error against A / alpha.
         """
-        # Maximum absolute row sum (infinity norm) as block encoding subnormalization
-        row_sums = np.array(np.abs(self.A_grand).sum(axis=1)).flatten()
-        alpha = float(np.max(row_sums))
+        extracted = self.extract_block()
+        target = self.A_orig / self.alpha
 
-        # Qubit counts
-        n_state = int(np.ceil(np.log2(self.dim_grand)))
-        # Sparsity per row (at most 1 from I + max_row from A_step)
-        max_row_nnz = max(self.A_grand[i].nnz for i in range(min(100, self.dim_grand)))
-        n_ancilla = int(np.ceil(np.log2(max_row_nnz))) + 2
+        diff = np.abs(extracted - target)
+        linf_err = float(np.max(diff))
+        frob_err = float(la.norm(diff, 'fro') / (la.norm(target, 'fro') + 1e-15))
 
-        return alpha, n_state, n_ancilla
-
-    def solve_exact(self):
-        """
-        Solves the grand linear system A_grand * Y = B_grand classically
-        to obtain the exact ground-truth state trajectory.
-        """
-        Y_sol = spla.spsolve(self.A_grand, self.B_grand)
-        return Y_sol
-
-    def compute_condition_number_estimate(self):
-        """
-        Computes condition number estimate kappa(A_grand).
-        """
-        # 1-norm condition number estimate
-        norm_A = spla.norm(self.A_grand, 1)
-        # Approximate norm(A^-1) via power iteration on inverse
-        v = np.random.randn(self.dim_grand)
-        v /= np.linalg.norm(v)
-        for _ in range(5):
-            w = spla.spsolve(self.A_grand, v)
-            norm_w = np.linalg.norm(w)
-            v = w / norm_w
-        inv_norm_est = norm_w
-        kappa_est = norm_A * inv_norm_est
-        return kappa_est
+        return {
+            'linf_error': linf_err,
+            'frob_error': frob_err,
+            'alpha': self.alpha,
+            'd_orig': self.d_orig,
+            'n_qubits': self.total_qubits,
+            'gate_count': len(self.circuit.data),
+            'depth': self.circuit.depth()
+        }

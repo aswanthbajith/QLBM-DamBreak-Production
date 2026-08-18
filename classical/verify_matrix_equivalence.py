@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Verification Script for Level 3 & Level 4:
-Proves exact numerical identity between Classical Continuous LBM and Matrix-Vector Operator Form.
+Verification Script for Step 5: Exact Numerical Equivalence
+Between Classical Two-Phase LBM and Matrix-Operator System.
 """
 
-import sys
 import os
+import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
@@ -13,137 +13,125 @@ from two_phase_lbm import TwoPhaseLBM2D
 from matrix_two_phase_lbm import MatrixTwoPhaseLBM2D
 
 def verify_equivalence():
+    val_dir = "/home/aswa/Research/QLBM-DamBreak/validation"
+    os.makedirs(val_dir, exist_ok=True)
+
     nx, ny = 40, 20
     dam_w, dam_h = 10, 10
     total_steps = 50
 
-    print("="*75)
-    print("LEVEL 3 & 4 VERIFICATION: Matrix-Vector Algebraic Equivalence Proof")
-    print(f"Test Domain: {nx}x{ny} ({nx*ny} nodes) | Dam: {dam_w}x{dam_h} | Time Steps: {total_steps}")
-    print("="*75)
+    print("="*80)
+    print("STEP 5: EXACT MATRIX-OPERATOR ALGEBRAIC EQUIVALENCE PROOF")
+    print(f"Domain: {nx}x{ny} ({nx*ny} nodes) | Dam: {dam_w}x{dam_h} | Steps: {total_steps}")
+    print("="*80)
 
-    # 1. Initialize Classical Continuous Model
+    # 1. Classical Continuous Solver
     classical_sim = TwoPhaseLBM2D(
         nx=nx, ny=ny,
-        rho0=1.0, nu=0.02,
-        gy=-2.0e-4, gx=0.0,
-        tau_phi=0.65,
+        rho_L=1.0, rho_G=0.1,
+        nu_L=0.01, nu_G=0.01,
+        sigma=0.001, gy=-4.0e-4,
+        width=3.5, mobility=0.05,
+        enable_surface_tension=True,
         free_slip_bottom=True
     )
     classical_sim.initialize_dam(dam_w=dam_w, dam_h=dam_h)
 
-    # 2. Initialize Matrix-Vector Model
+    # 2. Matrix Operator Solver
     matrix_sim = MatrixTwoPhaseLBM2D(
         nx=nx, ny=ny,
-        rho0=1.0, nu=0.02,
-        gy=-2.0e-4, gx=0.0,
-        tau_phi=0.65,
+        rho_L=1.0, rho_G=0.1,
+        nu_L=0.01, nu_G=0.01,
+        sigma=0.001, gy=-4.0e-4,
+        width=3.5, mobility=0.05,
+        enable_surface_tension=True,
         free_slip_bottom=True
     )
 
     N = nx * ny
-    Psi = np.zeros(2 * 9 * N, dtype=np.float64)
-    
+    dim_single = 9 * N
+    Psi = np.zeros(2 * dim_single, dtype=np.float64)
+
+    # Populate initial state
     for q in range(9):
         Psi[q * N : (q + 1) * N] = classical_sim.g[q].flatten()
-        Psi[(9 + q) * N : (9 + q + 1) * N] = classical_sim.h[q].flatten()
+        Psi[dim_single + q * N : dim_single + (q + 1) * N] = classical_sim.phase_field.h[q].flatten()
 
-    print("\nExecuting step-by-step equivalence check...")
-    max_linf_overall = 0.0
-    max_l2_overall = 0.0
+    u_m = classical_sim.u.copy()
+    v_m = classical_sim.v.copy()
 
-    print(f"{'Step':>6} | {'Max Linf Error':>18} | {'Relative L2 Error':>18} | {'Status':>10}")
-    print("-" * 60)
+    max_linf = 0.0
+    max_l2 = 0.0
+    records = []
+
+    print(f"\n{'Step':>6} | {'Max Linf Error':>18} | {'Relative L2 Error':>18} | {'Status':>12}")
+    print("-" * 65)
 
     for step in range(total_steps + 1):
-        Psi_classical = np.zeros(2 * 9 * N, dtype=np.float64)
+        # Extract classical state
+        Psi_c = np.zeros(2 * dim_single, dtype=np.float64)
         for q in range(9):
-            Psi_classical[q * N : (q + 1) * N] = classical_sim.g[q].flatten()
-            Psi_classical[(9 + q) * N : (9 + q + 1) * N] = classical_sim.h[q].flatten()
+            Psi_c[q * N : (q + 1) * N] = classical_sim.g[q].flatten()
+            Psi_c[dim_single + q * N : dim_single + (q + 1) * N] = classical_sim.phase_field.h[q].flatten()
 
-        diff = Psi - Psi_classical
-        linf_err = np.max(np.abs(diff))
-        l2_err = np.linalg.norm(diff) / (np.linalg.norm(Psi_classical) + 1e-15)
+        diff = np.abs(Psi - Psi_c)
+        linf = float(np.max(diff))
+        l2 = float(np.linalg.norm(diff) / (np.linalg.norm(Psi_c) + 1e-15))
 
-        max_linf_overall = max(max_linf_overall, linf_err)
-        max_l2_overall = max(max_l2_overall, l2_err)
+        max_linf = max(max_linf, linf)
+        max_l2 = max(max_l2, l2)
+
+        status = "EXACT (ZERO)" if linf < 1e-13 else ("MACHINE PREC" if linf < 1e-10 else "DISCREPANCY")
+        records.append((step, linf, l2, status))
 
         if step % 10 == 0:
-            status = "IDENTICAL" if linf_err < 1e-12 else ("EXACT (<1e-3)" if linf_err < 1e-3 else "MISMATCH")
-            print(f"{step:6d} | {linf_err:18.4e} | {l2_err:18.4e} | {status:>10}")
+            print(f"{step:6d} | {linf:18.4e} | {l2:18.4e} | {status:>12}")
 
+        # Step both forward
         classical_sim.step()
-        Psi = matrix_sim.step(Psi)
+        Psi, u_m, v_m = matrix_sim.step(Psi, u_m, v_m)
 
-    print("-" * 60)
-    print(f"Maximum Point-wise L_inf Error over {total_steps} steps: {max_linf_overall:.4e}")
-    print(f"Maximum Relative L_2 Error over {total_steps} steps   : {max_l2_overall:.4e}")
-    
-    # 3. Analyze Matrix Properties
-    S_nnz = matrix_sim.S.nnz
-    S_dim = matrix_sim.S.shape[0]
-    M1_nnz = matrix_sim.M1.nnz
+    print("-" * 65)
+    print(f"Overall Max L_inf Error over {total_steps} steps: {max_linf:.4e}")
+    print(f"Overall Max Rel L_2 Error over {total_steps} steps: {max_l2:.4e}")
 
-    print("\n" + "="*75)
-    print("ALGEBRAIC OPERATOR PROPERTIES")
-    print("="*75)
-    print(f"Total State Vector Dimension D : {S_dim} (2 fields x 9 velocities x {N} nodes)")
-    print(f"Streaming Matrix S Sparsity    : {S_nnz} non-zeros ({S_nnz / S_dim:.1f} per row) -> Unitary Permutation")
-    print(f"Linear Collision M1 Sparsity   : {M1_nnz} non-zeros ({M1_nnz / S_dim:.1f} per row) -> Block-Diagonal")
-    print("="*75 + "\n")
-
-    # Generate Level 3 & 4 Verification Report
-    report_path = "/home/aswa/Research/QLBM-DamBreak/validation/LEVEL_3_4_MATRIX_REPORT.md"
-    with open(report_path, "w") as f:
-        f.write(f"""# Level 3 & 4 Verification Report: Matrix-Vector Formulation & Nonlinear Term Isolation
+    # Generate Markdown Report
+    report = f"""# Exact Matrix-Operator Equivalence Verification Report
 
 ## 1. Executive Summary
-- **Level 3 (Matrix-Vector Formulation)** and **Level 4 (Nonlinear Term Isolation)** have been derived, implemented, and verified.
-- The global matrix-vector operator system:
-  $$\\mathbf{{\\Psi}}(t+1) = \\mathbf{{S}} \\left[ \\mathbf{{\\Omega}}(\\mathbf{{\\Psi}}(t)) \\right]$$
-  matches the continuous two-phase LBM simulation with **relative $L_2$ error $< 3 \\times 10^{{-4}}$**.
+- **Operator Structure**:
+  $$\\mathbf{{\\Psi}}(t+1) = \\mathbf{{S}} \\cdot \\mathbf{{\\Psi}}^{{post}}(\\mathbf{{\\Psi}}(t))$$
+  where $\\mathbf{{S}} \\in \\{{0, 1\\}}^{{18N \\times 18N}}$ is the unitary spatial permutation and boundary reflection matrix.
+- **Maximum Point-wise Discrepancy**: $L_\\infty = {max_linf:.4e}$ across {total_steps} time steps.
+- **Maximum Relative $L_2$ Discrepancy**: $L_2 = {max_l2:.4e}$.
 
 ---
 
-## 2. Quantitative Equivalence Over Time
+## 2. Step-by-Step Numerical Verification Table
 
-| Step | Max Point-Wise Error $L_\\infty$ | Relative Error $L_2$ | Status |
+| Step | Max Point-Wise Error $L_\\infty$ | Relative Error $L_2$ | Equivalence Status |
 | :---: | :---: | :---: | :---: |
-| **0** | $0.00$ | $0.00$ | **Exact** |
-| **10** | $< 1.5 \\times 10^{{-4}}$ | $< 3.0 \\times 10^{{-4}}$ | **Verified** |
-| **20** | $< 1.5 \\times 10^{{-4}}$ | $< 3.0 \\times 10^{{-4}}$ | **Verified** |
-| **30** | $< 1.5 \\times 10^{{-4}}$ | $< 3.0 \\times 10^{{-4}}$ | **Verified** |
-| **40** | $< 1.6 \\times 10^{{-4}}$ | $< 3.0 \\times 10^{{-4}}$ | **Verified** |
-| **50** | $< 1.6 \\times 10^{{-4}}$ | $< 3.0 \\times 10^{{-4}}$ | **Verified** |
+"""
+    for s, li, l2, st in records:
+        if s % 10 == 0:
+            report += f"| **{s}** | ${li:.4e}$ | ${l2:.4e}$ | **{st}** |\n"
 
+    report += f"""
 ---
 
 ## 3. Structural Properties of Discrete Operators
+1. **Global Streaming Matrix $\\mathbf{{S}}$**:
+   - Dimension: $18N \\times 18N = {2 * 9 * N} \\times {2 * 9 * N}$
+   - Sparsity: Exactly $1.0$ non-zero entry ($+1.0$) per row and column.
+   - Unitary Property: $\\mathbf{{S}}^T \\mathbf{{S}} = \\mathbf{{I}}_{{18N}}$ (strictly exact).
+2. **Boundary Treatment**:
+   - Solid walls: Half-way bounce back ($\mathbf{{c}}_{{\\bar{{q}}}} = -\\mathbf{{c}}_q$).
+   - Floor: Specular reflection ($c_y \\to -c_y$).
+"""
+    with open(f"{val_dir}/EXACT_MATRIX_EQUIVALENCE.md", "w") as f:
+        f.write(report)
 
-1. **State Vector**:
-   $$\\mathbf{{\\Psi}}(t) = \\begin{{bmatrix}} \\mathbf{{g}}(t) \\\\ \\mathbf{{h}}(t) \\end{{bmatrix}} \\in \\mathbb{{R}}^{{18 N}}$$
-2. **Global Streaming Matrix $\\mathbf{{S}}$**:
-   - Dimension: $18 N \\times 18 N$
-   - Sparsity: Exactly $18 N$ non-zeros ($1.0$ per row/column).
-   - Unitary property: $\\mathbf{{S}}^T \\mathbf{{S}} = \\mathbf{{I}}$, directly mapping to quantum permutation gates $U_S$.
-3. **Linear Relaxation Matrix $\\mathbf{{M}}_1$**:
-   - Dimension: $18 N \\times 18 N$
-   - Sparsity: Exactly $9.0$ non-zeros per row (strictly local node coupling).
-4. **Nonlinear Collision Terms**:
-   - Strictly degree-$2$ polynomial:
-     - Hydrodynamic convective momentum flux: $\\frac{{(\\mathbf{{c}}_q \\cdot \\mathbf{{u}})^2}}{{2 c_s^4}} - \\frac{{|\\mathbf{{u}}|^2}}{{2 c_s^2}} \\implies \\mathbf{{g}} \\otimes \\mathbf{{g}}$
-     - Phase-field advection: $\\phi \\mathbf{{u}} = (\\sum h_i) (\\sum g_k \\mathbf{{c}}_k / \\rho_0) \\implies \\mathbf{{h}} \\otimes \\mathbf{{g}}$
-     - Guo body forcing: $\\mathbf{{u}} \\cdot \\mathbf{{F}} \\implies \\mathbf{{g}} \\otimes \\mathbf{{h}}$
-
----
-
-## 4. Next Step: Level 5 Carleman Linearization
-With the exact quadratic polynomial structure isolated:
-$$\\mathbf{{\\Psi}}(t+1) = \\mathbf{{S}} \\left[ \\mathbf{{A}}_1 \\mathbf{{\\Psi}}(t) + \\mathbf{{A}}_2 (\\mathbf{{\\Psi}}(t) \\otimes \\mathbf{{\\Psi}}(t)) + \\mathbf{{b}}_{{force}} \\right]$$
-we can now construct the **Carleman Lifted State Space $\\mathbf{{y}}(t) = [\\mathbf{{\\Psi}}(t), \\mathbf{{\\Psi}}^{{\\otimes 2}}(t)]^T$** in Level 5.
-""")
-
-    print(f"Report written to: {report_path}")
+    print(f"\nReport written to: {val_dir}/EXACT_MATRIX_EQUIVALENCE.md")
 
 if __name__ == "__main__":
     verify_equivalence()

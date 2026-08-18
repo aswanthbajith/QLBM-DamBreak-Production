@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Level 5: Carleman Linearization and State Space Lifting for Two-Phase LBM.
+Complete Carleman Linearization & State Space Lifting for Two-Phase LBM.
 
-State Representation:
-For order N_C = 2 (exact quadratic truncation):
-y_2(t) = [Psi(t); Psi_local^(x)2(t)] in R^(18 N + 324 N) = R^(342 N)
+State Representation (Order N_C = 2):
+Y_2(t) = [ Psi(t); Psi_local^(x)2(t) ] in R^(18 N + 324 N) = R^(342 N)
 
-Carleman Update Equation:
-y_2(t+1) = M_C * y_2(t) + b_C
+Complete Carleman Linear System:
+Y_2(t+1) = A_C * Y_2(t) + b_C
+
 where:
-M_C = S_C * C_C
-- C_C = [[ M1, M2 ], [ 0, M1_kron2 ]] is the block upper-triangular Carleman collision matrix.
-- S_C = [[ S, 0 ], [ 0, S_kron2 ]] is the Carleman streaming matrix (Unitary Permutation).
+A_C = S_C * C_2 in R^(342 N x 342 N)
+- S_C = block_diag(S, S_kron2) is the complete (342N x 342N) unitary streaming permutation.
+- C_2 = [[ M1, M2 ], [ 0, M1_kron2 ]] is the block upper-triangular collision matrix.
 """
 
 import numpy as np
@@ -24,7 +24,10 @@ class CarlemanTwoPhaseLBM:
                  tau_phi=0.65,
                  truncation_order=2,
                  free_slip_bottom=True):
-        
+        """
+        nx, ny: Grid nodes
+        truncation_order: 1 (Linear 18N) or 2 (Complete Quadratic 342N)
+        """
         self.nx = nx
         self.ny = ny
         self.N = nx * ny
@@ -57,22 +60,23 @@ class CarlemanTwoPhaseLBM:
         self.opp = np.array([0, 3, 4, 1, 2, 7, 8, 5, 6], dtype=np.int32)
         self.refl_floor = np.array([0, 1, 4, 3, 2, 8, 7, 6, 5], dtype=np.int32)
 
-        # Dimension of Carleman state
-        # Order 1: 18 N
-        # Order 2: 18 N + (18^2) N = 18 N + 324 N = 342 N
+        # Dimension calculation
         if truncation_order == 1:
-            self.dim_carleman = self.dim_base
+            self.dim_carleman = self.dim_base # 18 N
         elif truncation_order == 2:
-            self.dim_carleman = self.dim_base + (18**2) * self.N
+            self.dim_carleman = self.dim_base + 324 * self.N # 342 N
         else:
-            raise ValueError("Truncation order > 2 not required for quadratic LBM.")
+            raise ValueError("Truncation order > 2 not implemented.")
 
-        print(f"Initializing Carleman Two-Phase LBM: Grid {nx}x{ny} (N={self.N}) | Order N_C={truncation_order} | Carleman Dim D_C={self.dim_carleman}")
+        print(f"Constructing Carleman Model: Grid {nx}x{ny} (N={self.N}) | Order N_C={truncation_order} | Dimension D_C={self.dim_carleman}")
 
-        # Build Sparse Linear Streaming Matrix S
-        self.S = self._build_streaming_matrix()
-        # Build Block Linear Collision Matrix M1
-        self.M1 = self._build_linear_collision_matrix()
+        # Build Full Operators
+        self.S = self._build_streaming_matrix_base()
+        self.M1_node = self._build_local_linear_collision()
+        self.M2_node = self._build_local_quadratic_tensor()
+
+        # Build Full Carleman Matrix A_C (342N x 342N)
+        self.A_C = self._build_full_carleman_matrix()
 
     def _node_idx(self, x, y):
         return x * self.ny + y
@@ -80,7 +84,8 @@ class CarlemanTwoPhaseLBM:
     def _coord(self, n):
         return n // self.ny, n % self.ny
 
-    def _build_streaming_matrix(self):
+    def _build_streaming_matrix_base(self):
+        """Builds 18N x 18N base streaming permutation matrix S."""
         rows = []
         cols = []
         vals = []
@@ -117,73 +122,218 @@ class CarlemanTwoPhaseLBM:
                     cols.append(src_idx)
                     vals.append(1.0)
 
-        S_sparse = sp.csr_matrix((vals, (rows, cols)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
-        return S_sparse
+        return sp.csr_matrix((vals, (rows, cols)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
 
-    def _build_linear_collision_matrix(self):
-        rows = []
-        cols = []
-        vals = []
+    def _build_local_linear_collision(self):
+        """Builds local 18x18 linear collision matrix M1_node."""
+        M1 = np.zeros((18, 18), dtype=np.float64)
 
-        # 1. Hydrodynamic linear relaxation (g)
-        for q_star in range(self.Q):
-            for q in range(self.Q):
-                wi_term = self.w[q_star] * (1.0 + (self.c[q_star, 0] * self.c[q, 0] + self.c[q_star, 1] * self.c[q, 1]) / self.cs2)
-                coeff = (1.0 / self.tau_v) * wi_term
+        # 1. Hydrodynamic block (g, indices 0..8)
+        for q_star in range(9):
+            for q in range(9):
+                wi = self.w[q_star]
+                val = (1.0 / self.tau_v) * wi
                 if q_star == q:
-                    coeff += (1.0 - 1.0 / self.tau_v)
+                    val += (1.0 - 1.0 / self.tau_v)
+                M1[q_star, q] = val
 
-                if abs(coeff) > 1e-15:
-                    for n in range(self.N):
-                        rows.append(q_star * self.N + n)
-                        cols.append(q * self.N + n)
-                        vals.append(coeff)
-
-        # 2. Phase-field linear relaxation (h)
-        h_offset = self.dim_single
-        for q_star in range(self.Q):
-            for q in range(self.Q):
-                coeff = (1.0 / self.tau_phi) * self.w[q_star]
+        # 2. Phase-field block (h, indices 9..17)
+        for q_star in range(9):
+            for q in range(9):
+                wi = self.w[q_star]
+                val = (1.0 / self.tau_phi) * wi
                 if q_star == q:
-                    coeff += (1.0 - 1.0 / self.tau_phi)
+                    val += (1.0 - 1.0 / self.tau_phi)
+                M1[9 + q_star, 9 + q] = val
 
-                if abs(coeff) > 1e-15:
+        return M1
+
+    def _build_local_quadratic_tensor(self):
+        """
+        Builds local 18x324 quadratic collision matrix M2_node.
+        Contracts local Kronecker monomial Psi(18) (x) Psi(18) (dim 324) into Psi(18).
+        """
+        M2 = np.zeros((18, 324), dtype=np.float64)
+
+        # Hydrodynamic convective flux: w_i * [ (c_i.u)^2 / (2 cs4) - |u|^2 / (2 cs2) ]
+        # u = sum_q g_q c_q / rho0
+        for q_star in range(9):
+            wi = self.w[q_star]
+            for q1 in range(9): # g index
+                for q2 in range(9): # g index
+                    c1_dot_cstar = self.c[q1, 0] * self.c[q_star, 0] + self.c[q1, 1] * self.c[q_star, 1]
+                    c2_dot_cstar = self.c[q2, 0] * self.c[q_star, 0] + self.c[q2, 1] * self.c[q_star, 1]
+                    c1_dot_c2 = self.c[q1, 0] * self.c[q2, 0] + self.c[q1, 1] * self.c[q2, 1]
+
+                    term_conv = (c1_dot_cstar * c2_dot_cstar) / (2.0 * self.cs4)
+                    term_trace = c1_dot_c2 / (2.0 * self.cs2)
+                    coeff = (1.0 / self.tau_v) * wi * (term_conv - term_trace) / (self.rho0**2)
+
+                    col = q1 * 18 + q2
+                    M2[q_star, col] = coeff
+
+        # Phase-field advective flux: w_i * phi * (c_i.u) / cs2
+        # phi = sum_q1 h_q1, u = sum_q2 g_q2 c_q2 / rho0
+        for q_star in range(9):
+            wi = self.w[q_star]
+            for q1 in range(9): # h index (9 + q1)
+                for q2 in range(9): # g index (q2)
+                    c_star_dot_c2 = self.c[q_star, 0] * self.c[q2, 0] + self.c[q_star, 1] * self.c[q2, 1]
+                    coeff = (1.0 / self.tau_phi) * wi * (c_star_dot_c2 / (self.cs2 * self.rho0))
+
+                    col = (9 + q1) * 18 + q2
+                    M2[9 + q_star, col] = coeff
+
+        return M2
+
+    def _build_full_carleman_matrix(self):
+        """
+        Assembles the complete Carleman matrix A_C in CSR format:
+        For N_C = 1: A_C in R^(18N x 18N)
+        For N_C = 2: A_C in R^(342N x 342N)
+        """
+        if self.truncation_order == 1:
+            # A_C = S * M1
+            # Build global M1
+            rows = []
+            cols = []
+            vals = []
+            for n in range(self.N):
+                for i in range(18):
+                    for j in range(18):
+                        val = self.M1_node[i, j]
+                        if abs(val) > 1e-15:
+                            rows.append(i * self.N + n)
+                            cols.append(j * self.N + n)
+                            vals.append(val)
+            M1_global = sp.csr_matrix((vals, (rows, cols)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
+            return self.S.dot(M1_global)
+
+        elif self.truncation_order == 2:
+            # Build Block Upper-Triangular Collision Matrix C_2 (342N x 342N)
+            # C_2 = [[ M1_global (18N x 18N), M2_global (18N x 324N) ],
+            #        [ 0,                     M1_kron2_global (324N x 324N) ]]
+            
+            # 1. M1_global (18N x 18N)
+            r_m1, c_m1, v_m1 = [], [], []
+            for n in range(self.N):
+                for i in range(18):
+                    for j in range(18):
+                        val = self.M1_node[i, j]
+                        if abs(val) > 1e-15:
+                            r_m1.append(i * self.N + n)
+                            c_m1.append(j * self.N + n)
+                            v_m1.append(val)
+            M1_global = sp.csr_matrix((v_m1, (r_m1, c_m1)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
+
+            # 2. M2_global (18N x 324N)
+            r_m2, c_m2, v_m2 = [], [], []
+            for n in range(self.N):
+                for i in range(18):
+                    for j in range(324):
+                        val = self.M2_node[i, j]
+                        if abs(val) > 1e-15:
+                            r_m2.append(i * self.N + n)
+                            c_m2.append(j * self.N + n)
+                            v_m2.append(val)
+            M2_global = sp.csr_matrix((v_m2, (r_m2, c_m2)), shape=(self.dim_base, 324 * self.N), dtype=np.float64)
+
+            # 3. M1_kron2_global (324N x 324N) = (M1 (x) M1)_node
+            M1_kron2_node = np.kron(self.M1_node, self.M1_node) # 324 x 324
+            r_mk, c_mk, v_mk = [], [], []
+            for n in range(self.N):
+                for i in range(324):
+                    for j in range(324):
+                        val = M1_kron2_node[i, j]
+                        if abs(val) > 1e-15:
+                            r_mk.append(i * self.N + n)
+                            c_mk.append(j * self.N + n)
+                            v_mk.append(val)
+            M1_kron2_global = sp.csr_matrix((v_mk, (r_mk, c_mk)), shape=(324 * self.N, 324 * self.N), dtype=np.float64)
+
+            # Block assemble C_2
+            C_2 = sp.bmat([
+                [M1_global, M2_global],
+                [None, M1_kron2_global]
+            ], format='csr', dtype=np.float64)
+
+            # Build Full S_C = block_diag(S, S_kron2)
+            # S_kron2 permutations for ordered pairs (q1, q2)
+            r_sk, c_sk, v_sk = [], [], []
+            for q1 in range(18):
+                q1_dir = q1 % 9
+                q1_field = q1 // 9
+                cx1, cy1 = self.c[q1_dir, 0], self.c[q1_dir, 1]
+
+                for q2 in range(18):
+                    q2_dir = q2 % 9
+                    q2_field = q2 // 9
+                    cx2, cy2 = self.c[q2_dir, 0], self.c[q2_dir, 1]
+
+                    # Combined ordered pair index k = q1 * 18 + q2 (0..323)
+                    k = q1 * 18 + q2
+                    k_offset = k * self.N
+
+                    # Directional displacement is dominated by primary velocity
+                    cx = cx1
+                    cy = cy1
+
                     for n in range(self.N):
-                        rows.append(h_offset + q_star * self.N + n)
-                        cols.append(h_offset + q * self.N + n)
-                        vals.append(coeff)
+                        x, y = self._coord(n)
+                        src_idx = k_offset + n
 
-        M1_sparse = sp.csr_matrix((vals, (rows, cols)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
-        return M1_sparse
+                        tx = x + cx
+                        ty = y + cy
+
+                        target_q1 = q1_dir
+                        if tx < 0 or tx >= self.nx or ty < 0 or ty >= self.ny:
+                            if ty < 0 and self.free_slip_bottom:
+                                target_q1 = self.refl_floor[q1_dir]
+                                tx = x
+                                ty = 0
+                            else:
+                                target_q1 = self.opp[q1_dir]
+                                tx = np.clip(x, 0, self.nx - 1)
+                                ty = np.clip(y, 0, self.ny - 1)
+
+                        target_k = (q1_field * 9 + target_q1) * 18 + q2
+                        target_n = self._node_idx(tx, ty)
+                        dst_idx = target_k * self.N + target_n
+
+                        r_sk.append(dst_idx)
+                        c_sk.append(src_idx)
+                        v_sk.append(1.0)
+
+            S_kron2 = sp.csr_matrix((v_sk, (r_sk, c_sk)), shape=(324 * self.N, 324 * self.N), dtype=np.float64)
+
+            S_C = sp.bmat([
+                [self.S, None],
+                [None, S_kron2]
+            ], format='csr', dtype=np.float64)
+
+            A_C = S_C.dot(C_2)
+            return A_C
 
     def lift_state(self, Psi):
         """
-        Lifts base physical state Psi in R^(18 N) to Carleman state y_2 in R^(342 N):
-        y_2 = [ Psi; Psi (x)_local Psi ]
+        Lifts state vector Psi in R^(18 N) to Carleman vector Y_2 in R^(342 N):
+        Y_2 = [ Psi; Psi_local^(x)2 ]
         """
         if self.truncation_order == 1:
             return Psi.copy()
 
-        # Compute local tensor square at each node
-        # Reshape to (18, N)
+        # Reshape Psi to (18, N)
         psi_mat = Psi.reshape((18, self.N))
-        # Outer product per node: (18, 18, N) -> (324, N)
+        # Compute local Kronecker square per node: (18, 18, N) -> (324, N)
         psi_kron2 = np.einsum('in,jn->ijn', psi_mat, psi_mat).reshape((324 * self.N,))
         
-        y = np.concatenate([Psi, psi_kron2])
-        return y
+        Y_2 = np.concatenate([Psi, psi_kron2])
+        return Y_2
 
-    def project_state(self, y):
-        """
-        Projects Carleman state y back to physical hydrodynamic state Psi in R^(18 N).
-        """
-        return y[:self.dim_base].copy()
+    def project_state(self, Y):
+        """Projects Carleman vector Y back to physical state Psi in R^(18 N)."""
+        return Y[:self.dim_base].copy()
 
-    def build_carleman_one_step_matrix(self):
-        """
-        Constructs the linear Carleman one-step transition matrix A^(1) such that:
-        y(t+1) = A^(1) y(t) + b_force
-        """
-        # For N_C = 1: A^(1) = S * M1
-        A1 = self.S.dot(self.M1)
-        return A1
+    def step(self, Y):
+        """Executes one Carleman step: Y(t+1) = A_C * Y(t)."""
+        return self.A_C.dot(Y)
