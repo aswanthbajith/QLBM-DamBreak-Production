@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Production Two-Phase Dam-Break 2D Simulation Driver with Diagnostics.
+Production Dam-Break 2D Simulation Driver with Comprehensive Diagnostic Logging.
 """
 
 import os
@@ -15,35 +15,33 @@ def run_dam_break_simulation(nx=300, ny=100,
                              dam_w=45, dam_h=45,
                              total_steps=2200,
                              save_interval=200,
-                             rho_L=1.0, rho_G=0.1,
-                             nu_L=0.005, nu_G=0.01,
-                             sigma=0.001, gy=-4.0e-4,
-                             output_dir="validation/sim_data"):
+                             output_dir="results"):
     
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(f"{output_dir}/frames", exist_ok=True)
 
-    print("="*75)
-    print(f"Two-Phase Gas-Liquid LBM Dam-Break Simulation: {nx}x{ny} Grid")
-    print(f"Dam Geometry: {dam_w}x{dam_h} Column (Aspect Ratio: {dam_w/dam_h:.2f})")
-    print(f"Density Ratio: rho_L/rho_G = {rho_L/rho_G:.1f} | Viscosity: nu_L = {nu_L}")
-    print("="*75)
+    print("="*70)
+    print(f"Classical Two-Phase LBM Dam-Break Simulation: {nx}x{ny} Grid")
+    print(f"Initial Column: {dam_w}x{dam_h} nodes (Aspect Ratio: {dam_w/dam_h:.2f})")
+    print("="*70)
 
+    # Physical parameters
+    gy = -4.0e-4
     g_abs = abs(gy)
+    rho0 = 1.0
+    nu = 0.005 # High-Re kinematic viscosity
 
     sim = TwoPhaseLBM2D(
         nx=nx, ny=ny,
-        rho_L=rho_L, rho_G=rho_G,
-        nu_L=nu_L, nu_G=nu_G,
-        sigma=sigma, gx=0.0, gy=gy,
-        width=3.5, mobility=0.05,
-        enable_surface_tension=True,
+        rho0=rho0, nu=nu,
+        gy=gy, gx=0.0,
+        width=2.5, tau_phi=0.55,
         free_slip_bottom=True
     )
 
     sim.initialize_dam(dam_w=dam_w, dam_h=dam_h)
 
-    # Downstream sensor location on right wall
+    # Downstream sensor location (on right wall)
     sensor_x = nx - 2
     sensor_y = 5
 
@@ -57,7 +55,7 @@ def run_dam_break_simulation(nx=300, ny=100,
     }
 
     initial_mass = np.sum(sim.phi)
-    p_hydrostatic = rho_L * g_abs * dam_h
+    p_hydrostatic = rho0 * g_abs * dam_h
 
     t0 = time.time()
 
@@ -89,21 +87,21 @@ def run_dam_break_simulation(nx=300, ny=100,
         if step % save_interval == 0 or step == total_steps:
             fig, ax = plt.subplots(figsize=(9, 3.8))
             im = ax.imshow(sim.phi.T, origin='lower', cmap='Blues', vmin=0.0, vmax=1.0, extent=[0, nx, 0, ny])
-            ax.contour(sim.phi.T, levels=[0.5], colors='crimson', linewidths=1.8, extent=[0, nx, 0, ny])
+            ax.contour(sim.phi.T, levels=[0.5], colors='red', linewidths=1.8, extent=[0, nx, 0, ny])
             ax.scatter([sensor_x], [sensor_y], color='darkred', marker='x', s=80, label='Sensor P1 (Impact)')
-            ax.set_title(rf"Two-Phase Dam-Break: $t^* = {t_star:.2f}$ (Step {step})", fontsize=11, fontweight='bold')
+            ax.set_title(rf"Two-Phase Dam-Break LBM: $t^* = {t_star:.2f}$ (Step {step})", fontsize=11, fontweight='bold')
             ax.set_xlabel("Lattice X")
             ax.set_ylabel("Lattice Y")
             ax.legend(loc='upper right')
             cbar = plt.colorbar(im, ax=ax)
-            cbar.set_label(r"Liquid Phase Fraction $\phi$", fontsize=10)
+            cbar.set_label(r"Liquid Phase Field $\phi$", fontsize=10)
             plt.tight_layout()
             plt.savefig(f"{output_dir}/frames/dam_break_step_{step:05d}.png", dpi=120)
             plt.close()
 
         sim.step()
 
-    # Save output diagnostics
+    # Save data
     np.savez(f"{output_dir}/dam_break_diagnostics.npz", **history)
     with open(f"{output_dir}/dam_break_diagnostics.csv", "w") as f:
         f.write("step,t_star,x_star,h_star,p_impact_star,mass_error\n")

@@ -1,189 +1,188 @@
 #!/usr/bin/env python3
 """
-Production Two-Phase Velocity-Based Lattice Boltzmann Method (LBM)
-Coupled with Conservative Phase-Field Interface Capturing.
+Production Two-Phase Velocity-Based Lattice Boltzmann Method (LBM) Solver.
 
-Theoretical Basis:
-- Hydrodynamics: Incompressible Velocity-Based LBM (Jennings et al. 2025 / Watanabe & Hu 2026)
-- Interface Tracking: Conservative Phase-Field / Allen-Cahn Formulation
-- Lattice: D2Q9 (9 discrete velocities)
-- Boundaries: Half-way bounce-back on solid walls, with free-slip floor option
+Couples:
+- Hydrodynamics: Incompressible velocity-based D2Q9 LBM with variable density and viscosity
+- Interface Capturing: Conservative Allen-Cahn phase field with counter-gradient sharpening
+- Forcing: Continuum Surface Force (CSF) + Gravitational buoyancy + Guo body forcing scheme
 """
 
 import numpy as np
+from two_phase_physics import TwoPhaseProperties
+from phase_field import PhaseFieldLBM2D
+from forcing import TwoPhaseForcing
 
 class TwoPhaseLBM2D:
     def __init__(self, nx, ny,
-                 rho0=1.0, nu=0.01,
-                 gy=-3.0e-4, gx=0.0,
-                 width=3.0, tau_phi=0.6,
+                 rho_L=1.0, rho_G=0.1,
+                 nu_L=0.01, nu_G=0.01,
+                 sigma=0.001,
+                 gx=0.0, gy=-4.0e-4,
+                 width=4.0, mobility=0.05,
+                 contact_angle=90.0,
+                 enable_surface_tension=True,
                  free_slip_bottom=True):
         """
         nx, ny: Lattice grid dimensions
-        rho0: Reference fluid density
-        nu: Kinematic shear viscosity
-        gy, gx: Gravitational acceleration vector
-        width: Interface transition thickness
-        tau_phi: Phase field relaxation time
-        free_slip_bottom: Whether floor uses free-slip or no-slip bounce-back
+        rho_L, rho_G: Liquid and gas phase densities
+        nu_L, nu_G: Liquid and gas phase kinematic viscosities
+        sigma: Surface tension coefficient
+        gx, gy: Gravitational acceleration vector
+        width: Interface transition width W
+        mobility: Interface mobility M
+        contact_angle: Wall static contact angle in degrees
+        enable_surface_tension: Whether surface tension force is evaluated
+        free_slip_bottom: Whether bottom floor uses free-slip reflection
         """
         self.nx = nx
         self.ny = ny
-        self.rho0 = rho0
-        self.nu = nu
-        self.gx = gx
-        self.gy = gy
-        self.g_abs = np.sqrt(gx**2 + gy**2)
-        self.width = width
-        self.tau_phi = tau_phi
+        self.enable_surface_tension = enable_surface_tension
         self.free_slip_bottom = free_slip_bottom
 
-        # D2Q9 Lattice constants
+        # Lattice constants
         self.Q = 9
         self.cs2 = 1.0 / 3.0
         self.cs4 = 1.0 / 9.0
-        self.tau_v = self.nu / self.cs2 + 0.5
 
-        # Lattice velocity vectors c[i] = [cx, cy]
-        self.c = np.array([
-            [ 0,  0],  # 0: rest
-            [ 1,  0],  # 1: +x
-            [ 0,  1],  # 2: +y
-            [-1,  0],  # 3: -x
-            [ 0, -1],  # 4: -y
-            [ 1,  1],  # 5: +x+y
-            [-1,  1],  # 6: -x+y
-            [-1, -1],  # 7: -x-y
-            [ 1, -1]   # 8: +x-y
-        ], dtype=np.int32)
+        # Physical properties & differential stencils
+        self.props = TwoPhaseProperties(
+            rho_L=rho_L, rho_G=rho_G,
+            nu_L=nu_L, nu_G=nu_G,
+            sigma=sigma, width=width,
+            mobility=mobility
+        )
 
-        # Lattice weights w[i]
-        self.w = np.array([
-            4.0/9.0,
-            1.0/9.0, 1.0/9.0, 1.0/9.0, 1.0/9.0,
-            1.0/36.0, 1.0/36.0, 1.0/36.0, 1.0/36.0
-        ], dtype=np.float64)
+        # Sub-modules
+        self.phase_field = PhaseFieldLBM2D(
+            nx=nx, ny=ny,
+            width=width, mobility=mobility,
+            contact_angle=contact_angle,
+            free_slip_bottom=free_slip_bottom
+        )
 
-        # Opposite directions for bounce-back
+        self.forcing = TwoPhaseForcing(
+            props=self.props,
+            gx=gx, gy=gy
+        )
+
+        # Lattice velocities & weights
+        self.c = self.props.c
+        self.w = self.props.w
         self.opp = np.array([0, 3, 4, 1, 2, 7, 8, 5, 6], dtype=np.int32)
-        
-        # Mirror reflections for floor free-slip
         self.refl_floor = np.array([0, 1, 4, 3, 2, 8, 7, 6, 5], dtype=np.int32)
 
         # Macroscopic fields
-        self.phi = np.zeros((nx, ny), dtype=np.float64)
         self.u = np.zeros((nx, ny), dtype=np.float64)
         self.v = np.zeros((nx, ny), dtype=np.float64)
         self.p = np.zeros((nx, ny), dtype=np.float64)
+        self.rho = np.ones((nx, ny), dtype=np.float64) * rho_G
+        self.tau_v = np.ones((nx, ny), dtype=np.float64) * (nu_G / self.cs2 + 0.5)
 
-        # Mesoscopic distribution populations
-        self.g = np.zeros((self.Q, nx, ny), dtype=np.float64)
-        self.h = np.zeros((self.Q, nx, ny), dtype=np.float64)
+        # Hydrodynamic distribution populations
+        self.g = np.zeros((9, nx, ny), dtype=np.float64)
+        self.g_post = np.zeros((9, nx, ny), dtype=np.float64)
+
+    @property
+    def phi(self):
+        """Shortcut property for phase field order parameter."""
+        return self.phase_field.phi
+
+    @phi.setter
+    def phi(self, value):
+        self.phase_field.phi = value
+
+    @property
+    def h(self):
+        """Shortcut property for phase field distribution."""
+        return self.phase_field.h
 
     def initialize_dam(self, dam_w, dam_h):
-        """Initialize water column of dimensions dam_w x dam_h at bottom-left corner."""
+        """Initializes the liquid water column and equilibrium distributions."""
         self.dam_w = dam_w
         self.dam_h = dam_h
-        
-        for x in range(self.nx):
-            for y in range(self.ny):
-                if x <= dam_w and y <= dam_h:
-                    d = min(dam_w - x, dam_h - y)
-                    self.phi[x, y] = 0.5 + 0.5 * np.tanh(2.0 * d / self.width)
-                elif x > dam_w and y <= dam_h:
-                    d = x - dam_w
-                    self.phi[x, y] = 0.5 - 0.5 * np.tanh(2.0 * d / self.width)
-                elif x <= dam_w and y > dam_h:
-                    d = y - dam_h
-                    self.phi[x, y] = 0.5 - 0.5 * np.tanh(2.0 * d / self.width)
-                else:
-                    d = np.sqrt((x - dam_w)**2 + (y - dam_h)**2)
-                    self.phi[x, y] = 0.5 - 0.5 * np.tanh(2.0 * d / self.width)
 
+        # 1. Initialize phase-field
+        self.phase_field.initialize_column(dam_w, dam_h)
+
+        # 2. Compute initial density and viscosity fields
+        self.rho = self.props.density(self.phi)
+        self.tau_v = self.props.relaxation_time(self.phi)
+
+        # 3. Initialize velocity and pressure at rest
         self.u.fill(0.0)
         self.v.fill(0.0)
         self.p.fill(0.0)
 
-        # Set equilibrium distributions at rest
-        for i in range(self.Q):
-            cu = self.c[i, 0] * self.u + self.c[i, 1] * self.v
-            u2 = self.u**2 + self.v**2
-            self.g[i] = (self.p / (self.rho0 * self.cs2)) * self.w[i] + self.rho0 * self.w[i] * (cu / self.cs2 + 0.5 * cu**2 / self.cs4 - 0.5 * u2 / self.cs2)
-            self.h[i] = self.w[i] * self.phi * (1.0 + cu / self.cs2)
+        # 4. Initialize hydrodynamic distribution g_i at equilibrium
+        for i in range(9):
+            self.g[i] = self.w[i] * (self.p / (self.rho * self.cs2))
 
     def step(self):
-        """Execute one complete time step of the coupled two-phase system."""
-        # 1. Update order parameter from distributions
-        self.phi = np.clip(np.sum(self.h, axis=0), 0.0, 1.0)
+        """Executes one complete time step of the coupled two-phase system."""
+        # 1. Update fluid properties from current phase field
+        self.rho = self.props.density(self.phi)
+        self.tau_v = self.props.relaxation_time(self.phi)
 
-        # 2. Gravity body force driving the liquid phase
-        Fx = self.phi * self.rho0 * self.gx
-        Fy = self.phi * self.rho0 * self.gy
+        # 2. Compute total body forces (Surface Tension + Gravity)
+        Fx, Fy = self.forcing.compute_total_force(
+            self.phi,
+            enable_surface_tension=self.enable_surface_tension
+        )
 
-        # 3. Collision Step for Phase Field (h)
-        h_post = np.zeros_like(self.h)
-        for i in range(self.Q):
-            cu = self.c[i, 0] * self.u + self.c[i, 1] * self.v
-            heq = self.w[i] * self.phi * (1.0 + cu / self.cs2)
-            h_post[i] = self.h[i] - (1.0 / self.tau_phi) * (self.h[i] - heq)
+        # 3. Phase-field evolution step (Conservative Allen-Cahn)
+        self.phase_field.step(self.u, self.v)
 
-        # 4. Collision Step for Hydrodynamics (g) with Guo Body Forcing (Jennings et al. 2025)
-        g_post = np.zeros_like(self.g)
-        for i in range(self.Q):
-            cu = self.c[i, 0] * self.u + self.c[i, 1] * self.v
-            u2 = self.u**2 + self.v**2
-            geq = (self.p / (self.rho0 * self.cs2)) * self.w[i] + self.rho0 * self.w[i] * (cu / self.cs2 + 0.5 * cu**2 / self.cs4 - 0.5 * u2 / self.cs2)
-            
-            term1 = (self.c[i, 0] - self.u) * (Fx / self.rho0) + (self.c[i, 1] - self.v) * (Fy / self.rho0)
-            term2 = (cu / self.cs2) * (self.c[i, 0] * (Fx / self.rho0) + self.c[i, 1] * (Fy / self.rho0))
-            Fi = (1.0 - 0.5 / self.tau_v) * self.w[i] * (term1 / self.cs2 + term2 / self.cs2)
-            
-            g_post[i] = self.g[i] - (1.0 / self.tau_v) * (self.g[i] - geq) + Fi
+        # 4. Compute Guo body forcing terms
+        Fi = self.forcing.compute_guo_force_term(
+            self.u, self.v, Fx, Fy, self.rho, self.tau_v
+        )
 
-        # 5. Streaming Step (Exact Linear Permutation Shift)
-        for i in range(self.Q):
-            cx = self.c[i, 0]
-            cy = self.c[i, 1]
-            self.h[i] = np.roll(h_post[i], shift=(cx, cy), axis=(0, 1))
-            self.g[i] = np.roll(g_post[i], shift=(cx, cy), axis=(0, 1))
+        # 5. Hydrodynamic collision step
+        u2 = self.u**2 + self.v**2
+        p_star = self.p / (self.rho * self.cs2)
 
-        # 6. Solid Wall Boundary Conditions
-        for i in range(1, self.Q):
+        for i in range(9):
+            wi = self.w[i]
+            cx, cy = self.c[i, 0], self.c[i, 1]
+            cu = cx * self.u + cy * self.v
+
+            geq = wi * (p_star + cu / self.cs2 + 0.5 * cu**2 / self.cs4 - 0.5 * u2 / self.cs2)
+            self.g_post[i] = self.g[i] - (1.0 / self.tau_v) * (self.g[i] - geq) + Fi[i]
+
+        # 6. Hydrodynamic streaming step
+        for i in range(9):
+            cx, cy = self.c[i, 0], self.c[i, 1]
+            self.g[i] = np.roll(self.g_post[i], shift=(cx, cy), axis=(0, 1))
+
+        # 7. Solid wall bounce-back boundary conditions
+        for i in range(1, 9):
             opp_i = self.opp[i]
-            cx = self.c[i, 0]
-            cy = self.c[i, 1]
-            
-            if cx > 0: # Right wall bounce-back
-                self.g[opp_i, -1, :] = g_post[i, -1, :]
-                self.h[opp_i, -1, :] = h_post[i, -1, :]
-            if cx < 0: # Left wall bounce-back
-                self.g[opp_i, 0, :] = g_post[i, 0, :]
-                self.h[opp_i, 0, :] = h_post[i, 0, :]
-            if cy > 0: # Top wall bounce-back
-                self.g[opp_i, :, -1] = g_post[i, :, -1]
-                self.h[opp_i, :, -1] = h_post[i, :, -1]
-            if cy < 0: # Bottom floor
+            cx, cy = self.c[i, 0], self.c[i, 1]
+
+            if cx > 0: self.g[opp_i, -1, :] = self.g_post[i, -1, :]
+            if cx < 0: self.g[opp_i, 0, :] = self.g_post[i, 0, :]
+            if cy > 0: self.g[opp_i, :, -1] = self.g_post[i, :, -1]
+            if cy < 0:
                 if self.free_slip_bottom:
                     refl_i = self.refl_floor[i]
-                    self.g[refl_i, :, 0] = g_post[i, :, 0]
-                    self.h[refl_i, :, 0] = h_post[i, :, 0]
+                    self.g[refl_i, :, 0] = self.g_post[i, :, 0]
                 else:
-                    self.g[opp_i, :, 0] = g_post[i, :, 0]
-                    self.h[opp_i, :, 0] = h_post[i, :, 0]
+                    self.g[opp_i, :, 0] = self.g_post[i, :, 0]
 
-        # 7. Macroscopic Hydrodynamic Moments
-        self.p = self.cs2 * np.sum(self.g, axis=0)
-        
+        # 8. Macroscopic hydrodynamic moments update
+        self.p = self.rho * self.cs2 * np.sum(self.g, axis=0)
+
         sum_gc_x = np.zeros((self.nx, self.ny), dtype=np.float64)
         sum_gc_y = np.zeros((self.nx, self.ny), dtype=np.float64)
-        for i in range(self.Q):
+        for i in range(9):
             sum_gc_x += self.g[i] * self.c[i, 0]
             sum_gc_y += self.g[i] * self.c[i, 1]
-            
-        self.u = (1.0 / self.rho0) * sum_gc_x + 0.5 * Fx / self.rho0
-        self.v = (1.0 / self.rho0) * sum_gc_y + 0.5 * Fy / self.rho0
 
-        # Enforce no-slip on left, right, top walls
+        self.u = sum_gc_x + 0.5 * Fx / self.rho
+        self.v = sum_gc_y + 0.5 * Fy / self.rho
+
+        # Enforce no-slip on boundaries
         self.u[0, :] = 0.0; self.u[-1, :] = 0.0; self.u[:, -1] = 0.0
         self.v[0, :] = 0.0; self.v[-1, :] = 0.0; self.v[:, -1] = 0.0
         if not self.free_slip_bottom:
@@ -191,21 +190,21 @@ class TwoPhaseLBM2D:
         self.v[:, 0] = 0.0
 
     def get_wavefront_x(self, threshold=0.5):
-        """Extract leading liquid surge position along floor."""
+        """Extracts leading liquid surge front position along floor."""
         floor_phi = self.phi[:, 1]
-        liquid_idx = np.where(floor_phi > threshold)[0]
-        if len(liquid_idx) > 0:
-            return float(np.max(liquid_idx))
+        liq_idx = np.where(floor_phi > threshold)[0]
+        if len(liq_idx) > 0:
+            return float(np.max(liq_idx))
         return float(self.dam_w)
 
     def get_column_height(self, threshold=0.5):
-        """Extract remaining column height along back wall."""
+        """Extracts remaining liquid column height along back wall."""
         wall_phi = self.phi[1, :]
-        liquid_idx = np.where(wall_phi > threshold)[0]
-        if len(liquid_idx) > 0:
-            return float(np.max(liquid_idx))
+        liq_idx = np.where(wall_phi > threshold)[0]
+        if len(liq_idx) > 0:
+            return float(np.max(liq_idx))
         return float(self.dam_h)
 
     def get_sensor_pressure(self, x, y):
-        """Extract pressure at sensor node (x, y)."""
+        """Extracts pressure at sensor coordinate (x, y)."""
         return float(self.p[x, y])
