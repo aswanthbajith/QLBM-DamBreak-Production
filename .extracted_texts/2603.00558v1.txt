@@ -1,0 +1,2292 @@
+A Stable and General Quantum Fractional-Step Lattice
+Boltzmann Method for Incompressible Flows
+
+Yang Xiao1, Liming Yang1, 2, 3, ⁎, Chang Shu4 and Yinjie Du1
+Department of Aerodynamics, College of Aerospace Engineering, Nanjing University
+
+1
+
+of Aeronautics and Astronautics, Nanjing 210016, China
+2
+
+State Key Laboratory of Mechanics and Control for Aerospace Structures, Nanjing
+University of Aeronautics and Astronautics, Nanjing 210016, China
+MIIT Key Laboratory of Unsteady Aerodynamics and Flow Control, Nanjing
+
+3
+
+University of Aeronautics and Astronautics, Nanjing 210016, China
+4
+
+Department of Mechanical Engineering, National University of Singapore, Singapore
+117576, Singapore
+
+Abstract
+Quantum computing shows substantial potential in accelerating simulations and
+alleviating memory bottlenecks in computational fluid dynamics (CFD), owing to its
+inherent properties of superposition and entanglement. The lattice Boltzmann method
+(LBM), being largely algebraic in nature, has inspired the development of various
+quantum LBMs. However, most existing approaches fix the relaxation time at τ = 1,
+thereby confining a given mesh resolution to simulations at a single Reynolds number.
+Although our earlier quantum lattice kinetic scheme (LKS) lifted this restriction, it
+
+⁎
+
+Corresponding author, E-mail: lmyang@nuaa.edu.cn.
+
+1
+
+suffers from instability at high Reynolds numbers. To address this challenge, we
+propose a quantum fractional-step LBM (FS-LBM). In this framework, the predictor
+step is implemented on a quantum circuit using the standard LBM formulation, while
+the corrector step is performed classically. The relaxation time is retained at τ = 1 to
+ensure seamless compatibility with existing quantum LBMs. Benchmark simulations
+of representative two- and three-dimensional incompressible isothermal and thermal
+flows demonstrate that the quantum FS-LBM achieves accuracy and convergence
+orders consistent with its classical counterpart, while significantly outperforming the
+quantum LKS in both precision and stability. Notably, this work presents the first
+quantum LBM simulation of three-dimensional incompressible thermal flows.
+
+Keywords: Quantum computing, Lattice Boltzmann method, Fractional step method,
+Incompressible flows.
+
+1 Introduction
+The lattice Boltzmann method (LBM), derived from kinetic theory, offers
+advantages such as simple algebraic operations, ease of implementation, and natural
+parallelism [1-3]. Leveraging these distinctive features, LBM has been successfully
+applied to various incompressible flows, including multiphase flows [4-6], thermal
+fluids [7-9], and magnetohydrodynamics [10-12]. However, LBM typically requires
+storing the distribution functions, resulting in substantially greater memory
+consumption than traditional Navier-Stokes (N-S) solvers [13-15]. In addition, LBM
+2
+
+exhibits poor stability at high Reynolds numbers. As reported in [16-17], the
+relaxation parameter τ = 0.5 is the margin of instability, while τ naturally approaches
+0.5 if the mesh resolution is insufficient at high Reynolds numbers.
+To improve stability and efficiency, several extensions of LBM have been
+proposed. d'Humiéres et al. [18] introduced the multi-relaxation-time LBM, which
+enhances the computational stability but increases computational effort. Inamuro [19]
+proposed the lattice kinetic scheme (LKS), which fixes the relaxation time τ to 1 and
+updates macroscopic quantities solely from the equilibrium distribution function
+(EDF). This reduces memory requirements since only the EDF must be stored.
+However, Shu et al. [20] pointed out that the LKS suffers from poor numerical
+stability at high Reynolds number flows. To address this limitation, they proposed the
+fractional-step LBM (FS-LBM), which significantly enhances numerical stability
+under high Reynolds number conditions [20]. The FS-LBM consists of a predictor
+step and a corrector step. In the predictor step, the relaxation time τ is set to 1 and the
+standard LBM is applied, allowing the use of only the EDF without modification as in
+LKS. In the corrector step, an anti-diffusion equation is solved using the central
+difference scheme. Building on this idea, Chen et al. [21-23] proposed the simplified
+LBM (SLBM), another fractional-step-based method that enhances stability while still
+requiring storage of only the EDF. In contrast to FS-LBM, the corrector step in SLBM
+is carried out using the EDF directly, thereby avoiding the need to solve the
+anti-diffusion equation. Nevertheless, even storing only the EDF still results in
+significant
+
+memory
+
+requirements,
+
+particularly
+
+for
+
+large-scale
+
+engineering
+3
+
+applications.
+Recently, quantum computing has emerged as a potential solution to the
+significant memory demands of LBM due to its unique properties of superposition
+and entanglement [24-25]. A quantum bit (qubit) can exist in a superposition of 0 and
+1 states, enabling an n-qubit system to represent a linear combination of 2n basis states
+[26-27]. For instance, storing flow variables over 1018 mesh points using 64-bit
+precision would require only about 60 (~ log21018) qubits, whereas a classical
+computer would need nearly 8000 petabytes, which is far beyond the capacity of most
+existing classical systems [28-29]. Because LBM involves primarily algebraic
+operations rather than discrete differential operators, it is particularly suitable for
+quantum implementation. Several quantum LBMs have been developed. Budinski [30]
+proposed a quantum LBM for solving 1D and 2D linear advection-diffusion equations
+by implementing the collision and streaming steps via the linear combination of
+unitaries (LCU) decomposition [31] and quantum walks [32]. Wawrzyniak et al. [33]
+extended quantum LBM to 3D advection-diffusion problems using a novel data
+encoding strategy [34] that significantly reduces the number of quantum gates
+required for initialization. Budinski [35] further adopted quantum LBM to simulate
+incompressible flows by employing the vorticity-stream function formulation of the
+N-S equations. Kocherla et al. [36] proposed a two-circuit quantum LBM, in which
+two separate quantum circuits are used to compute the vorticity and stream functions,
+respectively, thereby lowering the quantum gate count relative to single-circuit
+implementations.
+4
+
+Despite these advances, quantum LBMs face a fundamental limitation, i.e., the
+computational process in quantum systems is inherently linear, whereas the collision
+term in LBM is nonlinear [37]. To circumvent this difficulty, most existing quantum
+LBMs [30, 33, 35-36] set τ = 1, effectively removing nonlinearity. However, this
+restriction ties each mesh resolution to a single Reynolds number, limiting the
+flexibility of quantum LBMs. Although the Carleman linearization method can, in
+principle, eliminate the nonlinearity of the collision term, it leads to exponential
+growth in system dimensionality [38-39]. In our previous work, we proposed a
+quantum LKS based on Inamuro’s method to simulate 2D and 3D incompressible
+flows [40]. This scheme retains τ = 1 while allowing the simulation of flows at
+arbitrary Reynolds numbers, achieving accuracy comparable to its classical
+counterpart. However, as mentioned earlier [20], LKS suffers from poor stability at
+high Reynolds numbers, and this limitation persists in the quantum LKS. This
+highlights the urgent need for a more practical and robust quantum LBM.
+In this work, to balance simplicity and broad applicability, we develop a quantum
+FS-LBM based on the framework of Shu et al. [20] for simulating incompressible
+flows at arbitrary Reynolds numbers. Specifically, the quantum FS-LBM consists of a
+predictor step and a corrector step. In the predictor step, the relaxation time τ is set to
+1, and the evolution is implemented via quantum circuits. The corrector step is
+performed classically by solving the reverse diffusion equation using finite difference
+methods. This design allows seamless integration with existing approaches [30, 33,
+35-36]. To address instabilities that may arise in regions with steep gradients during
+5
+
+the anti-diffusion correction, we employ a finite difference scheme with a stable
+stencil based on least-squares quadratic fitting [41-42], ensuring robustness.
+Furthermore, we consider two variants of the quantum FS-LBM. The first, referred to
+as quantum FS-LBM-I, implements collision, streaming, and macroscopic variable
+computation entirely within quantum circuits. However, due to the limitation that
+quantum circuits can directly extract only zeroth-order moments, quantum FS-LBM-I
+requires multiple identical quantum circuits to compute macroscopic density and
+velocity separately, which leads to considerable computational overhead. The second
+variant, termed quantum FS-LBM-II, executes only collision and streaming steps on
+the quantum circuit and outputs the post-streaming distribution functions, with
+macroscopic quantities then computed classically. Since quantum FS-LBM-II requires
+only a single quantum circuit to obtain both density and velocity, it offers a substantial
+improvement in computational efficiency. The proposed method is validated through
+simulations of 2D and 3D Taylor-Green vortex flows, lid-driven cavity flows, and
+natural convection in a square cavity, confirming its accuracy and effectiveness.
+Comparative results further show that the quantum FS-LBM exhibits superior
+accuracy and stability over the quantum LKS. Notably, this work represents the first
+application of quantum LBM to the simulation of 3D incompressible thermal flows.
+The structure of this paper is arranged as follows: Section 1 is the introduction;
+Section 2 and Section 3 detail the fundamentals of classical FS-LBM and quantum
+FS-LBM, respectively; Section 4 applies the developed method to solve a series of 2D
+and 3D numerical cases; Section 5 gives a brief summarization.
+6
+
+2 Classical fractional-step lattice Boltzmann method
+For incompressible thermal flows, the macroscopic governing equations are
+typically composed of the weakly compressible N-S equations coupled with the
+energy equation, which can be expressed as
+
+
+   u   0,
+t
+u
+   uu   p   2 u  F ,
+t
+T
+   Tu    2T ,
+t
+
+(1)
+
+where u, p, ρ, and T denote the velocity, pressure, density, and temperature of fluid
+flow, respectively. υ and κ represent the viscosity and thermal diffusivity. The term F
+is the buoyancy force caused by temperature non-uniformity, which can be expressed
+under the Boussinesq approximation as:
+F   g T  Tm j,
+
+(2)
+
+where g, β, Tm, and j denote the gravitational acceleration, thermal expansion
+coefficient, mean temperature of the flow field, and the unit vector in the y-direction,
+respectively. As shown in Eq. (1), the temperature field T is influenced by the flow
+field, while the buoyancy force F generated by the temperature field T also plays a
+crucial role as an external force in the momentum equation.
+To solve the incompressible thermal flow problem described by Eq. (1) using the
+LBM, the density distribution function f and the temperature distribution function h
+are introduced to represent the flow field and temperature field, respectively. The
+corresponding governing equations are given as follows
+7
+
+
+1
+1 eq
+f  x  e t , t  t   1   f  x, t  
+f  x , t ,
+
+  
+
+1
+1
+h  x  e t , t  t   1  h  x, t   heq  x, t ,
+
+  
+
+(3)
+
+where δt and eα are the time step and the discrete particle velocity vector in the α
+direction. τυ and τκ denote the relaxation time of the fluid field and temperature field,
+respectively. The corresponding EDFs f eq and heq are expressed as
+
+ e  u e  u 2 u  u 
+f  x , t   w  1  2 
+ 2 ,
+4
+c
+2
+c
+2c s 
+s
+s
+
+eq
+
+ e  u e  u 2 u  u 
+eq
+h  x, t   w T 1  2 
+ 2 ,
+cs
+2cs4
+2c s 
+
+
+(4)
+
+where ρ, cs, and wα are the density, lattice sound speed, and weighting coefficient,
+respectively. The macroscopic quantities, including density, velocity, and temperature,
+can then be evaluated from the distribution functions according to
+
+   feq  x, t , u   e feq  x, t , T   heq  x, t .
+
+
+
+
+(5)
+
+
+
+In FS-LBM developed by Shu et al. [20], both relaxation parameters τυ and τκ are
+fixed at 1, thereby simplifying the collision and streaming steps to
+
+Collision step :
+
+f  x, t   feq  x, t ,
+
+Streaming step :
+
+h  x, t   heq  x, t .
+
+f  x, t  t   f  x  e  t , t ,
+
+h  x, t  t   h  x  e  t , t .
+
+(6)
+
+where f and h are the post-collision states. As observed from Eq. (6), the update
+of the entire lattice Boltzmann equation (LBE) depends solely on the EDFs,
+significantly reducing memory requirements since only the EDFs need to be stored.
+However, according to the Chapman–Enskog expansion analysis, the macroscopic
+equations recovered from Eq. (6) are as follows
+
+8
+
+
+   u   0,
+t
+u
+   uu   p    2 u,
+t
+T
+   Tu     2T ,
+t
+
+(7)
+
+where    0.5cs2t  x 2 6t ,    0.5cs2t  x 2 6t . In standard LBM, the lattice
+spacing ∆x and time step δt are typically set to 1, leading to fixed dynamic viscosity υ*
+= 1/6 and thermal diffusivity κ* = 1/6, which means that a given mesh resolution can
+only simulate flows at a specific Reynolds number.
+To overcome the above limitation, Shu et al. [20] introduced a fractional-step
+scheme, decomposing FS-LBM into the following predictor and corrector steps
+
+Predictor step :
+
+   u   L1c ,
+t
+u
+   uu   p    2 u  L1m ,
+t
+T
+   Tu     2T  LT1 .
+t
+
+Corrector step :
+
+ 0  Lc2 ,
+t
+u
+      2 u  F  Lm2 ,
+t
+T
+      2T  LT2 .
+t
+
+
+
+
+
+
+
+(8)
+
+
+
+In the predictor step, the macroscopic variables ρn, un, and Tn at time step n are used to
+obtain intermediate macroscopic variables  , u , and T
+
+according to Eq. (6). In
+
+the subsequent corrector step, the time derivatives are discretized via a first-order
+forward Euler scheme, yielding the updated macroscopic variables ρn+1, un+1, and Tn+1
+
+ n 1   ,
+
+ n 1u n1   u  t      2 u n  tF n ,
+T
+
+n 1
+
+
+
+
+
+(9)
+
+ T  t     T .
+
+
+2
+
+n
+
+For the Laplacian operator ∇2 in Eq. (9), Shu et al. [20] employed the central
+difference (CD) stencil to discretize it. However, since υ - υ* and κ - κ* are generally
+negative, this approach can become unstable in flows with large gradients. To address
+9
+
+this, Dupuy et al. [41] proposed a finite difference stable stencil (SS) based on
+least-squares quadratic fitting, with the discrete 2D Laplacian operator ∇2 given by
+2
+
+n
+
+u 
+
+
+
+3h 2
+2 Ti n1,j 1  Ti n1,j 1  Ti n1,j 1  Ti n1,j 1  Ti,jn1  Ti,jn1  Ti n1,j  Ti n1,j  4Ti,jn
+
+
+T 
+2
+
+n
+
+ 
+
+2 uin1,j 1  uin1,j 1  uin1,j 1  uin1,j 1  ui,jn 1  ui,jn 1  uin1,j  uin1,j  4ui,jn
+
+ 
+
+
+
+
+(10)
+
+3h 2
+
+where i and j correspond to the indices for the x and y directions, respectively. For the
+3D Laplacian operator, its discrete form is obtained by applying Eq. (10)
+independently to each coordinate plane. The SS stencil retains second-order accuracy
+like the CD stencil, but with reduced accuracy at the same mesh size. Thus, to
+preserve solution fidelity, the SS stencil is employed only when the CD stencil
+becomes unstable.
+Notably, when using the FS-LBM to simulate incompressible isothermal flows,
+Eq. (6) involves only the density distribution function fα, and the buoyancy term F in
+Eq. (8) vanishes.
+
+3 Quantum fractional-step lattice Boltzmann method
+As outlined in Section 2, the classical FS-LBM consists of a predictor step and a
+corrector step. In the quantum FS-LBM, the predictor step is implemented through a
+quantum circuit, whereas the corrector step is performed on a classical computer.
+Furthermore, the evolution of the density and temperature distribution functions is
+realized through distinct but structurally identical quantum circuits. For clarity, we
+illustrate the quantum FS-LBM using only the density distribution function.
+As illustrated in Fig. 1(a), the circuit of quantum FS-LBM is composed of five
+10
+
+quantum registers and four core modules: initialization, collision, streaming, and
+computation of macroscopic variables. The qubit registers
+
+qd
+
+with d = {x, y, z}
+
+encode the variables at the lattice points, each requiring nd = log2({Mx, My, Mz})
+qubits, where Mx, My, Mz are the number of lattice points in each spatial direction. In
+the LBM framework, the distribution function for each discrete velocity direction
+involves the variables at the same lattice point, while the qubit register qd
+
+can only
+
+store the variables for one discrete velocity direction. Therefore, the qubit register
+qQ
+
+is introduced to store the variables at the lattice points corresponding to each
+
+discrete velocity direction α, which requires nQ = ceil(log2Q) qubits, where Q is the
+number of discrete velocity directions in the lattice Boltzmann model. An auxiliary
+register a0 , consisting of a single qubit (na = 1), is used for the implementation of
+the collision and macroscopic variable calculation modules. Consequently, the total
+number of qubits required for the quantum FS-LBM circuit is given by
+ntotal   ni  nQ  na . In this work, we employ the D2Q9 and D3Q27 lattice models to
+id
+
+simulate 2D and 3D incompressible flows, respectively. It is worth noting that for 2D
+simulations, the qubit register q z
+
+can be omitted without loss of generality.
+
+11
+
+Fig. 1 Schematic diagram of quantum FS-LBM. (a) Quantum circuit with general
+blocks for quantum FS-LBM. Initialization circuits for (b) D2Q9 and (c) D3Q27
+lattice models. (d) Quantum circuits for the collision operator. (e) Quantum circuits
+for the streaming operator P. (f) Quantum circuits for the streaming operator N.
+Quantum circuits for the macroscopic variables computation using (g) D2Q9 and (h)
+D3Q27 lattice model. (i) Quantum circuits for the streaming step in selected
+directions e6 = [-1, 1]T and e7 = [-1, -1]T of the D2Q9 lattice model. (j) Quantum
+circuits for the streaming step in selected directions e9 = [-1, 0, 1]T and e21 = [1, 1, -1]T
+of the D3Q27 lattice model.
+
+3.1 Initialization step with duplication sequence
+In the initialization step, the macroscopic density field is encoded into the
+amplitudes of a quantum state vector using the amplitude encoding method proposed
+by Shende et al. [34], which has already been integrated in the Qiskit platform [43]. In
+existing quantum LBMs [30, 35-36], all discrete velocity directions are encoded
+12
+
+ ni
+simultaneously, resulting in a computational complexity of O Q  2id  . However,
+
+
+
+since the density field ρ is identical across all discrete velocity directions, we adopt a
+duplication-based initialization strategy [33, 40] that reduces the computational cost
+ ni
+to O 2id  , as shown in Figs 1(b) and 1(c). Specifically, the amplitude encoding is
+
+
+
+first applied to the density field of a single discrete velocity direction, yielding the
+Ninit
+
+1 2 1
+quantum state  A  0 a 0000 Q
+ni , and  is the
+  k k , where N init  
+ρ k 0
+id
+
+Euclidean norm. Using a sequence of Hadamard and controlled gates, this encoded
+density field ρ is then duplicated across all discrete velocity directions.
+Taking the D2Q9 lattice model as an example (Fig. 1(b)), the Hadamard gates
+are applied to the first two qubits of the qQ
+
+register, resulting in the evolution of
+
+the state to:
+Ninit
+
+B
+
+1
+1
+1
+1
+ 1 2 1
+ 0 a  0000 Q  0001 Q  0010 Q  0011 Q 
+ k k .
+2
+2
+2
+2
+ ρ k 0
+
+(11)
+
+By applying subsequent controlled gates, the quantum state further evolves to:
+1
+1
+1
+1
+ C  0 a ( 0000 Q 
+0001 Q 
+0010 Q 
+0011 Q
+2
+2 2
+2 2
+2 2
+Ninit
+
+1
+1
+1
+1
+1
+1 2 1
+ 0100 Q  0101 Q  0110 Q  0111 Q 
+1000 Q )
+ k k .
+4
+4
+4
+4
+ρ k 0
+2 2
+Clearly, each subspace of the qubit register
+
+qQ
+
+(12)
+
+represents the density field
+
+corresponding to a distinct discrete velocity direction. For the D3Q27 lattice model,
+the coefficients of each subspace can be derived similarly, with details provided in [33,
+40].
+
+13
+
+3.2 Collision step based on the LCU method
+As discussed in Section 2, when the relaxation time is set to 1, the collision step
+in FS-LBM essentially reduces to computing the EDF (Eq. (6)). Since the
+initialization step encodes only the density field ρ, the collision step is implemented
+via the following collision matrix D,
+
+ feq  x0 , t  0
+
+0
+
+
+D   0
+
+0
+,
+eq
+ 0
+0 f  xM 1, t 
+
+
+
+C0 D0 0
+0 
+
+
+D 0
+
+0 ,
+ 0
+0 CQ1DQ1 
+
+
+(13)
+
+where
+
+e  u e  u u  u
+f  x, t   feq  x, t    w 1   2   4  2 .
+
+
+eq
+
+
+
+Here, C  2
+
+h
+
+2
+
+cs
+
+2cs
+
+
+
+2cs 
+
+(14)
+
+is a constant determined by the replication sequence in the
+
+initialization step, and h represents the number of Hadamard gates applied to the
+scalar field. Obviously, applying the collision matrix D to the quantum state  C
+yields
+Q 2 N init 1
+
+D C  0 a 
+ 0
+
+k 1
+
+1 eq
+f  x k , t   Q k
+ρ
+
+(15)
+
+which contains the full EDFs and corresponds to the post-collision state f*  x , t  in
+Eq. (6). However, although the collision matrix D is diagonal, it is not unitary. Hence,
+it must be decomposed into a linear combination of unitary operators via the linear
+combination of unitaries (LCU) method:
+D  B1  B2  2 ,
+
+B1, 2  D  i I  D 2 .
+
+(16)
+
+As shown in Fig. 1(d), the complete collision step can be realized by applying the
+Hadamard gates together with two controlled diagonal unitary operators, B1 and B2.
+14
+
+The resulting collision operator can be written as
+
+H  I
+
+
+ ntotal 1
+
+ 0 0  B  1 1  B H  I
+1
+
+a
+
+2
+
+a
+
+Applying the operator in Eq. (17) to the quantum state  C
+
+
+
+
+
+ D  0 a D  C  1 a i I - D2  C
+Ninit
+
+ 0a
+
+From Eq. (18), the
+
+ ntotal 1
+
+.
+
+(17)
+
+in Eq. (12) yields
+
+
+
+
+
+(18)
+
+1 Q1 2 1 eq
+f  xk , t   Q k  1 a i I - D2  C .
+
+
+ρ  0 k 0
+
+0 a state of the qubit register
+
+a0
+
+contains the distribution
+
+functions feq  x , t  for all discrete velocity directions, thus completing the collision
+step (Eq. (6)).
+
+3.3 Streaming step based on the quantum walk
+The streaming step can be realized via quantum walks [30, 32]. As shown in Eq.
+(6), this step essentially corresponds to propagating the post-collision distribution
+function f  x , t  along its discrete velocity direction eα to the neighboring lattice
+sites. This process can be constructed by introducing the positive shift operator P and
+the negative shift operator N, whose matrix forms are given by
+
+0
+1
+
+0
+P
+
+0
+
+0
+
+0 0  0 1
+0 0  0 0
+1 0  0 0
+,
+    
+0 0  0 0
+
+0 0  1 0
+
+0
+0
+
+0
+N 
+
+0
+
+1
+
+1 0  0 0
+0 1  0 0
+0 0  0 0
+.
+    
+0 0  0 1
+
+0 0  0 0
+
+(19)
+
+The quantum circuits for operators P and N are shown in Fig. 1(e) and 1(f), which are
+composed of multi-controlled X gates.
+The shift operator acts solely on the
+
+qd
+
+register, while the
+
+qQ
+
+register
+
+provides control conditions to guarantee that the streaming step is executed
+15
+
+exclusively within the subspace associated with the selected discrete velocity
+direction. Figs. 1(i) and 1(j) illustrate the quantum circuits of the streaming step for
+the D2Q9 and D3Q27 lattice models, with representative controlled-shift circuits
+detailed for specific discrete velocity directions. When the quantum circuits in Figs.
+1(i) and 1(j) are applied to the quantum state  D , the system evolves into the
+following state
+Ninit
+
+1 Q1 2 1
+ E  0 a   f  xk  e t , t   Q k  1 a   ,
+ρ  0 k 0
+
+where 1 a  
+
+(20)
+
+denotes the orthogonal state of no further interest. As shown in Eq.
+
+(20), the post-streaming distribution function f  xk  e t , t  is contained in the 0 a
+state of the a0
+
+register. Importantly, the shift operator inherently satisfies periodic
+
+boundary conditions, thereby eliminating the need for additional boundary treatment
+in flows with periodic boundaries.
+
+3.4 Computation of macroscopic variables
+The macroscopic density is obtained by computing the 0th moment of the
+distribution function, which involves summing the distribution function over all
+discrete velocity directions, as expressed in Eq. (5). In the quantum circuit, this
+process can be realized by sequentially applying swap gates and Hadamard gates on
+the
+
+qQ
+
+register and the auxiliary
+
+a0
+
+qubit. The swap gates reorder the
+
+distribution function, while the Hadamard gates generate amplitude superposition. Fig.
+1(g) and 1(h) illustrate the corresponding quantum circuits for computing
+macroscopic density using the D2Q9 and D3Q27 lattice models, respectively. It can
+16
+
+be observed that the circuit complexity depends only on the number of qubits in the
+
+qQ
+
+register. In other words, it is solely determined by the number of discrete
+
+velocity directions and is independent of the mesh size. Applying the quantum circuits
+in Figs. 1(g) and 1(h) to the quantum state  E , followed by measuring the auxiliary
+a0
+
+register in the 0 a state and taking the real part yields
+Q1
+
+nQ
+nQ
+ρ  1  2 ρ   f  x  et, t   1  2 ρ  ρ x, t  t .
+
+  0
+
+
+
+The density field ρ derived from Eq. (21) is then scaled by a constant
+
+(21)
+2
+
+nQ
+
+ρ ,
+
+yielding the density field ρ  x , t  t  at the next time step t + δt.
+For the calculation of the temperature field T, a quantum circuit of the same
+structure is employed, using the temperature field as input. However, calculating the
+velocity field u requires the 1st moment of the distribution function fα, whereas the
+circuits shown in Fig. 1(g) and 1(h) are limited to computing only the 0th moment. To
+obtain the velocity field, we construct multiple quantum circuits of identical structure,
+with the product of particle velocity and density field eαρ serving as the input, as
+illustrated in Fig. 2(a). This design allows both quantities to be extracted in parallel
+from the 0th moment, and we refer to this scheme as quantum FS-LBM-I. However,
+for 3D incompressible thermal flows, the quantum FS-LBM-I requires five identical
+quantum circuits, leading to a considerable demand for quantum resources. To address
+this, we propose an alternative scheme, termed quantum FS-LBM-II, as shown in Fig.
+2(b). Unlike quantum FS-LBM-I, quantum FS-LBM-II utilizes only two circuits, one
+for the flow field and one for the temperature field. In the flow-field circuit, the
+computation of the macroscopic quantities is omitted, yielding only the
+17
+
+post-streaming distribution function f  x  et, t  , while the macroscopic quantities
+are subsequently evaluated on a classical computer. This hybrid design significantly
+reduces quantum resource consumption while improving computational efficiency.
+
+Fig. 2 Schematic of (a) quantum FS-LBM-I and (b) quantum FS-LBM-II for
+simulating incompressible flows.
+
+4 Numerical Examples
+In this section, we apply the proposed quantum FS-LBMs to solve 2D and 3D
+incompressible flows at various Reynolds and Rayleigh numbers. All simulations are
+carried out on a PC with an Intel i7-14700KF CPU. The implementation is based on
+the Qiskit SDK version 0.45.2 and the AER backend version 0.13.2 [43]. For
+validation, the results of the quantum FS-LBMs are compared with those obtained
+from the quantum lattice kinetic scheme (LKS) [40]. Details of the quantum LKS for
+incompressible thermal flows are provided in Appendix A. For steady-state flows,
+computational convergence is assessed using the residual criterion
+
+18
+
+u
+
+n 1
+
+ un    T n 1  T n 
+2
+
+2
+
+ ,
+
+u   T 
+n 1 2
+
+n 1 2
+
+(21)
+
+where un+1, Tn+1, and un, Tn denote the velocity and temperature at the time steps n+1
+and n, respectively. Convergence is assumed once the residual falls below  = 10-6
+or 10-7, at which point the simulation is terminated.
+
+4.1 Two- and three-dimensional Taylor-Green vortex flows
+We first evaluate the performance and convergence order of the proposed
+quantum FS-LBMs using 2D and 3D Taylor-Green vortex flows, whose analytical
+solutions are given by
+2 u t
+
+ x   y  ReL 0
+,
+ u  x, , t   u0 cos  sin e
+L L
+
+
+ 2 2 u 0 t
+ v x, , t   u sin x  cos y e ReL ,
+0
+
+L L
+w x, , t   0,
+
+ 4 2u t
+
+0u02   2x 
+ 2y  ReL 0
+   x, t   0  2 cos
+.
+  cos
+ e
+
+4cs   L 
+ L 
+2
+
+(22)
+
+where u0, ρ0, and Re are the characteristic velocity, reference density, and Reynolds
+number, respectively. The computational domains are specified as [-L, L] × [-L, L] for
+2D and [-L, L] × [-L, L] × [-L, L] for 3D cases. Four different uniform meshes (N × N
+or N × N × N, N = 8, 16, 32, and 64) are used for simulation. The Reynolds number is
+defined as Re = u0L/υ. Periodic boundary conditions are applied in all boundaries, and
+the initial conditions are provided by the analytical solution. Simulation parameters
+are fixed as δt = 1, Δx = 1, ρ0 = 1, and Re = 10. At the dimensionless time t* = u0t/L =
+1.0, the numerical solution is compared with the analytical one. The relative error is
+19
+
+quantified using the L2-norm, defined as
+
+L2 
+
+u
+
+numerical
+
+ uexact  u0  N total ,
+2
+
+where unumerical, uexact, and Ntotal are the numerical solution, analytical solution, and the
+total number of mesh points, respectively.
+Figs. 3(a) and 3(b) respectively show the relationship between the L2-norm and
+mesh size on a log scale for 2D and 3D Taylor-Green vortex flows, comparing
+classical and quantum FS-LBMs with classical and quantum LKSs. It can be seen that
+both classical and quantum FS-LBMs exhibit convergence rates close to second order
+in the 2D and 3D Taylor-Green vortex flows, consistent with the theoretical accuracy
+of LBM. For the same mesh size, the L2-norms of the classical FS-LBM, quantum
+FS-LBM-I, and quantum FS-LBM-II coincide, and are 1-2 orders of magnitude
+smaller than those of the classical and quantum LKSs, confirming that FS-LBM
+provides more accurate results than LKS. Furthermore, Figs. 4 and 5 illustrate the uand v-velocity contours of the 2D and 3D Taylor-Green vortices at a mesh size of N =
+64, obtained using the classical FS-LBM, quantum FS-LBM-I, and quantum
+FS-LBM-II. The results of the three approaches are in perfect agreement, thereby
+validating both the accuracy and the effectiveness of the quantum FS-LBMs.
+Table 1 summarizes the computational times of quantum FS-LBM-I, quantum
+FS-LBM-II, quantum LKS-I, and quantum LKS-II at different mesh sizes. For the
+same version and mesh size, the computational times of quantum FS-LBMs and
+quantum LKSs are nearly identical, that is, quantum FS-LBM-I versus quantum
+LKS-I, and quantum FS-LBM-II versus quantum LKS-II. This is due to the fact that
+they share the same quantum circuit framework. Compared with version I (Fig. 1(a)),
+20
+
+the computational times of quantum FS-LBM-II and quantum LKS-II are reduced to
+approximately one-third in 2D and one-quarter in 3D cases, respectively. This
+improvement arises because, for incompressible isothermal flows, quantum
+FS-LBM-II and quantum LKS-II require only one quantum circuit, while quantum
+FS-LBM-I and quantum LKS-I require three or four circuits. Therefore, quantum
+FS-LBM-II can effectively improve computational efficiency.
+
+(a)
+
+(b)
+
+Fig. 3 Convergence order of the L2-norm versus mesh size for (a) 2D and (b) 3D
+Taylor-Green vortex flows.
+
+(a)
+
+(b)
+
+(c)
+
+(d)
+21
+
+Fig. 4 Comparison of (a) u- and (b) v-velocity contours for the 2D Taylor-Green
+vortex flow obtained by classical LKS, quantum LKS-I, and quantum LKS-II with a
+mesh size of 64 × 64. Comparison of (c) u- and (d) v-velocity contours for the 2D
+Taylor-Green vortex flow obtained by classical FS-LBM, quantum FS-LBM-I, and
+quantum FS-LBM-II with a mesh size of 64 × 64.
+
+(a)
+
+(b)
+
+(c)
+
+(d)
+
+Fig. 5 Comparison of (a) u- and (b) v-velocity contours for the 3D Taylor-Green
+vortex flow obtained by classical LKS, quantum LKS-I, and quantum LKS-II with a
+mesh size of 64 × 64 × 64. Comparison of (c) u- and (d) v-velocity contours for the
+3D Taylor-Green vortex flow obtained by classical FS-LBM, quantum FS-LBM-I, and
+quantum FS-LBM-II with a mesh size of 64 × 64 × 64.
+
+Table 1 Computational times of quantum FS-LBM-I, quantum FS-LBM-II, quantum
+LKS-I, and quantum LKS-II for solving 2D and 3D Taylor-Green vortex flows at
+different mesh sizes.
+Methods
+
+2D (s)
+
+3D (s)
+22
+
+N=8
+
+N=16
+
+N=32
+
+N=64
+
+N=8
+
+N=16
+
+N=32
+
+N=64
+
+Quantum LKS-I
+
+2.1
+
+17.9
+
+261.0
+
+3605.2
+
+26.8
+
+613.7
+
+17532.8
+
+560687.7
+
+Quantum LKS-II
+
+0.7
+
+5.8
+
+86.2
+
+1181.3
+
+6.3
+
+144.9
+
+4098.2
+
+134245.3
+
+Quantum FS-LBM-I
+
+2.1
+
+18.2
+
+261.7
+
+3594.4
+
+26.7
+
+625.9
+
+17157.8
+
+566130.3
+
+Quantum FS-LBM-II
+
+0.7
+
+5.9
+
+84.9
+
+1151.9
+
+6.4
+
+147.2
+
+4093.5
+
+132264.2
+
+4.2 Two- and three-dimensional lid-driven cavity flows
+To further assess robustness and practical applicability, we simulate the 2D and
+3D lid-driven cavity flows, a classical benchmark problem for validating newly
+developed numerical methods. Dirichlet boundary conditions are imposed on all walls,
+with the top lid moving at a constant velocity of u = 0.1, while the remaining walls are
+stationary. Notably, the Dirichlet boundary conditions in this case are implemented on
+the classical computer after computing macroscopic quantities from the quantum
+circuit. This treatment differs from the periodic boundary conditions, which are
+directly implemented within the quantum circuit, as discussed in Section 4.1.
+For the 2D case, simulations were conducted on three different uniform meshes
+(N × N, N = 16, 32, and 64) at Reynolds numbers of 100, 400, and 1000, with
+parameters δt = 1, Δx = 1, and ρ0 = 1. The velocity profiles along the cavity centerlines
+obtained by classical FS-LBM, quantum FS-LBM-I, and quantum FS-LBM-II are
+compared with those of classical LKS, quantum LKS-I, quantum LKS-II, as well as
+the benchmark results of Ghia et al. [44], as depicted in Figs. 6(a)-(c) for Re = 100,
+400, and 1000, respectively. The results of the classical and quantum FS-LBMs show
+23
+
+perfect consistency, further confirming the accuracy of the quantum FS-LBMs. In
+contrast, although the classical and quantum LKSs yield mutually consistent results,
+their accuracy is significantly lower than that of the classical and quantum FS-LBMs,
+particularly on coarse meshes and at high Reynolds numbers. Figs. 7(a) – (c) further
+compare convergence histories of the classical and quantum FS-LBMs as well as the
+classical and quantum LKSs under different mesh sizes and Reynolds numbers.
+Notably, convergence is achieved and the simulation is terminated once the residual
+drops below 10-6. The classical and quantum FS-LBMs exhibit almost identical
+convergence trends with comparable iteration counts, all consistently lower than those
+of the classical and quantum LKSs. These results clearly demonstrate that the
+quantum FS-LBMs offer superior computational accuracy and efficiency over the
+quantum LKSs.
+To further verify the applicability of the quantum FS-LBMs at higher Reynolds
+number flows, we simulated the 2D lid-driven cavity flow at Re = 5000 on a mesh of
+64 × 64. Figs. 8(a) and 8(b) present the velocity profiles along the vertical and
+horizontal centerlines, together with the convergence histories, compared with results
+from the classical FS-LBM, quantum FS-LBM-I, quantum FS-LBM-II, and the
+benchmark data of Ghia et al. [44]. The corresponding flow patterns obtained from
+the classical and quantum FS-LBMs are shown in Fig. 8(c). Overall, the classical and
+quantum FS-LBMs yield generally consistent results, successfully capturing the
+secondary vortices at the cavity bottom and the upper-left corner. However, while the
+convergence histories of the classical FS-LBM and quantum FS-LBM-II are identical,
+24
+
+quantum FS-LBM-I shows slight deviations, suggesting that the quantum circuit used
+in quantum FS-LBM-I for computing macroscopic quantities may introduce
+additional errors. A similar behavior is also observed for the classical and quantum
+LKSs in Fig. 8(b). Although none achieves convergence, the quantum LKS-I diverges
+earlier than both the classical LKS and quantum LKS-II. This further highlights the
+superior robustness of quantum FS-LBMs compared to quantum LKSs. In addition,
+since the results of the quantum FS-LBMs become more accurate with increasing
+mesh size, we simulated the 2D lid-driven cavity flow at Re = 1000 using a mesh of
+128 × 128. Figs. 9(a) and 9(b) present the velocity profiles along the vertical and
+horizontal centerlines as well as the convergence histories obtained from the classical
+and quantum FS-LBMs as well as the classical and quantum LKSs, while Fig. 9(c)
+shows the corresponding flow patterns. At this resolution, the quantum LKS-I again
+fails to converge, while the classical and quantum FS-LBMs achieve convergence
+with superior accuracy and efficiency compared to the classical LKS and quantum
+LKS-II. These findings further confirm the greater robustness of the quantum
+FS-LBMs over the quantum LKSs.
+
+(a) Re = 100
+
+25
+
+(b) Re = 400
+
+(c) Re = 1000
+Fig. 6 Comparison of vertical and horizontal centerline velocity profiles with the
+benchmark results of Ghia et al. [44] at (a) Re = 100, (b) Re = 400, and (c) Re = 1000.
+
+(a) Re = 100
+
+26
+
+(b) Re = 400
+
+(c) Re = 1000
+Fig. 7 Convergence history of the classical FS-LBM, quantum FS-LBM-I, quantum
+FS-LBM-II, classical LKS, quantum LKS-I, and quantum LKS-II with different mesh
+sizes at (d) Re = 100, (e) Re = 400, and (f) Re = 1000.
+
+27
+
+(a) Velocity profiles
+
+(b) Convergence histories
+
+(c) Streamlines
+Fig. 8 Comparison of (a) vertical and horizontal centerline velocity profiles and (b)
+convergence histories obtained by classical FS-LBM, quantum FS-LBM-I, quantum
+FS-LBM-II, classical LKS, quantum LKS-I, and quantum LKS-II at Re = 5000. (c)
+Streamlines of the 2D lid-driven cavity flow at Re = 5000 obtained by the same
+methods.
+
+(a) Velocity profiles
+
+(b) Convergence histories
+
+28
+
+(c) Streamlines
+Fig. 9 Comparison of (a) vertical and horizontal centerline velocity profiles and (b)
+convergence histories obtained by classical FS-LBM, quantum FS-LBM-I, quantum
+FS-LBM-II, classical LKS, quantum LKS-I, and quantum LKS-II at Re = 1000. (c)
+Streamlines of the 2D lid-driven cavity flow at Re = 1000 obtained by the same
+methods.
+Finally, we performed a simulation of the 3D cavity flow at Re = 100 on a mesh
+of 32 × 32 × 32. Notably, the Laplacian operator in the corrector step of Eq. (8)
+was discretized using the SS stencil described in Eq. (10). Figs. 10(a)–(c) depict the
+velocity vector fields of the classical and quantum LKSs on the x – z, y – z, and x – y
+planes at the center of the cavity, whereas Figs. 10(d) – (f) show the corresponding
+velocity vector fields for the classical and quantum FS-LBMs. It can be seen that both
+methods exhibit strong consistency between their classical and quantum
+implementations, with similar overall flow patterns. Moreover, Figs. 11 and 12
+present the u-velocity distribution along the vertical centerline of the cavity and the
+corresponding convergence histories for the classical and quantum FS-LBMs and
+LKSs, respectively. From Fig. 11, all results are in close agreement with the
+benchmark data of Wong and Baker [45] and Jiang et al. [46]. While slight deviations
+appear in the central region of the velocity profiles, the classical and quantum
+FS-LBMs provide more accurate predictions in the upper-right region compared to
+their LKS counterparts. Additionally, the classical and quantum FS-LBMs converge
+with fewer iterations than the classical and quantum LKSs. These results demonstrate
+29
+
+the effectiveness and robustness of quantum FS-LBMs in simulating complex
+three-dimensional incompressible flows.
+
+(a)
+
+(d)
+
+(b)
+
+(e)
+
+(c)
+
+(f)
+
+Fig. 10 Flow patterns in vector form on the centroidal planes of (a) x-z, (b) y-z, and (c)
+x-y obtained by classical LKS, quantum LKS-I, and quantum LKS-II. Flow patterns in
+vector form on the centroidal planes of (d) x-z, (e) y-z, and (f) x-y obtained by
+classical FS-LBM, quantum FS-LBM-I, and quantum FS-LBM-II.
+
+30
+
+Fig. 11 Comparison of the u-velocity component distribution along the vertical
+centerline with benchmark results from Wong and Baker [45] and Jiang et al. [46].
+
+Fig. 12 Convergence history of classical FS-LBM, quantum FS-LBM-I, quantum
+31
+
+FS-LBM-II, classical LKS, quantum LKS-I, and quantum LKS-II for the 3D
+lid-driven cavity flow at Re = 100.
+
+4.3 Two- and three-dimensional natural convention in a cavity
+In this section, we validate the applicability of quantum FS-LBMs for
+incompressible thermal flows by simulating 2D and 3D natural convection in a square
+cavity. All walls are stationary and subject to Dirichlet boundary conditions. In the 2D
+case, the top and bottom walls are adiabatic, while the left and right walls are
+isothermal with T1 = 2 and T0 = 1. In the 3D case, the two walls perpendicular to the
+x-z plane are isothermal with T1 = 2 and T0 = 1, and the remaining walls are adiabatic.
+The dynamic similarity of this test case is characterized by two dimensionless
+parameters: the Prandtl number (Pr) and the Rayleigh number (Ra), which are defined
+as follows:
+
+Pr 
+
+
+gTH 3
+, Ra 
+,
+
+
+
+(23)
+
+where ΔT = T1 - T0, and H is the length of the square cavity. In the simulation, the
+Nusselt number Nu is used to evaluate the heat transfer rate, and the average Nusselt
+number Nu over the entire computational domain is defined as
+
+Nu 
+
+H 1 
+T 
+uT  
+d.
+2 
+T H  
+x 
+
+(24)
+
+First, the 2D natural convection in a square cavity was simulated on three
+different uniform meshes (N × N, N = 16, 32, and 64) at Rayleigh numbers of 103, 104,
+and 105. The parameters are set to δt = 1, Δx = 1, Pr = 0.71, and gβ = 10-5.
+32
+
+Convergence is achieved once the residual drops below 10-7. Figs. 13(b) and 13(d)
+present the isotherms obtained by the classical and quantum FS-LBMs at Ra = 103
+and Ra = 104, while the corresponding results from the classical and quantum LKSs
+are shown in Figs. 13(a) and 13(c). It can be observed that the temperature contours
+from the classical and quantum FS-LBMs coincide perfectly under the same mesh
+size, demonstrating the effectiveness of quantum FS-LBMs in simulating
+incompressible thermal flows. Compared with the results of the classical and quantum
+LKSs, which require a mesh size of 64 × 64 to obtain reasonable accuracy, the
+classical and quantum FS-LBMs deliver superior accuracy and attain reliable results
+on a coarser mesh size of 32 × 32. Figs. 14(a) and 14(b) show the convergence
+histories of the classical and quantum FS-LBMs as well as the classical and quantum
+LKSs at Ra = 103 and Ra = 104, respectively. The convergence curves of the classical
+and quantum FS-LBMs coincide exactly, but their iteration counts are higher than
+those of the classical and quantum LKSs, especially on coarse meshes. This
+discrepancy is likely because the classical and quantum LKSs converge to inaccurate
+solutions, as evidenced by the isotherms in Figs. 13(a) and 13(c). Under coarse mesh
+conditions, the temperature contours produced by the classical and quantum LKSs
+lose centro-symmetry, while those from the classical and quantum FS-LBMs remain
+fully centro-symmetric across all mesh sizes.
+For Ra = 105, Fig. 15(a) depicts the isotherms obtained by the classical and
+quantum FS-LBMs, while Fig. 15(b) illustrates the corresponding convergence
+histories alongside those of the classical and quantum LKSs. Although the classical
+33
+
+and quantum FS-LBMs again produce highly consistent results at the same mesh size,
+reasonable solutions are achieved only on the mesh size of 64 × 64. In contrast, the
+classical and quantum LKSs diverge outright on the mesh size of 32 × 32. Even on
+the mesh size of 64 × 64, they fail to converge, with residuals oscillating around 10-3,
+yielding incorrect solutions as shown in Fig. 16(b). Moreover, while the classical and
+quantum LKSs appear to converge structurally on the coarse mesh size of 16 × 16,
+their results remain erroneous, as shown in Fig. 16(a). Table 2 presents a quantitative
+comparison of representative physical parameters obtained from the classical and
+quantum FS-LBMs and LKSs against the benchmark results of Wang et al. [47] and
+Yang [48]. Here, umax denotes the maximum u-velocity along the vertical centerline
+with y indicating the corresponding coordinate, while vmax denotes the maximum
+v-velocity along the horizontal centerline with x indicating the corresponding
+coordinate. It can be observed that the results of the classical and quantum FS-LBMs
+on the mesh size of 64×64 exhibit excellent consistency with the reference data and
+demonstrate superior accuracy compared to the classical and quantum LKSs.
+
+(a)
+
+(b)
+
+(c)
+
+(d)
+34
+
+Fig. 13 Isotherms obtained by the classical LKS, quantum LKS-I, and quantum
+LKS-II at (a) Ra = 103 and (c) Ra = 104. Isotherms obtained by the classical FS-LBM,
+quantum FS-LBM-I, and quantum FS-LBM-II at (b) Ra = 103, (d) Ra = 104, and (f)
+Ra = 105.
+
+(a) Ra = 1000
+
+(b) Ra = 10000
+Fig. 14 Convergence histories of classical FS-LBM, quantum FS-LBM-I, quantum
+FS-LBM-II, classical LKS, quantum LKS-I, and quantum LKS-II with different mesh
+sizes for the 2D natural convection in a square cavity at (a) Ra = 103 and (b) Ra = 104
+
+35
+
+(a) Isotherms
+
+(b) Convergence histories
+Fig. 15 (a) Isotherms obtained by the classical FS-LBM, quantum FS-LBM-I, and
+quantum FS-LBM-II at Ra = 105. (b) Convergence histories of classical FS-LBM,
+quantum FS-LBM-I, quantum FS-LBM-II, classical LKS, quantum LKS-I, and
+quantum LKS-II with different mesh sizes for the 2D natural convection in a square
+cavity at Ra = 105.
+
+36
+
+(a)
+
+(b)
+
+Fig. 16 Isotherms obtained by the classical LKS, quantum LKS-I, and quantum
+LKS-II with the mesh sizes of (a) 16 × 16 and (b) 64 × 64 at Ra = 105.
+
+Table 2 Results of natural convection in a square cavity at different Rayleigh numbers
+of Ra = 103, 104, and 105.
+Classical
+
+Quantum
+
+Quantum
+
+Classical
+
+Quantum
+
+Quantum
+
+Wang
+
+Yang
+
+LKS
+
+LKS-I
+
+LKS-II
+
+FS-LBM
+
+FS-LBM-I
+
+FS-LBM-II
+
+et al.
+
+et al.
+
+umax
+
+3.561
+
+3.561
+
+3.561
+
+3.639
+
+3.639
+
+3.639
+
+3.640
+
+3.647
+
+y
+
+0.8095
+
+0.8095
+
+0.8095
+
+0.8095
+
+0.8095
+
+0.8095
+
+0.815
+
+0.815
+
+vmax
+
+3.597
+
+3.597
+
+3.597
+
+3.686
+
+3.686
+
+3.686
+
+3.708
+
+3.696
+
+x
+
+0.1905
+
+0.1905
+
+0.1905
+
+0.1746
+
+0.1746
+
+0.1746
+
+0.180
+
+0.175
+
+Nu
+
+1.121
+
+1.121
+
+1.121
+
+1.114
+
+1.114
+
+1.115
+
+1.115
+
+1.118
+
+umax
+
+16.306
+
+16.305
+
+16.306
+
+16.124
+
+16.123
+
+16.124
+
+16.140
+
+16.183
+
+y
+
+0.8254
+
+0.8254
+
+0.8254
+
+0.8254
+
+0.8254
+
+0.8254
+
+0.825
+
+0.825
+
+vmax
+
+18.832
+
+18.832
+
+18.832
+
+19.438
+
+19.438
+
+19.438
+
+19.670
+
+19.627
+
+x
+
+0.1587
+
+0.1587
+
+0.1587
+
+0.1269
+
+0.1269
+
+0.1269
+
+0.118
+
+0.117
+
+Nu
+
+2.190
+
+2.190
+
+2.190
+
+2.216
+
+2.216
+
+2.216
+
+2.232
+
+2.245
+
+umax
+
+121.3713
+
+134.83023
+
+121.3713
+
+34.6144
+
+34.6093
+
+34.6144
+
+34.870
+
+34.775
+
+y
+
+0.9048
+
+0.9048
+
+0.9048
+
+0.8571
+
+0.8571
+
+0.8571
+
+0.855
+
+0.853
+
+Ra
+
+103
+(2D)
+
+104
+(2D)
+
+105
+(2D)
+
+37
+
+103
+(3D)
+
+vmax
+
+94.7511
+
+99.5179
+
+94.7511
+
+67.0643
+
+67.0592
+
+67.0643
+
+68.850
+
+68.634
+
+x
+
+0.1111
+
+0.1269
+
+0.1111
+
+0.0635
+
+0.0635
+
+0.0635
+
+0.065
+
+0.067
+
+Nu
+
+4.681
+
+4.877
+
+4.681
+
+4.403
+
+4.403
+
+4.403
+
+4.491
+
+4.524
+
+umax
+
+0.1248
+
+0.1238
+
+0.1230
+
+0.1291
+
+0.1280
+
+0.1280
+
+0.132
+
+0.132
+
+y
+
+0.1935
+
+0.1935
+
+0.1935
+
+0.1935
+
+0.1935
+
+0.1935
+
+0.187
+
+0.179
+
+vmax
+
+0.1198
+
+0.1235
+
+0.1231
+
+0.1262
+
+0.1281
+
+0.1281
+
+0.133
+
+0.133
+
+x
+
+0.8065
+
+0.8065
+
+0.8065
+
+0.8065
+
+0.8065
+
+0.8065
+
+0.829
+
+0.821
+
+Nu
+
+1.0184
+
+1.0613
+
+1.0676
+
+1.0518
+
+1.0802
+
+1.0802
+
+1.092
+
+1.088
+
+Next, we simulate the 3D natural convection in a square cavity at Ra = 103 and
+Ra = 104 using a uniform mesh size of 32 × 32 × 32. Figs. 17(a) and 17(b) present the
+isotherms on the z = 0.5H plane at Ra = 103, obtained by the classical and quantum
+LKSs as well as classical and quantum FS-LBMs. The isotherms from the classical
+and quantum FS-LBMs are highly consistent, while those from the classical and
+quantum LKSs are also mutually consistent. Fig. 17(c) shows the convergence
+histories of both FS-LBMs and LKSs, revealing that the classical and quantum
+FS-LBMs maintain closely matching convergence curves, with marginally higher
+iteration counts than the classical and quantum LKSs. Fig. 17(d) compares the
+u-velocity along the vertical centerline and the v-velocity along the horizontal
+centerline on the z = 0.5H plane against the benchmark results of Yang et al. [49]. The
+FS-LBMs, both classical and quantum, clearly achieve higher accuracy than the LKSs.
+This observation is further supported by the quantitative comparison of representative
+physical parameters in Table 2, which shows that the FS-LBMs yield results in closer
+agreement with the benchmark data from Yang et al. [49] and Wang et al. [50]. Finally,
+we extend the simulation to Ra = 104 using the quantum FS-LBMs on a mesh size of
+32 × 32 × 32. Figs. 18(a) and 18(b) show the isotherms and the u-velocity along the
+38
+
+vertical centerline as well as the v-velocity along the horizontal centerline on the z =
+0.5H plane computed by the classical and quantum FS-LBMs, respectively. Similarly,
+the results of the quantum FS-LBM-I and quantum FS-LBM-II are in excellent
+agreement with those of the classical FS-LBM and show good consistency with the
+results of Yang et al. [49], further confirming the applicability and robustness of
+quantum FS-LBMs in simulating incompressible thermal flows.
+
+(a)
+
+(b)
+
+(c)
+
+(d)
+
+Fig. 17 Isotherms on the z = 0.5H plane at Ra = 103 obtained by (a) classical LKS,
+quantum LKS-I, quantum LKS-II, and (b) classical FS-LBM, quantum FS-LBM-I,
+quantum FS-LBM-II. (c) Convergence histories of classical FS-LBM, quantum
+39
+
+FS-LBM-I, quantum FS-LBM-II, classical LKS, quantum LKS-I, and quantum
+LKS-II at Ra = 103. (d) Comparison of the u-velocity along the vertical centerline and
+the v-velocity along the horizontal centerline on the z = 0.5H plane obtained by
+classical LKS, quantum LKS-I, quantum LKS-II, classical FS-LBM, quantum
+FS-LBM-I, and quantum FS-LBM-II against the benchmark results from Yang et al.
+[49].
+
+(a)
+
+(b)
+
+Fig. 18 (a) Isotherms on the z = 0.5H plane at Ra = 104 obtained by classical FS-LBM,
+quantum FS-LBM-I, and quantum FS-LBM-II. (b) Comparison of the u-velocity
+along the vertical centerline and the v-velocity along the horizontal centerline on the z
+= 0.5H plane obtained by classical FS-LBM, quantum FS-LBM-I, and quantum
+FS-LBM-II against the results from Yang et al. [49].
+
+5 Conclusions
+In this study, we proposed a quantum FS-LBM for simulating two- and
+three-dimensional incompressible isothermal and thermal flows at arbitrary Reynolds
+40
+
+and Rayleigh numbers. The method comprises a predictor step and a corrector step:
+the predictor is performed via the LBM on a quantum circuit, while the corrector is
+computed using finite differences on a classical computer. Additionally, computing
+the density and velocity fields separately would require multiple quantum circuits,
+consuming substantial quantum resources. To overcome this, we developed a quantum
+FS-LBM-II variant that employs a single quantum circuit to generate the
+post-streaming distribution functions, from which both fields can then be computed
+on a classical computer. This design substantially reduces quantum resource
+requirements while enhancing computational efficiency.
+The performance of the proposed method was evaluated via a series of
+benchmark tests on representative 2D and 3D incompressible isothermal and thermal
+flows. Numerical results indicate that both quantum FS-LBM-I and FS-LBM-II yield
+solutions highly consistent with the classical LKS at the same grid resolution and
+share the same convergence order. Moreover, the convergence trend of quantum
+FS-LBM-II aligns perfectly with that of the classical FS-LBM, whereas quantum
+FS-LBM-I shows slight deviations. This discrepancy may be attributed to additional
+errors introduced by the quantum circuits used for computing macroscopic quantities.
+Compared with quantum LKSs, the quantum FS-LBMs exhibit higher accuracy,
+stability, and efficiency.
+In summary, the quantum FS-LBMs offer a practical and efficient framework for
+simulating incompressible flows on quantum hardware, potentially advancing
+large-scale fluid dynamics simulations. With the relaxation parameter set to 1, they
+41
+
+can be seamlessly integrated into most existing quantum LBMs, demonstrating
+excellent scalability and wide applicability. Future work will focus on implementing
+finite-difference methods within quantum circuits, enabling the corrector step to be
+performed entirely on quantum hardware. Additionally, since any boundary condition
+in LBM can be expressed in the form of A·fα, the matrix A may be decomposed via
+singular value decomposition (SVD), with the resulting factors encoded into quantum
+circuits. This would allow non-periodic boundary conditions to be fully integrated
+into the quantum framework.
+
+Appendix A: Supplementary details of the quantum lattice kinetic scheme for
+incompressible thermal flows
+Similar to FS-LBM, LKS also sets the relaxation parameter to 1, so that its lattice
+Boltzmann equation for simulating incompressible thermal flows is given by
+
+f  x  e t , t  t   feq  x, t ,
+
+(A.1)
+
+h  x  e t , t  t   heq  x, t .
+
+As discussed in Section 2, the N-S equations recovered from Eq. (A.1) yield both
+viscosity υ and thermal diffusivity κ fixed at 1/6, meaning that a given mesh size can
+only simulate flow at a specific Reynolds number, which greatly restricts flexibility.
+To overcome this limitation, Inamuro [19] modified the EDF feq  x, t  as follows
+
+ e  u e  u2 u  u
+
+T
+feq  x, t   w  1   2   4  2  AteT u  u e ,
+cs
+2cs
+2cs
+
+
+
+
+
+
+
+(A.2)
+
+where A is a constant. Through the C-E expansion analysis [40], the viscosity υ is then
+related to the constant A by
+42
+
+1
+
+    2 Acs2 cs2t.
+2
+
+
+(A.3)
+
+Thus, the viscosity υ can be adjusted by varying A instead of being fixed, allowing
+simulations at arbitrary Reynolds numbers. For the temperature equilibrium
+distribution function heq  x, t  , we follow the method of Meng et al. [51] to modify it
+as
+
+ e  u e  u2 u  u 
+heq  x, t   w T 1   2   4  2   w Bt e  T ,
+cs
+2cs
+2cs 
+
+
+(A.4)
+
+Through the C-E expansion analysis [51], the thermal diffusivity κ is then related to
+the constant B by
+
+1
+
+    B cs2t.
+2
+
+
+(A.5)
+
+Hence, the thermal diffusivity κ can be tuned by adjusting B. By replacing the original
+EDFs with those defined in Eqs. (A.2) and (A.4), LKS can overcome the constraints
+of mesh size and enable simulations of flows at arbitrary Reynolds numbers.
+For the implementation of quantum LKS, the quantum circuit framework and
+computational procedure are identical to those of the quantum FS-LBM. The only
+modification is that the collision matrix D in Eq. (13) is replaced with the following
+form
+C0 D0 0
+0 
+
+
+D 0
+
+0 ,
+ 0
+0 CQ1DQ1 
+
+
+ feq  x0 , t  0
+
+0
+
+
+D   0
+
+0
+,
+eq
+ 0
+0 f  xM 1, t 
+
+
+
+(A.6)
+
+where
+
+ e  u e  u2 u  u
+
+T
+feq  x, t   feq  x, t    w 1   2   4  2  AteT u  u e . (A.7)
+cs
+2cs
+2cs
+
+
+
+
+
+
+
+43
+
+For the temperature equilibrium distribution function heq  x, t  , the collision matrix D
+is given by
+
+heq  x0 , t  0
+
+0
+
+
+D   0
+
+0
+,
+eq
+ 0
+0 h  xM 1, t 
+
+
+
+(A.6)
+
+ e  u e  u2 u  u
+
+heq  x, t   heq  x, t  T  w 1   2   4  2  Bt e  T  T .
+cs
+2cs
+2cs
+
+
+
+(A.7)
+
+C0 D0 0
+0 
+
+
+D 0
+
+0 ,
+ 0
+0 CQ1DQ1 
+
+
+where
+
+Acknowledgements
+The research is partially supported by the National Natural Science Foundation
+of China (12202191) and Research Fund of State Key Laboratory of Mechanics and
+Control for Aerospace Structures (Nanjing University of Aeronautics and Astronautics)
+(MCAS-I-0324G04).
+
+Competing interests
+The authors declare no competing interests.
+
+44
+
+References
+[1]
+
+Krüger T, Kusumaatmaja H, Kuzmin A, et al. The lattice Boltzmann method.
+Springer International Publishing, 2017, 10(978-3): 4-15.
+
+[2]
+
+Ma K, Wang Y, Jiang M, et al. A simple one-step index algorithm for
+implementation of lattice Boltzmann method on GPU. Computer Physics
+Communications, 2023, 283: 108603.
+
+[3]
+
+Xiang X, Su W, Hu T, et al. Multi-GPU lattice Boltzmann simulations of
+turbulent square duct flow at high Reynolds number. Computers & Fluids, 2023,
+266: 106061.
+
+[4]
+
+Li X, Dong Z Q, Li Y, et al. A fractional-step lattice Boltzmann method for
+multiphase flows with complex interfacial behavior and large density contras.
+International Journal of Multiphase Flow, 2022, 149: 103982.
+
+[5]
+
+Petersen K J, Brinkerhoff J R. On the lattice Boltzmann method and its
+application to turbulent, multiphase flows of various fluids including cryogens:
+A review. Physics of Fluids, 2021, 33(4): 041302.
+
+[6]
+
+Falcucci G, Ubertini S, Biscarini C, et al. Lattice Boltzmann methods for
+multiphase flow simulations across scales. Communications in Computational
+Physics, 2011, 9(2): 269-296.
+
+[7]
+
+Scagliarini A, Biferale L, Sbragaglia M, et al. Lattice Boltzmann methods for
+thermal
+
+flows:
+
+Continuum
+
+limit
+
+and
+
+applications
+
+to
+
+compressible
+
+Rayleigh-Taylor systems. Physics of Fluids, 2010, 22(5): 055101.
+[8]
+
+Hu Y, Li D, Shu S, et al. An efficient immersed boundary-lattice Boltzmann
+45
+
+method for the simulation of thermal flow problems. Communications in
+Computational Physics, 2016, 20(5): 1210-1257.
+[9]
+
+Cui X, Yao X, Wang Z, et al. A coupled Volume Penalization-Thermal Lattice
+Boltzmann method for thermal flows. International Journal of Heat and Mass
+Transfer, 2018, 127: 253-266.
+
+[10] Cherkaoui I, Bettaibi S, Barkaoui A, et al. Magnetohydrodynamic blood flow
+study in stenotic coronary artery using lattice Boltzmann method. Computer
+Methods and Programs in Biomedicine, 2022, 221: 106850.
+[11] Dellar P J. Lattice kinetic schemes for magnetohydrodynamics. Journal of
+Computational Physics, 2002, 179(1): 95-126.
+[12] Magacho B, Tavares H S, Moriconi L, et al. Double multiple-relaxation-time
+model of lattice-Boltzmann magnetohydrodynamics at low magnetic Reynolds
+numbers. Physics of Fluids, 2023, 35(1): 013610.
+[13] Verzicco R, Orlandi P. A finite-difference scheme for three-dimensional
+incompressible flows in cylindrical coordinates. Journal of Computational
+Physics, 1996, 123(2): 402-414.
+[14] Zamzamian K, Razavi S E. Multidimensional upwinding for incompressible
+flows based on characteristics. Journal of Computational Physics, 2008, 227(19):
+8699-8713.
+[15] Boscheri W, Chiozzi A, Carlino M G, et al. A new family of semi-implicit finite
+volume/virtual element methods for incompressible flows on unstructured
+meshes. Computer Methods in Applied Mechanics and Engineering, 2023, 414:
+46
+
+116140.
+[16] Sterling J D, Chen S. Stability analysis of lattice Boltzmann methods. Journal of
+Computational Physics, 1996, 123(1): 196-206.
+[17] Worthing R A, Mozer J, Seeley G. Stability of lattice Boltzmann methods in
+hydrodynamic regimes. Physical Review E, 1997, 56(2): 2243.
+[18] d'Humieres D. Generalized lattice-Boltzmann equations. Rarefied gas dynamics,
+1992.
+[19] Inamuro T. A lattice kinetic scheme for incompressible viscous flows with heat
+transfer. Philosophical Transactions of the Royal Society of London. Series A:
+Mathematical, Physical and Engineering Sciences, 2002, 360(1792): 477-484.
+[20] Shu C, Niu X D, Chew Y T, et al. A fractional step lattice Boltzmann method for
+simulating high Reynolds number flows. Mathematics and Computers in
+Simulation, 2006, 72(2-6): 201-205.
+[21] Chen Z, Shu C, Wang Y, et al. A simplified lattice Boltzmann method without
+evolution of distribution function. Advances in Applied Mathematics and
+Mechanics, 2017, 9(1): 1-22.
+[22] Chen Z, Shu C, Tan D, et al. Simplified multiphase lattice Boltzmann method
+for simulating multiphase flows with large density ratios and complex interfaces.
+Physical Review E, 2018, 98(6): 063314.
+[23] Chen Z, Shu C, Tan D. High-order simplified thermal lattice Boltzmann method
+for incompressible thermal flows. International Journal of Heat and Mass
+Transfer, 2018, 127: 1-16.
+47
+
+[24] Xiao Y, Yang L M, Shu C, et al. Physics-informed quantum neural network for
+solving forward and inverse problems of partial differential equations. Physics
+of Fluids, 2024, 36(9): 097145.
+[25] Malinverno G, Blasco Alberto J. A Review of the Current State-of-the-Art of
+Quantum Computing for CFD: Approaches, Advantages, and Limitations.
+Aerotecnica Missili & Spazio, 2025: 1-18.
+[26] Xiao Y, Yang L M, Shu C, et al. A novel quantum Fourier ordinary differential
+equation solver for solving linear and nonlinear partial differential equations.
+Physics of Fluids, 37(6): 063614.
+[27] Liu J, Liu M, Liu J P, et al. Towards provably efficient quantum algorithms for
+large-scale machine-learning models. Nature Communications, 2024, 15(1):
+434.
+[28] Itani W, Sreenivasan K R, Succi S. Quantum algorithm for lattice Boltzmann
+(QALB) simulation of incompressible fluids with a nonlinear collision term.
+Physics of Fluids, 2024, 36(1): 017112.
+[29] Kumar E D, Frankel S H. Quantum unitary matrix representation of the lattice
+Boltzmann model for low Reynolds fluid flow simulation. AVS Quantum
+Science, 2025, 7(1): 013802.
+[30] Budinski L. Quantum algorithm for the advection – diffusion equation simulated
+with the lattice Boltzmann method. Quantum Information Processing, 2021,
+20(2): 57.
+[31] Low G H, Chuang I L. Hamiltonian simulation by qubitization. Quantum, 2019,
+48
+
+3: 163.
+[32] Qiang X, Loke T, Montanaro A, et al. Efficient quantum walk on a quantum
+processor. Nature Communications, 2016, 7(1): 11511.
+[33] Wawrzyniak D, Winter J, Schmidt S, et al. A quantum algorithm for the
+lattice-Boltzmann method advection-diffusion equation. Computer Physics
+Communications, 2025, 306: 109373.
+[34] Shende V V, Bullock S S, Markov I L. Synthesis of quantum logic circuits.
+Proceedings of the 2005 Asia and South Pacific Design Automation Conference.
+2005: 272-275.
+[35] Budinski L. Quantum algorithm for the Navier – Stokes equations by using the
+streamfunction-vorticity formulation and the lattice Boltzmann method.
+International Journal of Quantum Information, 2022, 20(02): 2150039.
+[36] Kocherla S, Adams A, Song Z, et al. A two-circuit approach to reducing
+quantum resources for the quantum lattice Boltzmann method. arxiv preprint
+arxiv:2401.12248, 2024.
+[37] Wang B, Meng Z, Zhao Y, et al. Quantum lattice Boltzmann method for
+simulating nonlinear fluid dynamics. arxiv preprint arxiv:2502.16568, 2025.
+[38] Itani W, Succi S. Analysis of Carleman linearization of lattice Boltzmann.
+Fluids, 2022, 7(1): 24.
+[39] Sanavio C, Succi S. Lattice Boltzmann – Carleman quantum algorithm and
+circuit for fluid flows at moderate Reynolds number. AVS Quantum Science,
+2024, 6(2): 023802.
+49
+
+[40] Xiao Y, Yang L, Shu C, et al. Quantum lattice kinetic scheme for solving
+two-dimensional and three-dimensional incompressible flows. arxiv preprint
+arxiv:2505.10883, 2025.
+[41] Dupuy P M, Svendsen H F, Patruno L E, et al. Finite-difference stable stencils
+based on least-square quadric fitting. Computer Physics Communications, 2010,
+181(10): 1671-1681.
+[42] Deng L, Liang J, Zhang Y, et al. Efficient numerical simulation of injection
+mold filling with the lattice Boltzmann method. Engineering Computations,
+2017, 34(2): 307-329.
+[43] Javadi-Abhari A, Treinish M, Krsulich K, et al. Quantum computing with Qiskit.
+arXiv preprint arXiv:2405.08810, 2024
+[44] Ghia U, Ghia K N, Shin C T. High-Re solutions for incompressible flow using
+the Navier-Stokes equations and a multigrid method. Journal of Computational
+Physics, 1982, 48(3): 387-411.
+[45] Wong K L, Baker A J. A 3D incompressible Navier – Stokes velocity – vorticity
+weak form finite element algorithm. International Journal for Numerical
+Methods in Fluids, 2002, 38(2): 99-123.
+[46] Jiang B N, Lin T L, Povinelli L A. Large-scale computation of incompressible
+viscous flow by least-squares finite element method. Computer Methods in
+Applied Mechanics and Engineering, 1994, 114(3-4): 213-231.
+[47] Wang Y, Shu C, Teo CJ. Thermal lattice Boltzmann flux solver and its
+application for simulation of incompressible thermal flows. Computers & Fluids,
+50
+
+2014, 94:98-111.
+[48] Yang LM, Shu C, Yang WM, et al. Development of an efficient gas kinetic
+scheme for simulation of two-dimensional incompressible thermal flows.
+Physical Review E, 2018, 97(1):013305.
+[49] Yang LM, Shu C, Yang WM, et al. A simple gas kinetic scheme for simulation
+of 3D incompressible thermal flows. Numerical Heat Transfer, Part B:
+Fundamentals, 2017, 72(6):450-68.
+[50] Wang Y, Shu C, Teo CJ, et al. Three-dimensional lattice Boltzmann flux solver
+and its applications to incompressible isothermal and thermal flows.
+Communications in Computational Physics, 2015, 18(3):593-620.
+[51] Meng X, Guo Z. Localized lattice Boltzmann equation model for simulating
+miscible viscous displacement in porous media. International Journal of Heat
+and Mass Transfer, 2016, 100:767-78.
+
+51
+
+

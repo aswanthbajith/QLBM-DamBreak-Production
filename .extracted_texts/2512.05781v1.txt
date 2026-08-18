@@ -1,0 +1,2523 @@
+Simulating non-trivial incompressible flows
+with a quantum lattice Boltzmann algorithm
+
+arXiv:2512.05781v1 [physics.flu-dyn] 5 Dec 2025
+
+David Jennings∗ , Kamil Korzekwa*† , Matteo Lostaglio*, and Paul Mannix*†
+PsiQuantum, 700 Hansen Way, Palo Alto, CA 94304, USA
+Richard Ashworth‡ , Emanuele Marsili§ , and Stephen Rolston¶
+Airbus Operations Ltd, Pegasus House Aerospace Avenue, Filton, Bristol, UK
+Quantum algorithms have been identified as a potential means to accelerate computational
+fluid dynamics (CFD) simulations, with the lattice Boltzmann method (LBM) being a promising
+candidate for realizing quantum speedups. Here, we extend the recent quantum algorithm
+for the incompressible LBM to account for realistic fluid dynamics setups by incorporating
+walls, inlets, outlets, and external forcing. We analyze the associated complexity cost and show
+that these modifications preserve the asymptotic scaling, and potential quantum advantage, of
+the original algorithm. Moreover, to support our theoretical analysis, we provide a classical
+numerical study illustrating the accuracy, complexity, and convergence of the algorithm for
+representative incompressible-flow cases, including the driven Taylor–Green vortex, the liddriven cavity flow, and the flow past a cylinder. Our results provide a pathway to accurate
+quantum simulation of nonlinear fluid dynamics, and a framework for extending quantum
+LBM to more challenging flow configurations.
+
+I. Introduction
+In settings where the understanding and prediction of the behavior of fluid flow is the ultimate aim and, in particular,
+when experiments are either impossible (e.g., in oceanography and metrology) or prohibitively expensive/time-consuming
+(e.g., building and testing multiple prototypes in wind-tunnels), computational fluid dynamics (CFD) models have
+become indispensable [1]. Due to the challenges associated with numerically modeling the non-trivial flow around a
+complex geometry with multiple different boundary conditions, a number of specialized high performance CFD codes
+have been developed. Albeit based on fundamentally different numerical methods including the finite-volume [2],
+spectral-element [3] and lattice Boltzmann method [4], these codes are highly optimized for parallelized execution on
+CPU and GPU architectures. As a result, it has been possible to simulate applications as diverse as landing-gear, wind
+farms and turbo-machinery, respectively. However, as these simulations seek to grow larger and better resolve the flow
+physics, computational constraints emerge. Notwithstanding the computational complexity increasing at least cubically
+with the Reynolds number Re, representing the flow field for a large computation demands also distributed memory.
+This, in turn, requires computational operations to be kept as local as possible in order to minimize the communication
+overhead [5]. On this basis, tensor network approximations based on matrix product states [6], super-resolution machine
+learning methods [7] as well as quantum CFD algorithms [8] have emerged.
+Quantum computing offers a fundamentally different way to process information that is expected to provide
+transformative (in some cases exponential) improvements over what is possible with ‘classical’ computing, i.e.,
+computational devices (such as today’s supercomputers) that process information via classical physics [9–13]. Instead
+of bits that are 0 or 1, a quantum computer uses quantum states that can explore many possibilities at once, and carefully
+designed algorithms ‘interfere’ these possibilities to amplify the desired solution. Over the past decade, researchers
+have built algorithms that target tasks central to scientific computing, such as solving large linear systems [14–16],
+estimating observables [17–19], and evolving dynamical models [20–26]. For nonlinear dynamics, ubiquitous in fluid
+flow, the nonlinearities must be put into a form amenable to a quantum computer. To achieve this, one can lift the
+nonlinear problem into a higher-dimensional linear form (e.g., via embedding/expansion methods [27]) and then solve
+∗ Quantum Applications Team, PsiQuantum, 700 Hansen Way, Palo Alto, CA 94304, USA
+
+† Lead authors’ emails: kkorzekwa@psiquantum.com and pmannix@psiquantum.com (authors are listed alphabetically within each affiliation).
+‡ Research Scientist, Central Research and Technology, Airbus Operations Ltd, Pegasus House Aerospace Avenue, Filton, Bristol, UK
+§ Research Scientist, Central Research and Technology, Airbus Operations Ltd, Pegasus House Aerospace Avenue, Filton, Bristol, UK
+
+¶ Research Project Leader, Central Research and Technology, Airbus Operations Ltd, Pegasus House Aerospace Avenue, Filton, Bristol, UK
+
+1
+
+the resulting system with quantum linear-algebra routines, which are known to circumvent the curse of dimensionality.
+Since the quantum-encoded data is a potentially exponentially large vector, the aim is not to print out the entire flow
+field, but to extract specific features or observables faster than classical methods might allow, especially for very large
+problem sizes. That said, potential speedups come with caveats: data must be encoded efficiently, the lifted system must
+be well-conditioned enough for the solver to work, and today’s hardware remains noisy, so most proposals target future,
+fault-tolerant machines [28–33]. Nevertheless, emerging quantum algorithms are a promising tool-in-the-making for
+selected, structured nonlinear problems, which are expected to supplement existing CFD methods in novel and impactful
+ways.
+One prominent example of a structured nonlinear problem is given by the lattice Boltzmann equation (LBE), whose
+nonlinear strength scales with the Mach number Ma, and whose memory demands are more intensive as compared with
+those of other CFD methods. On this basis, a number of quantum algorithms employing Carleman embedding/expansion
+methods have been proposed in recent years [34–37]. In Ref. [38], it was shown that these prior works did not properly
+address the crucial convergence of the Carleman embedding, which is essential for resolving nonlinear physics properly.
+The work also highlighted that prior algorithms suffered from inefficient information-extraction from the quantum state,
+as well as other algorithmic bottlenecks, such as unreasonably small time-step requirements. In order to circumvent
+these obstacles, the authors of Ref. [38] developed a quantum algorithm for the incompressible lattice Boltzmann
+equation [39, 40] and provided evidence that a modest quantum advantage can occur over classical methods, albeit with
+caveats that require further study and development.
+While Ref. [38] concentrated on building the theoretical framework for the quantum lattice Boltzmann algorithm,
+connecting these results to real-world problems of industrial relevance requires incorporating non-trivial boundary
+conditions and external driving. In this paper, we present the modifications required to extend Ref. [38] so that walls,
+inlets, outlets, and forcing can be accommodated. We explain the corresponding changes to the quantum algorithm,
+assess their complexity cost, and argue that the introduced extensions should not significantly slow down the designed
+quantum algorithm. In addition, we conduct a thorough numerical assessment of the Carleman convergence to the
+correct nonlinear dynamics. This is performed by computing solutions of the driven Taylor-Green vortex, the lid-driven
+cavity flow, and the flow past a cylinder.
+The structure of this work is as follows. First, in Sec. II, we briefly review the incompressible LBM and its associated
+quantum algorithm developed in Ref. [38], introducing the necessary notation. Then, in Sec. III, we explain how, and at
+what complexity cost, one can extend this algorithm to include non-trivial boundary conditions in the form of walls,
+inlets and outlets, as well as how to add driving. In Sec. IV, we present the convergence and complexity analysis for
+exemplary CFD settings. Finally, Sec. V contains conclusions and outlook for future work, while the Appendix contains
+extra technical details to make this work self-contained.
+
+II. Existing framework
+A. Lattice Boltzmann method
+The lattice Boltzmann equation (LBE) is a kinetic model of fluid dynamics that describes the fluid mesoscopically [41].
+It conserves mass and momentum by construction and its low-order moments recover the Navier-Stokes equations in the
+regime where the characteristic length scales of the problem are much larger than the molecular mean path. Within
+LBE, the fluid is modeled at time 𝑡 and position 𝒓 in 𝐷-dimensional space by a vector-valued function 𝒈(𝒓, 𝑡), whose
+components 𝑔𝑚 (𝒓, 𝑡), with 𝑚 ∈ {1, . . . , 𝑄}, are proportional to the probability density of finding a fluid particle with a
+discrete velocity 𝒆 𝑚 . LBE is derived from the discrete Boltzmann equation (DBE) describing continuous dynamics via:
+𝜕𝑡 𝑔𝑚 (𝒓, 𝑡) + 𝒆 𝑚 · ∇𝑔𝑚 (𝒓, 𝑡) = Ω𝑚 (𝒓, 𝑡),
+
+(1)
+
+where 𝒆 𝑚 · ∇𝑔𝑚 is an advection term that describes streaming, i.e., the flow of the fluid in space, while the collision
+operator Ω𝑚 describes collisions that are local in space. We adopt the Bhatnagar-Gross-Krook (BGK) operator [42]:
+
+1
+eq
+𝑔𝑚 (𝒓, 𝑡) − 𝑔𝑚 (𝒓, 𝑡) ,
+(2)
+𝜏
+where 𝜏 is the relaxation time determining the speed of equilibration, and 𝒈 eq is the Taylor expansion of the local
+Maxwell equilibrium up to second order terms, which for an incompressible flow is given by [39]:
+
+
+𝑝
+𝒆 𝑚 · 𝒖(𝒓, 𝑡) (𝒆 𝑚 · 𝒖(𝒓, 𝑡)) 2 |𝒖(𝒓, 𝑡)| 2
+eq
+𝑔𝑚 (𝒓, 𝑡) = 2 𝑤 𝑚 + 𝜌0
++
+−
+𝑤 𝑚 + 𝑂 (Ma3 ).
+(3)
+𝑐𝑠
+𝑐2𝑠
+2𝑐4𝑠
+2𝑐2𝑠
+Ω𝑚 (𝒓, 𝑡) = −
+
+2
+
+In the above, 𝜌0 denotes the constant fluid density, 𝑐 𝑠 the speed of sound, Ma := |𝒖|/𝑐 𝑠 the
+Í Mach number, and 𝒘 is a
+vector of Maxwell weightings for the different discrete velocities satisfying 𝑤 𝑚 ≥ 0 and 𝑚 𝑤 𝑚 = 1. The pressure 𝑝
+and velocity vector 𝒖 of the fluid are recovered as moments via:
+𝑝(𝒓, 𝑡) := 𝑐2𝑠
+
+𝑄
+∑︁
+
+𝑄
+
+𝒖(𝒓, 𝑡) :=
+
+𝑔𝑚 (𝒓, 𝑡),
+
+𝑚=1
+
+1 ∑︁
+𝑔𝑚 (𝒓, 𝑡)𝒆 𝑚 .
+𝜌0 𝑚=1
+
+(4)
+
+As shown in Ref. [39], this formulation recovers the Navier-Stokes equations, albeit with the divergence-free condition
+approximated as ∇ · 𝒖 = 𝑐12 𝜕𝑡 𝑝 ∼ 𝑂 (Ma2 ).∗ Therefore, at the expense of discarding weak compressibility effects, which
+𝑠
+
+for Ma ≪ 1 are already negligible, an 𝑂 (Ma2 ) incompressible LBE formulation whose collision integral is quadratic in
+𝑔𝑚 is obtained.
+To obtain the numerical solution of Eqs. (1) - (4), the system must be discretized in space, 𝑟 𝑖 ∈ [Δ𝑥, 2Δ𝑥, . . . , 𝑁𝑖 Δ𝑥],
+and in time, 𝑡 ∈ [0, Δ𝑡, 2Δ𝑡, . . . , 𝑁𝑡 Δ𝑡]. Integrating the left hand side of Eq. (1) using the method of characteristics and
+approximating the integral on the right side of Eq. (1) using the trapezoidal rule, one obtains:
+𝑔𝑚 (𝒓 + 𝒆 𝑚 Δ𝑡, 𝑡 + Δ𝑡) = 𝑔𝑚 (𝒓, 𝑡) −
+
+Δ𝑡
+eq
+[𝑔𝑚 (𝒓, 𝑡) − 𝑔𝑚 (𝒓, 𝑡)],
+𝜏 + Δ𝑡/2
+
+(5)
+
+which is second order accurate in both space and time [41]. To determine how Eq. (5) relates to the macroscopic
+Navier-Stokes equations, Chapman-Enskog analysis must be applied, which shows that the kinematic shear viscosity,
+
+
+Δ𝑡
+2
+𝜈 = 𝑐𝑠 𝜏 −
+,
+(6)
+2
+is a function of the relaxation time, time-step and speed of sound. As discussed in Ref. [41], the factor of (𝜏 − Δ𝑡/2)
+appearing in Eqs. (5) and (6) is not general, but rather a consequence of the time-discretization employed. Because we
+have used a second-order time discretization, the relaxation time 𝜏 is shifted by Δ𝑡/2. Although physically significant
+length- and time-scales are typically chosen, the system from Eqs. (3) - (6) is instead made non-dimensional by choosing
+the lattice spacing Δ𝑥 and time step Δ𝑡 (also known as lattice units) along with the reference density 𝜌0 , such that:
+𝑡 = 𝑡★Δ𝑡,
+
+𝑇 = 𝑁𝑡 Δ𝑡,
+
+𝜏 = 𝜏★Δ𝑡,
+
+𝒓 = 𝒓★Δ𝑥,
+
+𝐿 𝑖 = 𝑁𝑖 Δ𝑥,
+
+𝒆 𝑚 = 𝒆★𝑚
+
+Δ𝑥
+,
+Δ𝑡
+
+𝒖 = 𝒖★
+
+Δ𝑥
+,
+Δ𝑡
+
+𝑝 = 𝑝★ 𝑐2𝑠 𝜌0 ,
+
+(7)
+
+where superscript star denotes a non-dimensional variable, 𝐿 𝑖 is the length of the 𝑖 𝑡 ℎ side of the domain and 𝑇 is the size
+of time-interval considered. This choice restricts 𝑡★ ∈ {0, . . . 𝑁𝑡 } and 𝑟 𝑖★ ∈ {1, . . . , 𝑁𝑖 } to integer values, such that for
+an incompressible isothermal flow 𝑐 𝑠 = √1 Δ𝑥
+and 𝒆★𝑚 , 𝑤 𝑚 are given by Table 2 in the Appendix.
+3 Δ𝑡
+Anticipating the quantum formulation of Eq. (5), the system state at each time step 𝑡★ can be represented as:
+𝒈(𝑡★) =
+
+𝑄
+∑︁ ∑︁
+
+𝑔𝑚 (𝒓★, 𝑡★) |𝒓★⟩ ⊗ |𝑚⟩ ,
+
+(8)
+
+𝒓 ★ 𝑚=1
+
+where ⊗ denotes the tensor product and |𝒓★⟩ , |𝑚⟩ denote position and velocity registers, respectively, using the Dirac
+ket notation. The dimension of 𝒈 is 𝑑 = 𝑁𝑄, where 𝑁 is the total number of spatial lattice points. Equation (5) can be
+then be divided into collision (C) and streaming (S) steps, and rewritten in a matrix form as:
+𝒈𝐶 (𝑡★) = (𝐼 + 𝐹1 ) 𝒈(𝑡★) + 𝐹2 𝒈(𝑡★) ⊗2 ,
+
+(9a)
+
+★
+
+(9b)
+
+𝐶
+
+★
+
+𝒈(𝑡 + 1) = 𝑆 𝒈 (𝑡 ),
+
+where 𝐹𝑘 are 𝑑 × 𝑑 𝑘 matrices describing linear and quadratic contributions from collisions and 𝑆 is a 𝑑 × 𝑑 permutation
+matrix encoding streaming, see the Appendix for details.
+∗ Although this is suitable for steady or slowly varying flows, the collision operator proposed in Ref. [40] (also quadratic in 𝑔 ) is by contrast
+𝑚
+exact and therefore preferable for time-dependent flows.
+
+3
+
+B. Carleman embedding of the nonlinear dynamics
+The lattice Boltzmann equation is nonlinear, whereas quantum algorithms running on quantum computers are built
+from linear (unitary) operations, so there is a structural mismatch. The way in which this mismatch is resolved is by
+embedding the nonlinear dynamics into a much higher-dimensional linear system, whose variables are functions of
+the original ones. While this lifted system can be overwhelmingly large for classical solvers, quantum circuits act on
+superpositions and apply linear operators implicitly, so the cost need not scale with the full dimension in the same way
+as explicit classical representations. In practice, this makes it viable to work with high-dimensional embeddings on a
+quantum computer, provided the embedding can be implemented efficiently and remains well-behaved.
+In order for the incompressible LBE problem, captured by Eqs. (9a)-(9b), to be amenable for the quantum computer,
+we use the Carleman embedding technique [27]. Instead of representing the state of the fluid at each moment in time by
+a 𝑑-dimensional vector 𝒈, it is now represented by the Carleman vector:
+𝒚(𝑡★) := [𝒚 1 (𝑡★), 𝒚 2 (𝑡★), . . . , 𝒚 𝑁𝐶 (𝑡★)],
+
+𝒚 𝑘 (0) = 𝒈 ⊗𝑘 (0)
+
+(10)
+
+of dimension
+𝑑 (𝑑 𝑁𝐶 − 1)
+,
+(11)
+𝑑−1
+which carries information about all powers of the incompressible LBE evolution up to the 𝑁𝐶 -th power. Here, 𝑁𝐶 is the
+finite Carleman truncation order leading to Carleman truncation error 𝜖𝐶 , i.e., the evolution obtained from a truncated
+linear system will generally differ from the original LBE dynamics.
+The update rules for a 𝑑-dimensional vector 𝒈(𝑡★) from Eqs. (9a)-(9b), can now be approximated by a linear update
+rule for a 𝑑𝐶 -dimensional vector 𝒚(𝑡★) [38]:
+𝑑𝐶 := 𝑑 + 𝑑 2 + · · · + 𝑑 𝑁𝐶 =
+
+𝒚(𝑡★ + 1) = SC 𝒚(𝑡★),
+
+(12)
+
+where S and C are 𝑑𝐶 × 𝑑𝐶 Carleman streaming and collision matrices, see the Appendix for details. The above
+recurrence relation has a clear solution given by:
+𝒚 ini = [𝒈(0), 𝒈(0) ⊗2 , . . . , 𝒈(0) ⊗ 𝑁𝐶 ].
+
+★
+
+𝒚(𝑡★) = (SC) 𝑡 𝒚 ini ,
+
+(13)
+
+Therefore, for the initial state 𝒈(0), the state of the system after 𝑁𝑡 streaming and collision steps is approximated by:
+
+
+𝒈(𝑁𝑡 ) ≈ 𝜖𝐶 (SC) 𝑁𝑡 𝒚 ini 1 ,
+(14)
+where subscript 1 indicates the first block of the Carleman vector.
+Next, the LBE problem with 𝑁𝑡 streaming and collision steps can be written in the form of the following linear
+system of dimension 𝑑𝐶 (𝑁𝑡 + 1):
+𝐼
+©
+­−SC
+­
+­
+­ 0
+­ .
+­ .
+­ .
+­
+­ 0
+­
+« 0
+
+0
+𝐼
+−SC
+..
+.
+0
+0
+
+0
+0
+𝐼
+..
+.
+0
+0
+
+...
+...
+...
+..
+.
+...
+...
+
+0
+0
+0
+..
+.
+𝐼
+−SC
+
+0
+𝒚(0)
+𝒚
+ª©
+ª © ini ª
+0®® ­­ 𝒚(1) ®® ­­ 0 ®®
+®­
+® ­ ®
+0® ­ 𝒚(2) ® ­ 0 ®
+®
+­
+® = ­ . ®,
+.. ® ­
+..
+® ­ . ®
+® ­ . ®
+®
+­
+.
+.
+®­
+® ­ ®
+®
+­
+0® ­ 𝒚(𝑁𝑡 − 1) ®® ­­ 0 ®®
+𝐼 ¬ « 𝒚(𝑁𝑡 ) ¬ « 0 ¬
+
+(15)
+
+or in a more compact form as
+𝐴𝒀 = 𝒃.
+
+(16)
+
+The vector 𝒀 is the Carleman history state, carrying information about Carleman vector at all times during the simulated
+evolution:
+
+⊤
+𝒀 = 𝐴 −1 𝒃 = 𝒚 ini , SC 𝒚 ini , (SC) 2 𝒚 ini , . . . , (SC) 𝑁𝑡 −1 𝒚 ini , (SC) 𝑁𝑡 𝒚 ini .
+(17)
+The problem therefore reduces to performing a matrix inversion, and outputting the solution to the above set of linear
+equations. Although the solution vector 𝒀 can be exponentially large, as a function of the Carleman truncation scale,
+one can now exploit the particular features of a quantum computer that allow one to process such vectors efficiently.
+More precisely, it is known that quantum linear solvers (QLS) have exponential speedups over classical methods for
+certain structured problems [14] and, more recently, it has been shown that they can also provide exponential speedups
+in the context of simulating nonlinear dynamical systems via the above Carleman method [33].
+4
+
+C. Solving exponentially large linear systems on a quantum computer
+Quantum algorithms for solving systems of linear equations as in Eq. (16) typically return the solution in an encoded
+(quantum) form rather than a full list of numbers [14–16, 43], so they are most useful when one only needs certain
+features, like averages or correlations, rather than every entry. Their performance also depends on how well-behaved
+the equations are (in terms of the condition number 𝜅 𝐴 = ∥ 𝐴∥ · ∥ 𝐴 −1 ∥) and on whether the problem has structure that
+allows one to load data and apply matrices efficiently. It is rigorously established that promising quantum speedups
+exist, but only for the right kinds of large, structured problems [14].
+The ability of quantum linear solvers to provide large speedups relies crucially on the output of a quantum computer,
+which differs radically from what one has from a classical computer. This is because the solution 𝒀 = 𝐴 −1 𝒃 is
+encoded in a quantum state. Physically, this corresponds to a quantum mechanical system (such as a system of photons,
+superconductors, atoms, etc.) being in a superposition of two or more classical states, e.g., a particle being in a
+superposition of two locations 𝐴 and 𝐵. Mathematically, we write this superposition state in the Dirac notation as a
+vector |𝜓⟩ = 𝑎 | 𝐴⟩ + 𝑏 |𝐵⟩, where 𝑎 and 𝑏 are complex numbers that obey |𝑎| 2 + |𝑏| 2 = 1. Within quantum theory, the
+classical states are represented as orthonormal basis vectors, and so in this basis we have that |𝜓⟩ is the vector with
+components (𝑎, 𝑏). More generally, we label classical states with integers, and a general 𝑑-dimensional quantum state
+takes the form:
+|𝜓⟩ = 𝑎 0 |0⟩ + 𝑎 1 |1⟩ + · · · + 𝑎 𝑑−1 |𝑑 − 1⟩ ,
+(18)
+Í
+2
+with the condition 𝑗 |𝑎 𝑗 | = 1. If we measure the system, we collapse the quantum state probabilistically onto one
+of the states |𝑘⟩, and the probability that this occurs is 𝑝 𝑘 = |𝑎 𝑘 | 2 . Therefore, the normalization condition is simply
+the condition that measurement probabilities in quantum theory sum to 1. Upon getting outcome 𝑘, the quantum
+state collapses |𝜓⟩ → |𝑘⟩. At the level of linear algebra, this can be described (up to normalizing the vector) by the
+application of a projection matrix:
+(𝑎 0 , . . . , 𝑎 𝑑−1 ) → 𝑃 𝑘 (𝑎 0 , . . . , 𝑎 𝑑−1 ) = (0, 0, . . . , 0, 𝑎 𝑘 , 0, . . . , 0).
+
+(19)
+
+Here, 𝑃 𝑘 is the projection matrix onto the 𝑘-th basis vector that can be written in the Dirac notation as 𝑃 𝑘 = |𝑘⟩⟨𝑘 |.
+More generally, we have the compact Dirac notation convention defining rank-1 matrices |𝑚⟩⟨𝑘 | given by:
+∑︁
+∑︁
+|𝑚⟩⟨𝑘 |
+𝑎 𝑗 | 𝑗⟩ =
+𝑎 𝑗 |𝑚⟩⟨𝑘 | 𝑗⟩ = 𝑎 𝑘 |𝑚⟩ ,
+(20)
+𝑗
+
+𝑗
+
+in other words ⟨𝑘 | 𝑗⟩ = 𝛿 𝑗,𝑘 for any 𝑘, 𝑗. Given two quantum states |𝜓⟩ =
+Í
+the conjugate transposed vector ⟨𝜙| := 𝑗 𝑏 ∗𝑗 ⟨ 𝑗 |, the matrix
+∑︁
+|𝜓⟩⟨𝜙| =
+𝑎 𝑗 𝑏 ∗𝑘 | 𝑗⟩⟨𝑘 | ,
+
+Í
+
+𝑗 𝑎 𝑗 | 𝑗⟩ and |𝜙⟩ =
+
+Í
+
+𝑗 𝑏 𝑗 | 𝑗⟩, we then define
+
+(21)
+
+𝑗,𝑘
+
+and the complex number obtained from taking the inner product of these two vectors:
+∑︁
+∑︁
+⟨𝜙| 𝜓⟩ =
+𝑎 𝑗 𝑏 ∗𝑘 𝛿 𝑗,𝑘 =
+𝑎 𝑘 𝑏 ∗𝑘 .
+𝑗,𝑘
+
+(22)
+
+𝑘
+
+We also can have multiple copies of quantum states and denote, e.g., two systems with the first in the state |𝜓⟩ and
+the second in the state |𝜙⟩ as |𝜓⟩ ⊗ |𝜙⟩. In other words: multiple copies are denoted with terms separated by tensor
+products, and 𝐴 ⊗𝑛 = 𝐴 ⊗ 𝐴 ⊗ · · · ⊗ 𝐴 denotes 𝑛 copies of 𝐴. In this setting, the rules of quantum theory correspond to
+linear transformations (matrices on vectors) and linear algebra manipulations (compositions of matrices, inner products,
+tensor products, etc.).
+To implement quantum algorithms on a quantum computer, every component must be encoded in a quantum circuit
+(a sequence of instructions as to how to manipulate the quantum system). Mathematically, a quantum circuit is described
+by an exponentially large unitary matrix that acts on quantum states. This exponential matrix could describe various
+data, such as vectors and matrices. For example, the primitive of state preparation involves a quantum circuit 𝑈𝒃 that
+acts on a fiducial vector |0⟩ = (1, 0, 0 . . . , 0) and prepares the new vector |𝒃⟩ = 𝑈𝒃 |0⟩ = ∥𝒃1 ∥ (𝑏 0 , 𝑏 1 , . . . 𝑏 𝑑−1 ). In other
+words, the first column of 𝑈𝒃 is simply the normalized state vector |𝒃⟩. Another key ingredient is the encoding of an
+arbitrary matrix 𝐴 inside a unitary circuit. In order to respect unitarity, the matrix 𝐴 is typically rescaled 𝐴 → 𝐴/𝛼 𝐴
+by some positive constant 𝛼 𝐴 ≥ ∥ 𝐴∥, and then a quantum circuit 𝑈 𝐴 is constructed such that the top-left block of the
+matrix is identical to 𝐴/𝛼 𝐴; this is called a unitary block-encoding of the matrix 𝐴.
+5
+
+A standard approach to solving a linear system 𝐴𝒀 = 𝒃 on a quantum computer [14, 15, 43] assumes access to (i)
+an efficient unitary state preparation 𝑈𝒃 such that 𝑈𝒃 |0⟩ = |𝒃⟩, and (ii) a block-encoding 𝑈 𝐴 of 𝐴, i.e., a unitary 𝑈 𝐴
+acting on log 𝑑 + 𝑛 𝐴 qubits whose top-left block equals 𝐴/𝛼 𝐴 for some block-encoding prefactor 𝛼 𝐴 ≥ ∥ 𝐴∥. Given
+(𝑈𝒃 , 𝑈 𝐴), modern quantum linear solvers output a state proportional to 𝐴 −1
+quantum state. Optimal
+
+ |𝒃⟩ as a normalized
+1
+quantum linear solvers prepare the solution |𝒀⟩ within error 𝜖 using 𝑂 𝛼 𝐴 𝜅 𝐴 log 𝜖 applications of 𝑈 𝐴, 𝑈 †𝐴 and of
+the preparation unitaries 𝑈𝒃 , 𝑈𝒃† , where 𝜅 𝐴 is the condition number of 𝐴 on the relevant subspace. The dependence
+on both the condition number and the block-encoding prefactor is linear; thus large 𝛼 𝐴 directly inflates runtime. In
+practice, (quantum or classical) preconditioning can reduce 𝜅 𝐴, but any gains must be balanced against changes in 𝛼 𝐴
+and additional oracle costs.
+One final subtlety exists for QLS: the output. The output of the quantum linear solver applied to the Carleman system
+will be a quantum state |𝒀⟩ of the quantum computer. This is quite distinct from the output of a classical computer,
+which can, e.g., print the data on a screen to be perused. Instead, the quantum output |𝒀⟩ is an exponentially large vector
+that is ‘stored’ in the quantum computer (e.g., for a quantum computer with 1000 qubits, the vector has dimension
+21000 ≈ 10300 ). In order to extract meaningful information, one must perform a carefully chosen measurement that
+extracts a much smaller amount of information from |𝒀⟩. The full end-to-end quantum simulation must therefore build
+in the exact information that is required into the full pipeline, and the information extraction becomes itself a potential
+source of inefficiency. While we do not discuss that in this work, we refer the interested reader to Ref. [38], where it is
+shown how, and at what complexity cost, one can extract the drag force on an obstacle from a quantum state |𝒀⟩.
+
+III. Extensions to nontrivial flows and geometries
+Having introduced the incompressible Carleman LBM algorithm from Ref. [38] and discussed how to recover its
+solution using QLS, we now extend it to accommodate non-trivial geometries and driving via a body forcing or moving
+boundaries. These extensions will allow us to investigate the performance of our quantum algorithm on benchmark CFD
+problems, such as the forced Taylor-Green vortex, the lid-driven cavity flow and the flow past a cylinder, considered in
+Sec. IV.
+A. Geometry
+1. Extending the model
+For periodic boundary conditions, there are only fluid nodes and the system can be encoded in the streaming matrix:
+𝑆=
+
+𝑄
+∑︁ ∑︁
+
+𝒓★ + 𝒆★𝑚 𝒓★ ⊗ |𝑚⟩⟨𝑚| ,
+
+(23)
+
+𝒓 ★ 𝑚=1
+
+which translates populations 𝑔𝑚 from position 𝒓★ and with a discrete velocity 𝑚 to the next spatial position 𝒓★ + 𝒆★𝑚 ,
+where the addition should be interpreted as modulo the number of lattice points per direction, thus encoding the periodic
+domain. We want to modify this streaming matrix in order to account for the no-slip (Dirichlet) and free-slip (Neumann)
+boundary conditions required to consider domains with walls, inlets and outlets.
+The effect of a Dirichlet boundary condition can be modeled via the bounce-back rule following Ref. [41], whereby
+one prescribes these macroscopic boundary conditions via the populations as:
+𝒆★𝑚 · 𝒖★𝑤
+★
+𝑔𝑚¯ (𝒓★𝑏, 𝑡★) = 𝑔𝐶
+.
+𝑚 (𝒓 𝑏 , 𝑡) − 2𝑤 𝑚
+𝑐∗𝑠 2
+
+(24)
+
+Here, 𝒓★𝑏 is the boundary node, 𝑔𝐶
+¯ the reflection of/population opposite 𝑚, and 𝒖★𝑤 the
+𝑚 the post-collision population, 𝑚
+1 ★
+★
+★
+velocity vector of the wall located at 𝒓 𝑤 = 𝒓 𝑏 + 2 𝒆 𝑚 . As the second term in Eq. (24) accounts for the motion imparted
+by a moving wall, we will include it in the driving matrix described in section III.B. The effect of a Neumann boundary
+condition can be modeled via the non-equilibrium extrapolation scheme following Refs. [44, 45]. This scheme provides
+the populations in terms of their equilibrium and non-equilibrium components at the boundary via:
+
+
+eq
+eq
+𝑔𝑚 (𝒓★𝑏, 𝑡★) = 𝑔𝑚 ( 𝑝★𝑏, 𝒖★𝑏) + 𝑔𝑚 (𝒓★𝑓 , 𝑡) − 𝑔𝑚 ( 𝑝★𝑓 , 𝒖★𝑓 ) ,
+(25)
+
+6
+
+where 𝒓★𝑓 is one node to the interior of the boundary and ( 𝑝★𝑓 , 𝒖★𝑓 ) its corresponding pressure and velocity. For a Neumannboundary condition at which we want to enforce 𝜕𝑥 𝒖★ = 𝜕𝑥 𝑝★ = 0, for example, we can set ( 𝑝★𝑏, 𝒖★𝑏) = ( 𝑝★𝑓 , 𝒖★𝑓 ), such
+that the scheme reduces to prescribing populations for the unknown 𝑔𝑚 at 𝒓★𝑏 by copying them from 𝒓★𝑓 .
+To illustrate how these boundary conditions can be incorporated into the streaming matrix, we consider a domain
+bounded by a wall region, an inlet region and outlet region, all with particular geometries. Every node is either an inlet
+node, an outlet node, a wall node, or otherwise a fluid node interior to the simulation region. We introduce the following
+indicator functions on the discrete phase space {(𝒓★, 𝑚)} that encode the boundary regions within the model:
+(
+1 : 𝒓★ is a wall node,
+W𝒓 ★ =
+(26a)
+0 : otherwise,
+(
+1 : 𝒓★ is an inlet node and 𝒓★ + 𝒆★𝑚 is outside the simulation region,
+I𝒓 ★ ,𝑚 =
+(26b)
+0 : otherwise,
+(
+1 : 𝒓★ is an outlet node and 𝒓★ + 𝒆★𝑚 is outside the simulation region,
+O𝒓 ★ ,𝑚 =
+(26c)
+0 : otherwise.
+At the walls we impose a no-slip Dirichlet condition such that the effect of the first term in Eq. (24) can be achieved
+via the following modification of matrix elements of the streaming matrix:
+𝑆wall =
+
+∑︁
+∑︁ 𝑄
+𝒓★
+
++
+
+(27)
+
+𝑚=1
+
+∑︁ 𝑄
+∑︁
+𝒓★
+
++
+
+(1 − W𝒓 ★+𝒆★𝑚 ) (1 − W𝒓 ★ ) 𝒓★ + 𝒆★𝑚 𝒓★ ⊗ |𝑚⟩⟨𝑚|
+W𝒓 ★+𝒆★𝑚 (1 − W𝒓 ★ ) 𝒓★ 𝒓★ ⊗ | ¯
+𝑚⟩⟨𝑚|
+
+(28)
+
+W𝒓 ★ 𝒓★ 𝒓★ ⊗ |𝑚⟩⟨𝑚| .
+
+(29)
+
+𝑚=1
+
+𝑄
+∑︁ ∑︁
+𝒓 ★ 𝑚=1
+
+In the above, the first term corresponds to unmodified streaming when both nodes considered are fluid; the second
+term encodes bouncing, when a particle in a fluid node hits a wall node; and the third one simply means no evolution
+(identity matrix) for the wall nodes. We note that the streaming matrix modified according to the above recipe is still a
+permutation matrix, so 𝑆wall stays unitary and therefore can be realized directly by a quantum circuit.
+At an outlet, we impose a Neumann-boundary condition. To account for this condition in the streaming matrix, we
+introduce one more correction of the following form:
+𝑆Neumann = 𝐼 +
+
+∑︁ 𝑄
+∑︁
+𝒓★
+
+O𝒓 ★ ,𝑚 𝒓★ N (𝒓★) ⊗ | ¯
+𝑚⟩⟨ ¯
+𝑚| ,
+
+(30)
+
+𝑚=1
+
+and consider 𝑆Neumann 𝑆wall instead of 𝑆wall . This prescribes to simply replace the missing outlet occupations after
+streaming at position 𝒓★ with a value copied from the neighboring interior node at position N (𝒓★), one lattice node
+away along the normal to the outlet towards the simulation region† .
+To model the edges of the simulation regions at an inlet and outlet, we also introduce the following correction term:
+𝑆edge =
+
+𝑄
+∑︁ ∑︁
+
+(1 − I𝒓 ★ ,𝑚 ) (1 − O𝒓 ★ ,𝑚 ) 𝒓★ 𝒓★ ⊗ |𝑚⟩⟨𝑚| ,
+
+(31)
+
+𝒓 ★ 𝑚=1
+
+and consider 𝑆wall 𝑆edge instead of 𝑆wall . This term ensures that the fluid can go outside the simulation region via an inlet
+and an outlet, instead of moving periodically to the other side of the region. The final streaming term that accounts for
+walls, inlets and outlets is thus given by:
+𝑆 ′ = 𝑆Neumann 𝑆wall 𝑆edge .
+(32)
+† For example, in a two-dimensional setting with a vertical outlet being given by the points ( 𝑁 , 𝑦) with 𝑦 ∈ {1, . . . , 𝑁 } and 𝑁 the horizontal
+𝑥
+𝑦
+𝑥
+location of the outlet, we simply have N (𝒓 ★ ) = 𝒓 ★ − (1, 0).
+
+7
+
+This linear map is fully defined once we specify the indicator functions for the wall nodes, the inlet nodes, and the outlet
+nodes. If one can efficiently encode these three regions in a sufficiently compact functional description, then one can
+construct a block-encoding of 𝑆 ′ , which governs the linearized dynamics of the fluid. For simplicity, we shall assume
+straight boundaries aligned with the lattice nodes, with inlet and outlet nodes forming orthogonal lines to the walls at
+either end of the desired simulation region.
+2. Algorithmic extensions
+As described in detail in Ref. [38], the workhorse of our quantum algorithm for LBE is the quantum linear solver of
+Ref. [46] applied to the linear system from Eq. (15). This solver takes as its inputs the state preparation unitary 𝑈𝒃
+and the unitary block-encoding 𝑈 𝐴 of the linear system 𝐴. Since the modifications to the streaming matrix described
+in the previous section changes 𝐴, we will now explain how to block-encode the required linear system in a way that
+incorporates the wall boundary and inlet/outlet physics.
+Let us denote by 𝐴′ the linear system using a modified streaming matrix 𝑆 ′ , and by 𝐴 the original system with
+periodic 𝑆. Let us also recall that with an appropriately chosen tensor encoding [38], the Carleman streaming matrices
+can be represented by S = 𝑆 ⊗ 𝑁𝐶 and S ′ = 𝑆 ′⊗ 𝑁𝐶 . In Ref. [38], it was shown that the block-encoding prefactor 𝛼 𝐴 and
+the number of ancillary qubits needed 𝑛 𝐴 are given by:
+𝛼 𝐴 = 𝛼 C + 1,
+
+𝑛 𝐴 = 𝑛 C + 2,
+
+(33)
+
+where 𝛼 C and 𝑛 C are the block-encoding parameters for the Carleman collision matrix. This result was obtained under
+the assumption that S is unitary (so that 𝛼 S = 1 and 𝑛 S = 0). However, it is straightforward to show that for a general
+matrix, such as S ′ , the expressions for the block-encoding parameters become:
+𝛼 𝐴′ = 𝛼 S ′ 𝛼 C + 1,
+
+𝑛 𝐴 = 𝑛 S ′ + 𝑛 C + 2.
+
+(34)
+
+We can relate these parameters to the block-encoding parameters for the modified streaming term for a single-copy
+of the system. In particular, if we can construct a block-encoding of 𝑆 ′ with block-encoding prefactor 𝛼𝑆 ′ using 𝑛𝑆 ′
+ancillary qubits, the linear system 𝐴′ could be block-encoded with:
+𝛼 𝐴′ = (𝛼𝑆 ′ ) 𝑁𝐶 𝛼 C + 1,
+
+𝑛 𝐴′ = 𝑁𝐶 𝑛𝑆 ′ + 𝑛 C + 2.
+
+(35)
+
+In order to achieve this, we will employ the following construction. First, recall that a partial permutation matrix
+is a matrix in which each row and each column contains at most one 1, and all other entries are 0. Given a partial
+permutation matrix Π̃, one can always complete it to a permutation matrix Π. These two matrices then satisfy:
+Π̃ Π̃ † = Π̃Π † = Π Π̃ † = ˜𝐼,
+
+(36)
+
+where 𝐼˜ is the identity matrix on the image of Π̃. One can then block-encode Π̃ with a unit block-encoding prefactor,
+𝛼Π̃ = 1, using a single ancillary qubit via:
+𝑈Π̃ = Π̃ ⊗ 𝐼 + ( Π̃ − Π) ⊗ 𝑋,
+
+(37)
+
+where we used a Pauli 𝑋 unitary on the ancillary qubit. Indeed, using Eq. (36), one can verify that 𝑈Π̃ is unitary and that
+(𝐼 ⊗ ⟨0|)𝑈Π̃ (𝐼 ⊗ |0⟩) = Π̃.
+
+(38)
+
+Now, we observe that 𝑆edge is a partial permutation matrix, whereas 𝑆Neumann is a sum of two partial permutation
+matrices. Hence, using the block-encoding described above together with a linear combination of unitaries (LCU) [43]
+applied to two components of 𝑆Neumann , we can straightforwardly construct the block encoding of 𝑆 ′ with a block-encoding
+prefactor 𝛼𝑆 ′ = 2 using 𝑛𝑆 ′ = 3 ancillary qubits. We thus conclude that:
+𝛼 𝐴′ = 2 𝑁𝐶 𝛼 C + 1 ≈ 2 𝑁𝐶 𝛼 𝐴,
+
+𝑛 𝐴′ = 𝑛 𝐴 + 3𝑁𝐶 ,
+
+(39)
+
+so that incorporating non-trivial geometries into our quantum algorithm for LBE increases the query complexity
+by a factor of 2 𝑁𝐶 and requires additional 3𝑁𝐶 ancillary qubits. This additional cost should not have a significant
+effect on the efficiency of the algorithm, as it is expected that relatively low 𝑁𝐶 should suffice for simulations. More
+precisely, using the Carleman truncation error model [38], which predicts exponential damping of the Carleman error
+8
+
+as 𝜖𝐶 ∝ 2− |Γ| 𝑁𝐶 (as long as one is within the convergence radius), the increase in the query complexity is scaling as
+𝑂 (1/𝜖𝐶1/|Γ| ). For example, for the lid-driven cavity flow discussed in Sec. IV.B, one can estimate |Γ| to be approximately
+4.19 for Re = 20, which translates into an increase in the query complexity scaling as 𝑂 (1/𝜖𝐶0.24 ).
+Also, note that the complexity increase discussed above is due to a modified block-encoding prefactor, 𝛼 𝐴′ instead
+of 𝛼 𝐴, but the query complexity can also increase due to the dependence on the condition number 𝜅 𝐴′ , and not on 𝜅 𝐴.
+However, due to the fact that the difference between 𝑆 ′ and 𝑆 is only on the boundary nodes, this is expected to not be
+significant. The reasoning here is that this will depend on the norm ∥𝑆 ′ − 𝑆∥, however this is a matrix of zeroes except
+for nodes on the boundary of the simulation region, and so will not scale with the volume of the region and should be
+sub-leading relative to other terms. As we shall see in Sec. IV.D, this is indeed confirmed by our numerical studies.
+B. Driving
+We now proceed to extending the model and quantum algorithm from Ref. [38] to accommodate flows driven by a
+divergence-free body force or a moving boundary.
+1. Extending the model
+In LBM, one can include the effect of a divergence-free body force 𝑭(𝒓) by discretizing this force in velocity
+space,
+Í
+𝜙
+such that its discrete representation 𝜙 𝑚 (𝒓★), ensures that the zeroth moment respects
+mass
+conservation,
+𝑚 𝑚 = 0,
+Í
+and that the first moment recovers the forcing applied in the momentum equation, 𝑚 𝒆 𝑚 𝜙 𝑚 = 𝑭. While a second-order
+accurate discretization (in space and time) can be obtained following Ref. [47], by adding 𝜙 𝑚 to the right hand side of
+Eq. (9a) and including a velocity shift, we will instead pursue a first-order accurate approach as this does not require
+modifications of collision matrices 𝐹1 and 𝐹2 . As the implementation of a no-slip velocity boundary condition also
+includes a component which forces the flow (see Eq. (24)), we incorporate this driving which acts locally at 𝒓★𝑏 as:
+𝑔𝑚 (𝒓★𝑏, 𝑡) → 𝑔𝑚 (𝒓★𝑏, 𝑡) + 𝜙 𝑚 (𝒓★𝑏),
+
+(40a)
+
+𝒆★ ·𝒖 ∗
+
+such that 𝜙 𝑚 (𝒓 ∗𝑏 ) in this case corresponds to −2𝑤 𝑚 𝑚𝑐∗ 2 𝑤 , the correction of the bounce back rule for a moving boundary.
+𝑠
+Our matrix formulation of the problem from Eqs. (9a)-(9b) then gets extended by a driving step as follows:
+𝒈𝐶 (𝑡★) = (𝐼 + 𝐹1 ) 𝒈(𝑡★) + 𝐹2 𝒈(𝑡★) ⊗2 ,
+𝑆
+
+★
+
+𝐶
+
+(41a)
+
+★
+
+𝒈 (𝑡 ) = 𝑆 𝒈 (𝑡 ),
+
+(41b)
+
+★
+
+★
+
+(41c)
+
+𝜙 𝑚 (𝒓★) |𝒓★⟩ ⊗ |𝑚⟩ .
+
+(42)
+
+𝑆
+
+𝒈(𝑡 + 1) = 𝒈 (𝑡 ) + 𝐹0 ,
+where 𝐹0 is the driving vector given by:
+𝐹0 =
+
+𝑄
+∑︁ ∑︁
+𝒓 ★ 𝑚=1
+
+The effect that this third driving update rule from Eq. (41c) has on the Carleman vector can be inferred from its effect on
+𝑘 copies of the state vector:
+𝑘
+𝑘
+∑︁ 
+∑︁
+
+ ⊗𝑘
+
+[𝒈(𝑡★ + 1)] ⊗𝑘 = 𝒈 𝑆 (𝑡★) + 𝐹0
+=
+𝐼 ⊗𝑙 ⊗ 𝐹0⊗𝑘−𝑙 + perms. 𝒈 𝑆 (𝑡★) ⊗𝑙 =
+𝐷 𝑙𝑘 𝒈 𝑆 (𝑡★) ⊗𝑙 ,
+𝑙=0
+
+(43)
+
+𝑙=0
+
+where we have introduced 𝑑 𝑘 × 𝑑 𝑙 matrices:
+𝐷 𝑙𝑘 := 𝐼 𝑙 ⊗ 𝐹0⊗𝑘−𝑙 + perms.,
+
+(44)
+
+and where + perms. denotes a sum over distinct permutations over 𝑘 subsystems, with 𝑙 subsystems of type 1, and 𝑘 − 𝑙
+subsystems of type 2. This means that a single time step of the evolution can be compactly written as:
+𝒚(𝑡★ + 1) = DS ′ C 𝒚(𝑡★) + F0 ,
+
+9
+
+(45)
+
+with the Carleman driving matrix:
+© 𝐼
+­ 𝐷2
+­ 1
+­ 3
+D = ­­ 𝐷 1
+­ ..
+­ .
+­
+𝑁𝐶
+«𝐷 1
+and the Carleman driving vector:
+
+0
+𝐼 ⊗2
+𝐷 32
+..
+.
+𝐷 2𝑁𝐶
+
+0
+0
+𝐼 ⊗3
+..
+.
+𝐷 3𝑁𝐶
+
+...
+...
+...
+..
+.
+...
+
+0
+0
+0
+..
+.
+
+ª
+®
+®
+®
+®,
+®
+®
+®
+®
+⊗
+𝑁
+𝐼 𝐶¬
+
+F0 = [𝐹0 , 𝐹0⊗2 , . . . , 𝐹0⊗ 𝑁𝐶 ] ⊤ .
+
+(46)
+
+(47)
+
+The linear system that captures the full evolution over 𝑁𝑡 time steps, including non-trivial geometry encoded by S ′
+and driving encoded by D and F0 , is now given by:
+𝐼
+©
+­−DS ′ C
+­
+­
+­ 0
+­
+..
+­
+­
+.
+­
+­ 0
+­
+« 0
+
+0
+𝐼
+−DS ′ C
+..
+.
+0
+0
+
+0
+0
+𝐼
+..
+.
+0
+0
+
+...
+...
+...
+..
+.
+...
+...
+
+0
+0
+0
+..
+.
+𝐼
+−DS ′ C
+
+0
+𝒚(0)
+𝒚
+ª©
+ª © ini ª
+®
+­
+®
+­
+0® ­ 𝒚(1) ® ­ F0 ®®
+®­
+® ­ ®
+0® ­ 𝒚(2) ® ­ F0 ®
+® = ­ . ®,
+®
+­
+.. ® ­
+..
+® ­ . ®
+® ­ . ®
+.® ­
+.
+® ­ ®
+®­
+®
+­
+0® ­ 𝒚(𝑁𝑡 − 1) ®® ­­ F0 ®®
+𝐼 ¬ « 𝒚(𝑁𝑡 ) ¬ « F0 ¬
+
+(48)
+
+and we will again write it compactly as 𝐴′′𝒀 = 𝒃 ′′ .
+2. Algorithmic modifications
+The algorithmic modifications needed to include driving are as follows. First, instead of block-encoding 𝐴′ , we
+now need to block-encode 𝐴′′ . And second, instead of constructing a state preparation unitary 𝑈𝒃 for the undriven
+system, we need to construct 𝑈𝒃′′ . In both cases, the central new object is the driving vector 𝐹0 . Using the quantum
+data encoding proposed in Ref. [38], preparing 𝐹0 is equivalent to block-encoding a square matrix 𝐹¯0 such that its first
+column is 𝐹0 . Note that as long as ∥𝐹0 ∥ ≤ 1, one can block-encode 𝐹¯0 with a unit prefactor using a single ancillary
+qubit. Moreover, the choice of LBE parameters proposed by Ref. [38], which guarantees that the norm of the LBE state
+vector is always bounded by 1, also ensures that the condition ∥𝐹0 ∥ ≤ 1 is satisfied.
+We start with constructing a block-encoding of 𝐴′′ . As in the case of 𝐴′ analyzed in the previous section, it is
+straightforward to show that the block-encoding parameters for 𝐴′′ can be expressed via:
+𝛼 𝐴′′ = 𝛼 D 𝛼 S ′ 𝛼 C + 1,
+
+𝑛 𝐴 = 𝑛 D + 𝑛 S ′ + 𝑛 C + 2.
+
+(49)
+
+Hence, the actual task is to block-encode the Carleman driving matrix D. For that, we will use some well-known
+block-encoding results [43]. First, employing linear combination of unitaries (LCU), if a matrix 𝑀 can be written as:
+𝑀=
+
+𝐾
+∑︁
+
+(50)
+
+𝑀𝑘 ,
+
+𝑘=1
+
+where each 𝑀𝑘 can be block-encoded with a prefactor 𝛼 𝑀𝑘 using 𝑛 𝑀𝑘 ancillary qubits, then one can construct a
+block-encoding of 𝑀 with parameters:
+𝛼𝑀 =
+
+𝐾
+∑︁
+
+𝛼 𝑀𝑘 ,
+
+𝑛 𝑀 = log 𝐾 +
+
+max
+
+𝑘 ∈ {1,...,𝐾 }
+
+𝑛 𝑀𝑘 .
+
+(51)
+
+𝑘=1
+
+A variation of LCU applicable to block-diagonal matrices of the form:
+𝑀=
+
+𝐾
+∑︁
+
+|𝑘⟩⟨𝑘 | ⊗ 𝑀𝑘
+
+𝑘=1
+
+10
+
+(52)
+
+allows one to block-encode 𝑀 with parameters:
+𝛼𝑀 =
+
+max
+
+𝑘 ∈ {1,...,𝐾 }
+
+𝑛𝑀 = 1 +
+
+𝛼 𝑀𝑘 ,
+
+max
+
+𝑘 ∈ {1,...,𝐾 }
+
+(53)
+
+𝑛 𝑀𝑘 .
+
+Finally, for any 𝑚 ∈ {1, . . . , 𝑁𝐶 − 1}, the following 𝑁𝐶 -dimensional shift matrix,
+𝑁𝐶
+∑︁
+
+Δ𝑚 =
+
+|𝑘⟩⟨𝑘 − 𝑚| ,
+
+(54)
+
+𝑘=𝑚+1
+
+can be block-encoded with a unit prefactor using a single ancillary qubit, as it is a partial permutation matrix.
+Now, let us write D explicitly, using the encoding with the first register keeping track of the Carleman order:
+D=
+
+𝑁𝐶 𝑘
+∑︁
+∑︁
+
+|𝑘⟩⟨𝑙 | ⊗ 𝐷 𝑙𝑘 =
+
+𝑘=1 𝑙=1
+
+𝑁𝐶 ∑︁
+𝑘−1
+∑︁
+
+|𝑘⟩⟨𝑘 − 𝑚| ⊗ 𝐷 𝑘𝑘−𝑚 =
+
+𝑁𝐶
+∑︁−1
+
+𝑘=1 𝑚=0
+
+𝑁𝐶 
+∑︁
+
+|𝑘⟩⟨𝑘 | ⊗ 𝐷 𝑘𝑘−𝑚
+
+
+
+(Δ𝑚 ⊗ 𝐼) =:
+
+𝑚=0 𝑘=𝑚+1
+
+𝑁𝐶
+∑︁−1
+
+𝐵𝑚 . (55)
+
+𝑚=0
+
+Using Eq. (51), we then have:
+𝛼D =
+
+𝑁𝐶
+∑︁−1
+
+𝑛 D = log 𝑁𝐶 +
+
+𝛼 𝐵𝑚 ,
+
+max
+
+𝑚∈ {0,..., 𝑁𝐶 −1}
+
+(56)
+
+𝑛 𝐵𝑚 ,
+
+𝑚=0
+
+and the problem reduces to constructing block-encodings of 𝐵𝑚 matrices. To achieve this, we can block-encode the
+two factors of 𝐵𝑚 separately. As already mentioned, the second factor, Δ𝑚 ⊗ 𝐼, can be block encoded with a unit
+prefactor and one ancillary qubit, whereas for the first factor, we will employ Eq. (53). This results in the following
+block-encoding parameters for 𝐵𝑚 :
+𝛼 𝐵𝑚 =
+
+max
+
+𝑘 ∈ {𝑚+1,..., 𝑁𝐶 }
+
+𝛼𝐷 𝑘
+
+𝑛 𝐵𝑚 = 2 +
+
+,
+
+𝑘−𝑚
+
+max
+
+𝑘 ∈ {𝑚+1,..., 𝑁𝐶 }
+
+𝑛𝐷 𝑘
+
+.
+
+(57)
+
+𝑘−𝑚
+
+
+Finally, recalling Eq. (44), we note that each 𝐷 𝑘𝑘−𝑚 consists of a sum over 𝑚𝑘 terms, each containing 𝑚 copies of 𝐹¯0 .
+Hence, using Eq. (51), we have:
+ 
+ 
+𝑘
+𝑘
+𝛼𝐷 𝑘 =
+,
+𝑛 𝐷 𝑘 = log
++ 𝑚.
+(58)
+𝑘−𝑚
+𝑘−𝑚
+𝑚
+𝑚
+Putting it all together, we arrive at:
+𝛼D =
+
+𝑁𝐶
+∑︁−1 
+
+
+𝑁𝐶
+= 2 𝑁𝐶 − 1,
+𝑚
+
+(59a)
+
+𝑚=0
+
+
+𝑛 D = log 𝑁𝐶 + 2 +
+
+max
+
+𝑚∈ {0,..., 𝑁𝐶 −1}
+
+
+log
+
+
+
+𝑁𝐶
++ 𝑚 ≤ log 𝑁𝐶 + 2𝑁𝐶 + 1.
+𝑚
+
+(59b)
+
+Substituting the expressions derived above, together with the previous results from Eq. (39), into Eq. (49), we thus
+conclude that:
+𝛼 𝐴′′ = (2 𝑁𝐶 − 1)2 𝑁𝐶 𝛼 C + 1 ≈ 4 𝑁𝐶 𝛼 𝐴,
+𝑛 𝐴′′ = 𝑛 𝐴 + 5𝑁𝐶 + log 𝑁𝐶 + 1.
+(60)
+Thus, the complexity cost related to extending the algorithm from Ref. [38] to include both non-trivial geometries and
+forcing increases the query complexity by a factor of 4 𝑁𝐶 , and requires additional 5𝑁𝐶 ancillary qubits (up to leading
+order in 𝑁𝐶 ). As already discussed in the previous section, this cost should not strongly affect the algorithm’s efficiency,
+as 𝑁𝐶 can be chosen to be small in the sub-threshold regime, due to exponential convergence of the Carleman expansion.
+However, there are two other sources of potential complexity increase: the difference between the condition numbers of
+𝐴 and 𝐴′′ , and the cost related to state preparation unitary 𝑈𝒃′′ instead of 𝑈𝒃 . We postpone the discussion of the first
+effect to Sec. IV.D, and now focus on constructing 𝑈𝒃′′ .
+Let us first assume that one can efficiently construct a unitary 𝑈𝐹0 that prepares a quantum state |𝐹0 ⟩ that is a
+normalized version of the driving vector 𝐹0 from Eq. (42). Then, as was shown in Ref. [28], one can prepare |F0 ⟩ using
+𝑂 (𝑁𝐶 ) queries to 𝑈𝐹0 and 𝑂 (𝑁𝐶 ) single qubit gates. Hence, each query to a state preparation unitary 𝑈 F0 translates
+into 𝑂 (𝑁𝐶 ) queries to 𝑈𝐹0 . Next, for simplicity, let us assume that one initializes each node of the fluid system in an
+11
+
+equilibrium state corresponding to zero velocity and zero pressure (as is typical in CFD simulations, and as we do in all
+examples presented in Sec. IV). This then means that 𝒚 ini is a zero vector. Additionally, adding a single driving step
+before the start of the evolution, we can rewrite 𝒃 ′′ as
+′′
+
+𝒃 =
+
+𝑁𝑡
+∑︁
+
+|𝑡★⟩ ⊗ F0 .
+
+(61)
+
+𝑡 ★ =0
+
+Hence, preparing |𝒃 ′′ ⟩ just requires a uniform state preparation on the time step register and a single preparation of |F0 ⟩,
+which in turn requires 𝑂 (𝑁𝐶 ) uses of 𝑈𝐹0 . Therefore, one can conclude that, as long as one can efficiently prepare |𝐹0 ⟩,
+one can also efficiently prepare |𝒃 ′′ ⟩.
+Although the complexity cost of preparing |𝐹0 ⟩ may be significant for random or unstructured driving, in practice
+one is usually interested in driving with explicit functional dependence on position. For example, in the lid-driven
+cavity flow and flow past a cylinder, analyzed in the next section, driving has a particularly simple form:
+𝐹0 =
+
+∑︁
+
+|𝒓★⟩ ⊗
+
+𝒓★ ∈ R
+
+𝑄
+∑︁
+
+𝜙 𝑚 |𝑚⟩ .
+
+(62)
+
+𝑚=1
+
+In the above, R is a subset of nodes (neighboring the lid and inlet ones, respectively) and 𝜙 𝑚 are just a constant driving
+coefficients encoded in a small velocity register (consisting of 2𝐷 qubits for fluid in 𝐷 dimensions). Hence, we just
+need a uniform state preparation on the position register and a general state preparation on a small velocity register.
+The complexity cost of preparing |𝐹0 ⟩ is thus constant. Therefore, we will assume that the complexity cost of 𝑈𝒃′′ is
+negligible compared to the cost of unitary block-encoding 𝑈 𝐴′′ of the linear system.
+
+IV. Numerical studies
+In Sec. II, we introduced a quantum algorithm based on a Carleman embedding of the incompressible lattice
+Boltzmann method as described in Ref. [38]. In the previous Section III, we demonstrated how this approach can be
+extended to model non-trivial flows in domains which do not have periodic boundary conditions. In particular, we
+showed how: no-slip boundary conditions, free-slip boundary conditions, body forcing and non-trivial geometries can
+be accommodated. In this section, we implement and numerically test these theoretical developments in order to assess
+the ability of the Carleman embedding to approximate three different flows demanding these extensions.
+We focus on the driven Taylor-Green vortex, lid-driven cavity flow, and the flow past a cylinder, enclosed within a
+simulation region of size 𝐿 𝑥 × 𝐿 𝑦 . They are described by the incompressible Navier-Stokes equations:
+𝜕𝑡 𝒖 + (𝒖 · ∇) 𝒖 = −
+
+1
+∇𝑝 + 𝜈∇2 𝒖,
+𝜌0
+
+∇ · 𝒖 = 0,
+
+(63a)
+(63b)
+
+together with an appropriate set of boundary conditions. In each case, the forcing applied (via the boundary conditions
+or via a body forcing 𝑭), has an associated characteristic velocity-scale 𝑈 and length-scale 𝐿, which allows a physical
+Reynolds number Re = 𝑈 𝐿/𝜈 to be constructed. For the lid-driven cavity flow, for example, these scales correspond to
+the speed of the wall and the cavity size, while for the flow past a cylinder they correspond to the inlet velocity and
+the cylinder diameter. However, given that we numerically solve the lattice Boltzmann equation, Eq. (5), which is
+non-dimensionalized in terms of lattice units (i.e., using a velocity scale Δ𝑥/Δ𝑡 and length-scale Δ𝑥), it is useful to first
+establish the relationship between Re and these lattice units. As described in Ref. [38], guided by turbulence theory and
+the scaling required to maintain ∥ 𝒈∥ ∼ 𝑂 (1), we set:
+Ma ≊
+
+𝑢★0
+,
+√︁
+𝑐★𝑠 𝑁 𝑥 𝑁 𝑦
+
+(64)
+
+to obtain this relation. The dimensionless parameter 𝑢★0 introduced as a control of the temporal resolution is set to 𝑢★0 = 1
+unless otherwise stated. For a periodic box, the number of grid-points per direction required to resolve homogeneous
+isotropic turbulence scales as 𝑁 𝑥 ≳ 𝜂 𝑥 Re3/4 and 𝑁 𝑦 ≳ 𝜂 𝑦 Re3/4 , where 𝜂𝑖 = 𝐿 𝑖 /𝐿 (see Ref. [48]). On this basis, we
+fix 𝑁𝑖 = 𝜂𝑖 𝑅𝑒 𝛽 with 𝛽 ≥ 3/4, while for the temporal resolution we make use of the advection time-scale 𝑇 = 𝐿/𝑈,
+12
+
+𝑁𝐶 = 1
+𝑁𝐶 = 2
+𝑁𝐶 = 3
+𝑑𝐶
+𝑑𝐶 (𝑁𝑡 + 1)
+𝑑𝐶
+𝑑𝐶 (𝑁𝑡 + 1)
+𝑑𝐶
+𝑑𝐶 (𝑁𝑡 + 1)
+10
+9 · 102
+9 · 104
+8.1 · 105
+8.1 · 107
+7.3 · 108
+7.3 · 1010
+100 9 · 104
+9 · 108
+8.1 · 109
+8.1 · 1013
+7.3 · 1014
+7.3 · 1018
+1000 9 · 106
+9 · 1012
+8.1 · 1013
+8.1 · 1019
+7.3 · 1020
+7.3 · 1026
+Table 1 Dimensions 𝑑𝐶 of the Carleman vector and 𝑑𝐶 (𝑁𝑡 +1) of the Carleman linear system for two-dimensional
+LBE problems with resolution parameter 𝛽 = 1, different Reynolds numbers Re and truncation orders 𝑁𝐶 .
+Re
+
+1 𝐿
+which non-dimensionally translates into the number of time-steps 𝑁𝑡 = Δ𝑡
+𝑈 . Using the definition of the Mach number
+√
+Δ𝑥
+★
+Ma = 𝑈/(𝑐 𝑠 Δ𝑡 ), together with Eq. (64), we can eliminate Δ𝑡 giving 𝑁𝑡 = 𝑁 𝑥 𝑁 𝑦 /(𝑢★0 𝜂 𝑥 𝜂 𝑦 ). For a given simulation
+with fixed 𝜂 𝑥 and 𝜂 𝑦 , it therefore suffices to specify Re and 𝛽, as this fixes the remaining parameters according to:
+
+
+
+𝑁 𝑥 = 𝜂 𝑥 Re𝛽 ,
+
+
+
+𝑁 𝑦 = 𝜂 𝑦 Re𝛽 ,
+
+
+
+√
+𝑁𝑡 = 𝑁 𝑥 𝑁 𝑦 /(𝑢★0 𝜂 𝑥 𝜂 𝑦 ) ,
+
+3𝑢★ 1
+𝜏★ = √ 0
+.
+𝜂 𝑥 𝜂 𝑦 Re
+
+(65)
+
+Varying 𝛽 and 𝑢★0 then allows one to control the spatial and temporal resolution if needed.
+Our numerical implementation of the classical LBM and Carleman LBM is programmed in such a way that linear
+operations including streaming (which incorporates the boundary conditions) and forcing are represented as matrices.
+These matrices are then used by both our classical and Carleman LBM routines when performing these operations.
+This construction was intentionally chosen, as by validating our classical LBM code, we in-turn validate all linear
+components of the Carleman LBM. We performed validation tests by correctly reproducing the time evolution of the
+decaying and forced Taylor-Green vortex with second-order error in both space 𝑂 (Δ𝑥 2 ) and time 𝑂 (Δ𝑡 2 ) (see Fig. 8 in
+the Appendix). Given that the Taylor-Green vortex does not test the validity of our implementation of the no-slip and
+slip-free boundary conditions, we also performed our simulations with a second independent code, which we used to
+verify our implementation.
+To assess the ability of the Carleman LBM to correctly reproduce the classical LBM, we use the relative 𝐿 2 error:
+𝜖 rel (𝑡★) :=
+
+∥𝒖 𝑁𝐶 (𝒓★, 𝑡★) − 𝒖(𝒓★, 𝑡★) ∥
+,
+∥𝒖(𝒓★, 𝑡★) ∥
+
+𝜖𝐶 := ★ max
+
+𝑡 ∈ {1,··· , 𝑁𝑡 }
+
+𝜖rel (𝑡★),
+
+(66)
+
+∫
+where ∥𝒖(𝒓★, 𝑡★) ∥ 2 = 1/𝑉 |𝒖| 2 𝑑𝑉 and superscript 𝑁𝐶 indicates the Carleman LBM solution with truncation order 𝑁𝐶 .
+Note that only 𝑡★ > 0 is considered, as any error at 𝑡★ = 0 is independent of the embedding method. Although it would,
+in principle, be desirable to fix Re ≫ 1 and investigate how 𝜖𝐶 depends on the Carleman truncation order 𝑁𝐶 , the
+dimension of the linear embedding from Eq. (45) (as illustrated by Table 1) grows with 𝑁𝐶 according to Eq. (11), thus
+making this calculation extremely demanding for classical computers. Nevertheless, in order to at least attempt to
+accurately simulate physically relevant configurations, we must choose sufficiently large 𝑁 𝑥 = 𝜂 𝑥 Re𝛽 , which in turn
+restricts our calculations to 𝑁𝐶 = 1, 2, 3. Although this is compounded by the fact our code is currently limited to serial
+runs, we envisage making use of GPUs in future studies.
+Having detailed our numerical implementation, we now consider our three examples: how 𝜖𝐶 depends on Re
+and 𝑁𝐶 , how the spatial form of the absolute value of the difference |𝒖 𝑁𝐶 (𝒓★, 𝑡★) − 𝒖(𝒓★, 𝑡★)| varies with 𝑁𝐶 , and
+how 𝜖rel (𝑡★) varies in time. We consider the driven Taylor-Green vortex first as it is the simplest case, followed by the
+lid-driven cavity, and the flow past a cylinder. Finally, we will present numerical results on the condition number of the
+associated linear systems, thus addressing the question about the complexity cost of simulating non-trivial flows.
+A. Driven Taylor-Green vortex
+In a 2D domain Ω := [0, 𝐿] × [0, 𝐿] with periodic boundary conditions, the Taylor-Green vortex state is given by:
+𝒖(𝒓, 𝑡) = [sin(𝑘𝑥) cos(𝑘 𝑦), − cos(𝑘𝑥) sin(𝑘 𝑦)] 𝑓 (𝑡),
+
+𝑝(𝒓, 𝑡) = −
+
+𝜌0
+(sin2 (𝑘𝑥) + sin2 (𝑘 𝑦)) 𝑓 2 (𝑡),
+2
+
+(67)
+
+where 𝒓 = (𝑥, 𝑦), the wavenumber 𝑘 = 2𝜋/𝐿, and 𝑓 (𝑡) is explicit time dependence. Substituted into the Navier-Stokes
+equations, Eqs. (63a)-(63b), this state leads to the cancellation of the pressure gradient and non-linear terms, leaving
+13
+
+(a)
+
+(b)
+NC = 1
+NC = 2
+NC = 3
+
+10−3
+
+0.0010
+0.0008
+rel
+
+C
+
+10−2
+
+NC = 1
+NC = 2
+
+0.0006
+0.0004
+
+10
+
+−4
+
+0.0002
+10
+
+20
+
+30
+Re
+
+40
+
+0.0000
+
+50
+
+0
+
+1000
+
+2000
+
+3000
+
+t
+
+Fig. 1 Carleman truncation error for the forced Taylor-Green vortex flow with 𝛽 = 0.75. Left: Dependence
+of 𝜖𝐶 on the Reynolds number Re and truncation order 𝑁𝐶 = 1, 2, 3 for one advection time. Right: Time evolution
+of 𝜖 rel over 10 advection times for 𝑁𝐶 = 1, 2 and Re = 50.
+𝜕𝑡 𝒖 = 𝜈Δ𝒖, which when solved with the initial condition 𝑓 (𝑡 = 0) = 𝑈𝑇𝐺 gives 𝑓 (𝑡) = 𝑈𝑇𝐺 exp(−2𝜈𝑘 2 𝑡). As this
+solution decays exponentially in time, it is interesting to determine the form of a forcing 𝑭, which when added to the
+right hand side the Navier-Stokes equations not only sustains Eq. (67), but also leaves open the possibility of producing
+time-dependent states as the forcing increases in strength. Setting 𝜕𝑡 𝒖 = 0 and substituting Eq. (67) into these equations
+implies a forcing of the form:
+𝑭 = 2𝜈𝑘 2 𝒖(𝒓, 𝑡 = 0).
+(68)
+Choosing the velocity scale 𝑈𝑇𝐺 and length-scale 𝐿, we can non-dimensionalize the problem such that Re = 𝑈𝑇𝐺 𝐿/𝜈
+characterizes the relative strength of this forcing. In order to test the extension of the Carleman LBM to include driving
+as described in Sec. III.B, we follow the approach of Ref. [47] that considered the addition of a divergence-free body
+force for the incompressible LBM [39]. For a steady or slowly varying flow such that 𝜕𝑡 𝒖 ≊ 0, it is consistent to add
+𝜙𝑚 = 𝑤 𝑚
+
+𝒆𝑚 · 𝑭
+𝑐2𝑠
+
+(69)
+
+to the right hand side of Eq. (5). As Eq. (67) is a steady solution of the forced problem, we validated our implementation
+of the driving is nearly second-order accurate‡ as shown in Fig. 8 in the Appendix. However, in order to conduct a more
+strenuous test of the Carleman convergence, we choose instead to investigate transient dynamics, by starting from the
+zero initial condition 𝒖(𝒓, 𝑡 = 0) = 0, 𝑝(𝒓, 𝑡 = 0) = 0 and tracking how the classical and Carleman LBM evolve to the
+steady state solution from Eq. (67).
+Figure 1(a) shows the convergence behavior of the Carleman error 𝜖𝐶 for 𝑁𝐶 = 1, 2, 3 with 𝛽 = 0.75. We observe
+that the error for the linear Carlemen LBM, 𝑁𝐶 = 1, decreases with increasing Re. This was also observed for the
+decaying Taylor-Green vortex [38], and may be attributed to the fact that as 𝑁 𝑥 = Re𝛽 increases, the Mach number
+reduces in accordance with Eq. (64), thereby reducing the strength of nonlinearity. Although the quadratic Carleman
+expansion does not significantly improve the relative error, by continuing to 𝑁𝐶 = 3 we do find a dramatic reduction.
+This demonstrates that at least for small Re the proposed Carleman LBM for forced flows can converge as 𝑁𝐶 increases,
+albeit not necessarily uniformly. Due to the need to consider 𝑁𝐶 = 3 to observe a convincing trend towards convergence,
+it was necessary to limit our spatial resolution to 𝛽 = 0.75. However, by recomputing Fig. 1(a) for 𝛽 = 1 (without
+𝑁𝐶 = 3 included), we verified that the results presented are consistent with those observed for a larger resolution.
+To assess the time evolution of the truncation error, we chose Re = 50 (corresponding to 𝑁 𝑥 = 𝑁 𝑦 = 19) and
+time-integrated the zero initial condition subject to the Taylor-Green forcing for 10 advection times. As shown in
+Fig. 1(b), the relative error 𝜖rel plateaus following an initial transient. This shows that error associated with the Carleman
+LBM for forced flows does not continually grow, but converges to a finite value. The spatial form of the solution
+and its associated Carleman truncation error are shown in Fig. 2. Although it is interesting to go to larger Re, we
+‡ The velocity shift proposed in Ref. [47] requires modifications of 𝐹 and 𝐹 which are not currently included in our code.
+1
+2
+
+14
+
+uNC =1
+
+u
+
+uNC =2
+
+×10−5
+
+0.05166
+
+5.361
+
+0.01722
+
+0.00000
+
+3.574
+
+y
+
+kuk2
+
+0.03444
+
+10
+1.787
+
+5
+
+0
+
+ku − uNC k2
+
+15
+
+0.000
+
+0
+
+5
+
+10
+x
+
+15
+
+0
+
+5
+
+10
+x
+
+15
+
+0
+
+5
+
+10
+x
+
+15
+
+Fig. 2 Spatial form of the classical LBM solution, the Carleman LBM solution and their associated error for the
+forced Taylor-Green vortex flow after 10 advection times for 𝛽 = 0.75 and Re = 50. Left: Classical LBM solution.
+Middle: Linear Carleman approximation (bottom) and error (top). Right: Quadratic Carleman approximation
+(bottom) and error (top).
+intentionally limit the study to Re = 50, as beyond this threshold the solution state shown in Fig. 2 becomes unstable and
+can transition to another more complex steady state. Since it is known that a single, global linearization scheme cannot
+describe multiple basins of attraction, it follows that a direct Carleman embedding will fail for Reynolds number above
+a certain value. However, recent work has begun to go beyond such obstacles by constructing adaptive linearization
+schemes [49]. It would be of interest to extend such methods to quantum algorithms, and the above driven Taylor-Green
+vortex could be an excellent test-bed for such methods.
+B. Lid-driven cavity
+To test the extension of the Carleman LBM for no-slip boundary conditions as described in Sec. III, we consider
+lid-driven cavity flow, initially studied for the classical incompressible LBM in Ref. [40]. This problem considers a
+2D cavity, for example a notch of size Ω := [0, 𝐻] × [0, 𝐻] taken out of an aeroplane wing, such that the air flowing
+over the top surface moves at constant velocity 𝑈𝑤 , causing the sheared fluid within the cavity to circulate. Letting
+𝒖 = (𝑢, 𝑣), we set the components of the velocity vector at the top 𝑦 = 𝐻 and bottom 𝑦 = 0 boundaries of the cavity to
+𝑢(𝑥, 𝑦 = 𝐻, 𝑡) = 𝑈𝑤 ,
+
+𝑣(𝑥, 𝑦 = 𝐻, 𝑡) = 0,
+
+𝑢(𝑥, 𝑦 = 0, 𝑡) = 0,
+
+𝑣(𝑥, 𝑦 = 0, 𝑡) = 0,
+
+(70)
+
+and at the sides to
+𝒖(𝑥 = 0, 𝑦, 𝑡) = 𝒖(𝑥 = 𝐻, 𝑦, 𝑡) = 0.
+
+(71)
+
+As we use the lattice Boltzmann method, these macroscopic boundary conditions are converted into rules for how the
+populations 𝑔𝑚 are updated at the walls as described in Secs. III.A-III.B. By choosing the velocity scale 𝑈𝑤 and the box
+size as a length-scale 𝐻, we can non-dimensionalize the problem such that Re = 𝑈𝑤 𝐻/𝜈 characterizes the strength at
+which the moving top boundary drives the flow. As per the Taylor-Green vortex, we start from the zero initial condition
+𝒖(𝒓, 𝑡 = 0) = 0, 𝑝(𝒓, 𝑡 = 0) = 0 and track how the classical and Carleman LBM evolve to a steady state solution.
+Figure 3(a) shows the convergence behavior of the Carleman error for 𝑁𝐶 = 1, 2. In contrast to the previous example,
+we observe that as Re increases, the error grows for both 𝑁𝐶 = 1 and 𝑁𝐶 = 2. Also, by going to 𝑁𝐶 = 2, we directly
+observe a big drop in the error 𝜖𝐶 which appears to shrink as Re increases. On this basis, we did not go to 𝑁𝐶 = 3, but
+instead increased the spatial resolution for this example by setting 𝛽 = 1, such that 𝑁 𝑥 = 𝑁 𝑦 = Re. We attribute the
+increase in 𝜖𝐶 with Re to the fact that the form of the solution in this case changes as Re increases, and in particular that
+strong velocity gradients develop near the lid as shown in Fig. 4. For the Taylor-Green vortex, by contrast, the Carleman
+embedding only needed to approximate the same form of solution (given by Eq. (67)) for all Re. This is because for the
+range of Re considered, only the time-scale at which we reach the steady state changes with Re.
+Figure 3(b) shows the time evolution of the relative error for 𝑁𝐶 = 1, 2 at Re = 25. Once again, we observe that
+the Carleman error does not continually increase in time but instead converges to a finite value. A second interesting
+observation is that oscillations appear in 𝜖rel for both 𝑁𝐶 = 1 and 𝑁𝐶 = 2, which decay as 𝑡 increases. However, the
+amplitude of these oscillation is much larger for 𝑁𝐶 = 1. Similar behavior was also observed for the Taylor-Green
+15
+
+(a)
+
+(b)
+
+10−1
+
+rel
+
+C
+
+0.06
+
+10−2
+
+NC = 1
+NC = 2
+
+0.04
+
+0.02
+NC = 1
+NC = 2
+
+10−3
+10
+
+20
+
+30
+Re
+
+40
+
+0.00
+
+50
+
+0
+
+1000
+
+2000
+
+3000
+t
+
+4000
+
+5000
+
+6000
+
+Fig. 3 Carleman truncation error for the lid-driven cavity flow with 𝛽 = 1. Left: Dependence of 𝜖𝐶 on the
+Reynolds number Re and truncation order 𝑁𝐶 = 1, 2 for one advection time. Right: Time evolution of 𝜖rel over 10
+advection times for 𝑁𝐶 = 1, 2 and Re = 25.
+uNC =1
+
+u
+
+uNC =2
+
+0.03507
+
+0.00165
+
+0.00110
+
+15
+y
+
+kuk2
+
+0.02338
+
+10
+
+0.01169
+
+0.00055
+
+ku − uNC k2
+
+20
+
+5
+0.00000
+
+0
+
+0.00000
+
+0
+
+10
+
+20
+
+0
+
+10
+
+x
+
+20
+x
+
+0
+
+10
+
+20
+x
+
+Fig. 4 Spatial form of the classical LBM and Carleman LBM solutions (red) and their associated error (blue)
+for the lid-driven cavity flow after 10 advection times for 𝛽 = 1 and Re = 25. Left: the classical LBM solution.
+Middle: linear Carleman approximation. Right: the quadratic Carleman approximation.
+vortex in Fig. 1(b). Taken together, the results from Fig. 3 demonstrate that at least for small Re the proposed Carleman
+LBM for shear flows with no-slip boundary conditions converges as 𝑁𝐶 increases.
+Figure 4 shows the spatial form of the solution predicted by the classical LBM as well as the linear 𝒖 𝑁𝐶 =1 and
+quadratic 𝒖 𝑁𝐶 =2 Carleman LBM approximations. Due to horizontal movement of the lid, we observe larger gradients
+of the velocity near the moving lid. As the strongest gradients develop near the top right hand corner, the location
+where the fluid traveling rightwards meets a solid boundary and is forced to re-circulate, we have chosen to highlight
+the form of spatial error in this region. Comparing the form of the error for the linear 𝒖 𝑁𝐶 =1 and quadratic 𝒖 𝑁𝐶 =2
+approximations, we observe that 𝑁𝐶 = 2 further reduces the intensity of the error and shifts it away from the walls. In
+both solutions, we also observe that exactly at the boundaries the error is smallest. This suggests that the proposed
+extension of the Carleman LBM for no-slip boundary conditions yields a physically consistent approximation.
+C. Flow past a cylinder
+In order to computationally model an object in a wind tunnel, it is necessary to be able to accommodate inlet/outlet
+flows. A simple example in which the flow enters the domain, flows around the object embedded within, and then exits
+the domain, is the flow around a cylinder. Following Ref. [40] that studied this flow for the classical incompressible
+LBM, we use this example to test the extension of the Carleman LBM described in Section III to include free-slip
+
+16
+
+(a)
+
+(b)
+
+0.07
+
+NC = 1
+NC = 2
+
+0.150
+
+0.06
+
+0.125
+
+C
+
+NC = 1
+NC = 2
+
+0.04
+
+0.100
+rel
+
+0.05
+
+0.075
+
+0.03
+
+0.050
+
+0.02
+
+0.025
+4
+
+5
+
+6
+
+7
+Re
+
+8
+
+9
+
+0.000
+
+10
+
+0
+
+200
+
+400
+t
+
+600
+
+Fig. 5 Carleman truncation error for the flow past a cylinder with 𝛽 = 0.75. Left: Dependence of 𝜖𝐶 on the
+Reynolds number Re and truncation order 𝑁𝐶 = 1, 2 for one advection time. Right: Time evolution of 𝜖rel over 5
+advection times for 𝑁𝐶 = 1, 2 and Re = 6.
+outflow boundary conditions, as well as no-slip boundary conditions on a cylinder embedded within the domain.
+The computational domain considered is Ω := [−2.5𝐷, 11.5𝐷] × [−3.5𝐷, 3.5𝐷] where 𝐷 is the cylinder diameter.
+The cylinder is positioned at 𝒓 = (0, 0), slightly downstream of the inlet, but sufficiently far from the outlet, so that the
+influence of the outlet boundary condition is not felt upstream. In the vertical, we use periodic boundaries, at the inlet
+we impose the no-slip boundary condition
+𝒖 = (𝑈∞ , 0),
+(72)
+according to Eq. (24), while at the outlet we impose
+𝜕𝑥 𝑢 = 𝜕𝑥 𝑣 = 0,
+
+(73)
+
+such that the flow is free to exit the right hand side of the domain with a vertically non-uniform velocity profile. To
+convert the latter boundary condition into rules for how the populations 𝑔𝑚 should be updated at the outlet 𝒓 𝑜 , we
+use non-equilibrium extrapolation scheme to implement a zero-gradient (pressure and velocity) outlet§ following
+Refs. [44, 45], whose implementation is described in Sec. III.A. Due to the large domain required to minimize the
+influence of the outflow boundary on the flow, we are limited to small Re ≤ 10 and 𝑁𝐶 = 1, 2 with 𝛽 = 0.75, where
+the Reynolds number is defined by Re = 𝐷𝑈∞ /𝜈. As before, we initialize the systems at zero initial condition with
+𝒖(𝒓, 𝑡 = 0) = (0, 0), 𝑝(𝒓, 𝑡 = 0) = 0.
+Figure 5(a) shows the Carleman truncation error for 𝑁𝐶 = 1, 2 as a function of Re. Due to the small variations in
+spatial resolution with Re, we do not observe large differences in 𝜖𝐶 for this case. Consistent with the previous two
+cases considered, however, we do find that by increasing the Carleman truncation order from 𝑁𝐶 = 1 to 𝑁𝐶 = 2 we can
+reduce the maximum relative error over one advection time from 7% to 2.5%. Consistent with the lid-driven cavity flow,
+we observe that over 5 advection times the relative error for 𝑁𝐶 = 2 remains less than 𝑁𝐶 = 1. The dynamics of the
+relative error for this case is, however, more complex. In particular, at 𝑡 ≊ 100 we observe a drop in the relative error
+after an initial increase. We attribute this signature of the error signal to be the time taken for the wake of the cylinder to
+reach the outlet boundary. Following this decrease, the relative error subsequently increases for both cases, saturating
+around 15% after approximately 10 advection times for 𝑁𝐶 = 1. For 𝑁𝐶 = 2, we have not been able to run the simulate
+for long enough to establish this saturation but envisage using a more efficient code implementation in the future to
+establish this result.
+The top frame of Fig. 6 shows the classical solution obtained for this problem when Re = 6 and 𝛽 = 0.75. Due to
+the computational constrains imposed by the Carleman LBM calculation, we use 𝑁 𝑥 × 𝑁 𝑦 = 58 × 26 lattice nodes, the
+cylinder is coarsely represented using 𝐷 = 4 (corresponding to 16 lattice nodes), and we are restricted to steady state
+solutions. In this regime we observe higher velocities/kinetic energy as darker red above and below the cylinder. Behind
+§We acknowledge that a fixed pressure outlet with zero-gradient velocity handles reflections due to the finite domain better and has improved
+stability. Future work will consider this modification of the outflow boundary condition.
+
+17
+
+u(x = 20, y)
+
+y
+
+u
+25
+
+25
+
+20
+
+20
+
+15
+
+15
+
+10
+
+10
+
+5
+
+5
+
+0
+
+0
+
+y
+
+uNC =1
+25
+
+25
+
+20
+
+20
+
+15
+
+15
+
+10
+
+10
+
+5
+
+5
+
+0
+
+0
+
+y
+
+uNC =2
+25
+
+25
+
+20
+
+20
+
+15
+
+15
+
+10
+
+10
+
+5
+
+5
+
+0
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+x
+0.00000
+
+0.00388
+
+0
+
+0.01
+
+0.02
+
+0.03
+
+u
+0.00775
+
+0.01163
+
+ku − uNC k
+
+0.00000 0.01238 0.02475 0.03713
+
+kuk2
+
+Fig. 6 Spatial form of the classical LBM and Carleman LBM solutions (red) and their associated error (blue)
+for the flow around a cylinder after 5 advection times for 𝛽 = 0.75 and Re = 6. Left: The classical LBM solution
+accompanied by its streamwise velocity profile (top), the linear Carleman LBM approximation (red, middle) and
+the quadratic Carleman LBM approximation (red, bottom). The Carleman LBM truncation error is shown in
+blue in the middle and bottom frames. Right: Horizontal velocity profile evaluated downstream of the cylinder
+at the location indicated by the dashed line.
+the cylinder, the lower kinetic energy (lighter red) reflects the velocity deficit caused by the cylinder. The vertical profile
+of the horizontal velocity evaluated downstream of the cylinder, shown on the top right of Fig. 6, also reflects this
+velocity deficit.
+The linear Carleman approximation (red) accompanied by its deviation from the classical LBM solution (blue) is
+shown in the middle of Fig. 6. We observe that for the linear approximation the deviation is located primarily above
+and below the cylinder, where the increase in kinetic energy is misrepresented, as well as behind the cylinder, where
+the velocity deficit is misrepresented. The misrepresentation of the velocity deficit is emphasized in the deviation of
+
+18
+
+104
+
+κA
+
+periodic
+vortex
+lid
+103
+
+102
+
+5
+
+10
+Re
+
+20
+
+Fig. 7 Condition number 𝜅 𝐴 as a function of the Reynolds number Re for the periodic system, driven TaylorGreen vortex, and lid-driven cavity with parameters 𝛽 = 0.75 and 𝑁𝐶 = 2. Points correspond to numerical values
+and solid lines to best fits as described by Eq. (74).
+𝑢(𝑥 = 20, 𝑦), for 𝑁𝐶 = 1, from the classical simulation. Increasing the Carleman truncation order to 𝑁𝐶 = 2 (see
+bottom of Fig. 6), we find that the misrepresentation of the classical LBM solution above/below and behind the cylinder
+is drastically reduced. This is also seen when comparing the profiles for 𝑢(𝑥 = 20, 𝑦) in the bottom and top right frames
+of Fig. 6. By contrast, we observe that 𝑁𝐶 = 2 does not recover this velocity deficit without error, and in particular
+waves generated in the wake of the cylinder are found to be reflected from the outflow boundary in this case. Due to
+computational constraints it has not yet been possible to test 𝑁𝐶 = 3 in order to establish whether this is an error specific
+to 𝑁𝐶 = 2.
+D. Condition number
+As already mentioned in Sec. III, the extensions to non-trivial geometries and driven flows introduced in this paper
+may bring additional complexity cost as compared to the original algorithm from Ref. [38], as these modifications may
+affect the condition number of the linear system from Eq. (48). This, in principle, might negate the potential for a
+quantum advantage reported in Ref. [38]. However, the numerical results that we will now present paint an optimistic
+picture, in which this extra cost is small and does not affect the asymptotic scaling of the algorithm’s query complexity.
+Due to the immense size of the linear system whose condition number we want to investigate (recall Table 1),
+we limit our numerical studies to 𝛽 = 0.75, Re ∈ [5, 20], 𝑁𝐶 = 1, 2, and do not consider the flow past a cylinder
+case. Using a Lanczos-based algorithm, we first numerically compute the condition number 𝜅 𝐴per of the linear system
+describing undriven and periodic LBE, i.e., 𝐴per is given by Eq. (48) with Carleman driving D replaced by an identity
+matrix and Carleman streaming S constructed from the periodic streaming matrix given by Eq. (23). Next, we compute
+𝜅 𝐴vor for 𝐴vor describing the forced Taylor-Green vortex, i.e., again with periodic streaming, but this time with driving
+captured by Eq. (69). Given that the Carleman driving matrix D is non-trivial only for 𝑁𝐶 ≥ 2 (as for 𝑁𝐶 = 1 driving
+is accounted for only by the Carleman driving vector F0 ), we only perform computations for 𝑁𝐶 = 2 (as for 𝑁𝐶 = 1 the
+results are identical to the undriven periodic case). Finally, we compute 𝜅 𝐴lid for 𝐴lid describing the lid-driven cavity
+flow, where now both the streaming and driving terms differ from the trivial case. As discussed above, for 𝑁𝐶 = 1, the
+driving has no effect and the difference between 𝜅 𝐴lid and 𝜅 𝐴per stems solely from a modified streaming matrix that now
+encodes bounce-back conditions at the walls enclosing the simulation region. Interestingly, we observe that in this case,
+up to numerical precision, 𝜅 𝐴lid and 𝜅 𝐴per are identical. This can potentially be attributed to the fact that the modification
+due to walls still preserves the unitary nature of the streaming matrix.
+We present the results of our numerical studies for 𝑁𝐶 = 2 in Fig. 7. To estimate the scaling of 𝜅 𝐴 with Re, we
+perform the best linear fits to:
+ln 𝜅 𝐴 = 𝜒 ln Re + ln 𝑐,
+(74)
+yielding the scaling 𝑂 (Re 𝜒 ). We extracted the following values of the exponents 𝜒 for the three cases investigated:
+𝜒per = 1.784,
+
+𝜒vor = 1.836,
+
+𝜒lid = 1.712.
+
+(75)
+
+Based on the above results, the following three observations can be made. First, given the relatively small number of
+data points and the fragility of doubly-logarithmic fits, the values of 𝜒 for the three considered cases are remarkably
+19
+
+close to each other. This suggests that the algorithm’s asymptotic query complexity for problems with non-trivial
+geometries and driving should not differ significantly from the simple case with no walls and periodic boundaries.
+Second, as illustrated by larger values of 𝜅 lid as compared to 𝜅per , there still may exist an extra resource cost, but one may
+expect it to be a constant overhead, not scaling with Re. Third, the classical complexity of solving a two-dimensional
+CFD problem scales as 𝑂 (Re2.25 ), which means that asymptotically our quantum LBM algorithm may outperform the
+best classical methods by a factor scaling roughly as 𝑂 (Re0.45 ). Even including the extra complexity cost 𝑂 (Re0.375 )
+related to the extraction of the drag force from a quantum-encoded solution (as described in Ref. [38]), should allow one
+to preserve a non-zero quantum advantage.
+
+V. Conclusion
+In this work, we have extended the recent quantum algorithm for the incompressible lattice Boltzmann method to
+include a class of flows and geometries that are much closer to those encountered in practical CFD, including walls,
+inlets, outlets, and body forcing. At the algorithmic level, we have shown how these ingredients can be incorporated
+into the Carleman streaming and driving operators, how they modify the linear system that underpins the quantum
+linear-solver–based algorithm, and what is the impact on the complexity of solving it. The resulting block-encodings for
+non-trivial geometries and driving lead to a controlled overhead, scaling as a multiplicative factor of order 4 𝑁𝐶 in the
+query complexity and a linear in the Carleman truncation order 𝑁𝐶 increase of ancillary qubits, which preserves the
+asymptotic scaling, and hence the window for a quantum advantage, identified in earlier work [38].
+To assess the practical consequences of these extensions, we implemented a fully matrix-based classical Carleman
+LBM and benchmarked it against a standard incompressible LBM for three canonical two-dimensional flows: the driven
+Taylor–Green vortex, the lid-driven cavity flow, and flow past a cylinder. For the forced Taylor–Green vortex, we
+observed clear evidence of convergence of the Carleman approximation as the truncation order 𝑁𝐶 is increased, with
+𝑁𝐶 = 3 yielding a substantial reduction in error, and a relative error that saturates rather than grows in time. For the
+lid-driven cavity, the Carleman scheme with no-slip walls reproduces the main features of the recirculating flow and
+the associated shear layers. Moving from 𝑁𝐶 = 1 to 𝑁𝐶 = 2 significantly reduces the truncation error, even though
+the error grows with Reynolds number as the flow structure sharpens near the lid and corners. Finally, for flow past a
+cylinder at low Reynolds numbers, we demonstrated that moving from 𝑁𝐶 = 1 to 𝑁𝐶 = 2 again significantly reduces
+the truncation error for short times and that the same formalism can handle mixed inlet/outlet conditions and embedded
+obstacles. Note that a recent work [37] has performed a related Carleman convergence study in a time-continuous
+lattice Boltzmann setting, i.e., simulating the discrete Boltzmann equation. This was done without the incompressibility
+assumption, with the Carleman truncation to second order, and for the Kolmogorov and lid-driven cavity flows. Our
+results are consistent with Ref. [37] (in particular, in both works the relative error as a function of time plateaus),
+however they also extend and complement this work by including inlet/outlet boundaries and driving.
+From the perspective of quantum resources, our numerical study of the condition number of the Carleman linear
+system indicates that the inclusion of realistic boundaries and driving does not introduce a qualitatively new bottleneck,
+at least in the parameter ranges investigated. The dominant algorithmic costs remain those already identified for periodic,
+undriven flows, and the additional overhead from geometry and forcing enters mainly through the block-encoding
+prefactor and a modest increase in the number of ancillae. This supports the conclusion that, in regimes where the
+Carleman expansion converges, the end-to-end quantum LBM pipeline can be extended to more realistic CFD setups
+without closing the potential window for a quantum speedup. However, this window is currently far narrower than
+what was initially suggested in Ref. [34], which claimed a potential for exponential quantum advantage. Therefore, it
+strongly motivates more work on pre-conditioning methods, problem-optimized block-encodings, and other algorithmic
+optimizations. Such advances could have a meaningful impact on the complexity scaling of these Carleman-based
+algorithms.
+Our results also highlight important limitations and open questions. The present study is restricted to two-dimensional,
+low-Reynolds-number flows and relatively small Carleman orders 𝑁𝐶 ≤ 3, dictated by the classical cost of simulating the
+embedded linear systems. The observed trends in truncation error with Reynolds number and geometry suggest that more
+complex flows, particularly three-dimensional turbulence, high-Reynolds-number flows, and strongly time-dependent
+configurations, will require both improved control of the Carleman convergence radius and more efficient representations
+of the embedded dynamics. Likewise, our analysis did not include observable extraction beyond the drag force already
+investigated in Ref. [38], which is an important line to push forward in future work.
+Looking forward, several directions appear particularly promising. On the algorithmic side, it will be important to
+develop alternative linear embedding schemes adapted for particular CFD problems, preconditioning tailored to the LBM
+
+20
+
+structure, and more economical block-encodings for boundary and forcing operators. On the application side, extending
+the classical numerical analysis to three dimensions, to higher-Reynolds-number benchmark flows, and eventually to
+industrially relevant geometries would provide sharper tests of whether practically meaningful quantum advantages
+can be realized in CFD. In particular, it would be of interest to extend classical simulations of the Carleman LBM
+implementation to Reynolds numbers at which the transition to time-dependent solutions and vortex shedding emerges,
+e.g., Re ≊ 83 for the flow around a cylinder. This would test the ability of the Carleman method to accurately resolve
+such key physics. More broadly, our results illustrate that end-to-end quantum algorithm designs can be systematically
+pushed from idealized toy systems towards realistic engineering flows, and that they provide a concrete foundation for
+future studies at the interface of quantum computing and computational fluid dynamics.
+Authors contributions: Authors are listed alphabetically within each affiliation. DJ contributed to the blockingencoding theory. KK developed extensions to nontrivial flows and geometries, analyzed the corresponding complexity
+increases, and performed numerical simulations. ML supported the development of extensions to nontrivial flows
+and geometries. PM assisted in developing extensions to nontrivial flows and geometries, and performed numerical
+simulations. RA performed numerical studies of truncation errors and operator norms as input to complexity bounds.
+EM performed numerical comparison between LB and Carleman approximation. SR supported the definition of the end
+user requirements, and the application use cases. DJ, KK, and PM wrote the paper.
+Acknowledgments: We want to thank Thomas Astoul, Thomas Bendokat, Giovanni Giustini, and Alessandro De
+Rosis for helpful discussions concerning fluid dynamics and the lattice Boltzmann method. We are also grateful to
+Alice Barthe, Sam Morley-Short, and Trevor Vincent for their assistance with numerical simulations.
+
+Appendix
+LBE discrete velocity models
+
+𝑚 = 1:
+𝒆★𝑚 = 0,
+𝑤 𝑚 = 2/3,
+★
+𝑚 ∈ {2, 3}:
+𝒆 𝑚 ∈ {±1},
+𝑤 𝑚 = 1/6.
+𝑤 𝑚 = 4/9,
+𝑚 = 1:
+𝒆★𝑚 = (0, 0),
+D2Q9 𝑚 ∈ {2, . . . , 5}:
+𝒆★𝑚 ∈ {(±1, 0), (0, ±1)},
+𝑤 𝑚 = 1/9,
+𝑚 ∈ {6, . . . , 9}:
+𝒆★𝑚 ∈ {(±1, ±1)},
+𝑤 𝑚 = 1/36.
+𝑤 𝑚 = 8/27,
+𝑚 = 1:
+𝒆★𝑚 = (0, 0, 0),
+★
+𝑚 ∈ {2, . . . , 7}:
+𝒆 𝑚 ∈ {(±1, 0, 0), (0, ±1, 0), (0, 0, ±1)},
+𝑤 𝑚 = 2/27,
+D3Q27
+𝑚 ∈ {8, . . . , 19}:
+𝒆★𝑚 ∈ {(±1, ±1, 0), (±1, 0, ±1), (0, ±1, ±1)}, 𝑤 𝑚 = 1/54,
+𝑚 ∈ {20, . . . , 27}: 𝒆★𝑚 ∈ {(±1, ±1, ±1)},
+𝑤 𝑚 = 1/216.
+Table 2 Discrete velocities in lattice units for standard LBE models [41].
+D1Q3
+
+Streaming and collision matrices
+The streaming matrix 𝑆 can be explicitly written as:
+𝑆=
+
+𝑄
+∑︁ ∑︁
+
+𝒓★ + 𝒆★𝑚 𝒓★ ⊗ |𝑚⟩⟨𝑚| ,
+
+(76)
+
+𝒓 ★ 𝑚=1
+
+whereas the linear and quadratic collision matrices, 𝐹1 and 𝐹2 , have the following form:
+𝐹1 =
+
+∑︁
+𝒓★
+
+𝒓★ 𝒓★ ⊗
+
+𝑄
+∑︁
+
+1
+
+1
+★
+𝑚,𝑚1 =1 𝜏 + 2
+
+(𝑤 𝑚 + 3𝑤 𝑚 𝐸 𝑚,𝑚1 − 𝛿 𝑚,𝑚1 ) |𝑚⟩⟨𝑚 1 | ,
+
+21
+
+(77a)
+
+𝐹2 =
+
+∑︁
+
+𝑄
+∑︁
+
+𝑤𝑚
+
+𝑚,𝑚1 ,𝑚2 =1 𝜏
+
+★+ 1
+2
+
+𝒓★ 𝒓★, 𝒓★ ⊗
+
+𝒓★
+
+
+
+
+9
+3
+𝐸 𝑚,𝑚1 𝐸 𝑚,𝑚2 − 𝐸 𝑚1 ,𝑚2 |𝑚⟩⟨𝑚 1 , 𝑚 2 | ,
+2
+2
+
+(77b)
+
+where 𝐸 𝑚,𝑛 := 𝒆★𝑚 · 𝒆★𝑛 and 𝛿 is the Kronecker delta.
+Carleman streaming and collision matrices
+The Carleman streaming matrix S for truncation order 𝑁𝐶 is given by the following block-diagonal matrix:
+𝑆
+©
+­0
+­
+S∞ = ­ .
+­ ..
+­
+«0
+
+0
+𝑆 ⊗2
+..
+.
+0
+
+0
+0
+..
+.
+
+...
+...
+..
+.
+
+ª
+®
+®
+®.
+®
+®
+𝑆 ⊗ 𝑁𝐶 ¬
+
+...
+
+(78)
+
+The Carleman collision matrix C for truncation order 𝑁𝐶 has the following form:
+1
+©𝐶1
+­0
+­
+­
+C = ­­ 0
+­ ..
+­ .
+­
+«0
+
+𝐶21
+𝐶22
+0
+..
+.
+0
+
+0
+𝐶32
+𝐶33
+..
+.
+0
+
+0
+𝐶42
+𝐶43
+..
+.
+0
+
+...
+...
+...
+..
+.
+...
+
+0
+0
+0
+..
+.
+
+ª
+®
+®
+®
+®,
+®
+®
+®
+®
+𝑁𝐶
+𝐶 𝑁𝐶 ¬
+
+(79)
+
+where in each row 𝑘 there are min{𝑘 + 1, 𝑁𝐶 − 𝑘 + 1} non-zero blocks given by 𝑑 𝑘 × 𝑑 𝑙 matrices:
+
+
+𝐶𝑙𝑘 := (𝐼 + 𝐹1 ) ⊗2𝑘−𝑙 ⊗ 𝐹2⊗𝑙−𝑘 + perms. ,
+
+(80)
+
+with + perms. denoting a sum over distinct permutations over 𝑘 subsystems, with 2𝑘 − 𝑙 subsystems of type 1, and 𝑙 − 𝑘
+subsystems of type 2.
+Numerical validation
+Numerical - ∆x2.0061
+Theoretical - ∆x2
+
+10−1
+
+Error L2
+
+Error L2
+
+10−1
+
+10−2
+
+10−2
+
+10−3
+
+10−3
+3 × 10−2 4 × 10−2
+
+Numerical - ∆x1.9146
+Theoretical - ∆x2
+
+6 × 10−2
+
+−1
+
+10
+Resolution ∆x = ∆t
+
+2 × 10−1
+
+3 × 10−2 4 × 10−2
+
+6 × 10−2
+
+10−1
+Resolution ∆x = ∆t
+
+2 × 10−1
+
+Fig. 8 Validation that our code for Re = 10, 𝑢★0 = 0.5 correctly reproduces (left) the time evolution of the
+analytical solution for the decaying Taylor-Green vortex and, (right) the analytical solution for the forced
+Taylor-Green vortex with second-order accuracy in both space and time. Although the forcing used is first-order
+accurate, the dynamics are steady and we almost recover second order temporal accuracy.
+
+22
+
+References
+[1] Spalart, P. R., and Venkatakrishnan, V., “On the role and challenges of CFD in the aerospace industry,” Aeronaut. J., Vol. 120,
+No. 1223, 2016, p. 209–232. https://doi.org/10.1017/aer.2015.10.
+[2] Patel, H., Gerhold, T., and Ashton, N., “Assessing the HPC Performance of CODA for the NASA Common Research Model,”
+AIAA Aviation Forum and Ascend 2024, 2024, p. 3792. https://doi.org/10.2514/6.2024-3792.
+[3] Paul F. Fischer, J. W. L., and Kerkemeier, S. G., “nek5000 Web page,” , 2008. http://nek5000.mcs.anl.gov.
+[4] Bauer, M., Eibl, S., Godenschwager, C., Kohl, N., Kuron, M., Rettinger, C., Schornbaum, F., Schwarzmeier, C., Thönnes, D.,
+Köstler, H., et al., “waLBerla: A block-structured high-performance framework for multiphysics simulations,” Comput. Math.
+Appl., Vol. 81, 2021, pp. 478–501. https://doi.org/j.camwa.2020.01.007.
+[5] Witherden, F. D., and Jameson, A., “Future directions in computational fluid dynamics,” 23rd AIAA Computational Fluid
+Dynamics Conference, 2017, p. 3791. https://doi.org/10.2514/6.2017-3791.
+[6] Peddinti, R. D., Pisoni, S., Marini, A., Lott, P., Argentieri, H., Tiunov, E., and Aolita, L., “Quantum-inspired framework for
+computational fluid dynamics,” Commun. Phys., Vol. 7, No. 1, 2024, p. 135. https://doi.org/10.1038/s42005-024-01623-8.
+[7] Page, J., “Super-resolution of turbulence with dynamics in the loss,” J. Fluid Mech., Vol. 1002, 2025, p. R3. https://doi.org/https:
+//doi.org/10.1017/jfm.2024.1202.
+[8] Tennie, F., Laizet, S., Lloyd, S., and Magri, L., “Quantum computing for nonlinear differential equations and turbulence,” Nat.
+Rev. Phys., 2025, pp. 1–11. https://doi.org/10.1038/s42254-024-00799-w.
+[9] Feynman, R. P., “Simulating physics with computers,” Feynman and computation, cRc Press, 2018, pp. 133–153.
+[10] Lloyd, S., “Universal quantum simulators,” Science, Vol. 273, No. 5278, 1996, pp. 1073–1078. https://doi.org/10.1126/science.
+273.5278.1073.
+[11] Berry, D. W., Ahokas, G., Cleve, R., and Sanders, B. C., “Efficient quantum algorithms for simulating sparse Hamiltonians,”
+Commun. Math. Phys., Vol. 270, No. 2, 2007, pp. 359–371. https://doi.org/10.1007/s00220-006-0150-x.
+[12] Aspuru-Guzik, A., Dutoi, A. D., Love, P. J., and Head-Gordon, M., “Simulated quantum computation of molecular energies,”
+Science, Vol. 309, No. 5741, 2005, pp. 1704–1707. https://doi.org/10.1126/science.1113479.
+[13] McArdle, S., Endo, S., Aspuru-Guzik, A., Benjamin, S. C., and Yuan, X., “Quantum computational chemistry,” Rev. Mod.
+Phys., Vol. 92, No. 1, 2020, p. 015003. https://doi.org/10.1103/RevModPhys.92.015003.
+[14] Harrow, A. W., Hassidim, A., and Lloyd, S., “Quantum Algorithm for Linear Systems of Equations,” Phys. Rev. Lett., Vol. 103,
+No. 15, 2009, p. 150502. https://doi.org/10.1103/physrevlett.103.150502.
+[15] Costa, P. C., An, D., Sanders, Y. R., Su, Y., Babbush, R., and Berry, D. W., “Optimal scaling quantum linear-systems solver via
+discrete adiabatic theorem,” PRX Quantum, Vol. 3, No. 4, 2022, p. 040303. https://doi.org/10.1103/PRXQuantum.3.040303.
+[16] Jennings, D., Lostaglio, M., Pallister, S., Sornborger, A. T., and Subaşı, Y., “Efficient quantum linear solver algorithm with
+detailed running costs,” , 2023. https://arxiv.org/abs/2305.11352.
+[17] Danz, S., Berta, M., Schröder, S., Kienast, P., Wilhelm, F. K., and Ciani, A., “Calculating response functions of coupled
+oscillators using quantum phase estimation,” Phys. Rev. Res., Vol. 7, No. 2, 2025, p. 023264. https://doi.org/10.1103/5c6d-r1fb.
+[18] Kiani, B. T., De Palma, G., Englund, D., Kaminsky, W., Marvian, M., and Lloyd, S., “Quantum advantage for differential
+equation analysis,” Phys. Rev. A, Vol. 105, No. 2, 2022, p. 022415. https://doi.org/10.1103/PhysRevA.105.022415.
+[19] Rendon, G., “Exponentially Improved Constant in Quantum Solution Extraction,” , 2025. https://arxiv.org/abs/2508.08375.
+[20] Berry, D. W., “High-order quantum algorithm for solving linear differential equations,” J. Phys. A, Vol. 47, No. 10, 2014, p.
+105301. https://doi.org/10.1088/1751-8113/47/10/105301.
+[21] Montanaro, A., and Pallister, S., “Quantum algorithms and the finite element method,” Phys. Rev. A, Vol. 93, No. 3, 2016, p.
+032324. https://doi.org/10.1103/PhysRevA.93.032324.
+[22] Berry, D. W., Childs, A. M., Ostrander, A., and Wang, G., “Quantum algorithm for linear differential equations with exponentially
+improved dependence on precision,” Commun. Math. Phys., Vol. 356, 2017, pp. 1057–1081. https://doi.org/10.1007/s00220017-3002-y.
+
+23
+
+[23] Jennings, D., Lostaglio, M., Lowrie, R. B., Pallister, S., and Sornborger, A. T., “The cost of solving linear differential equations
+on a quantum computer: fast-forwarding to explicit resource counts,” Quantum, Vol. 8, 2024, p. 1553. https://doi.org/10.22331/q2024-12-10-1553.
+[24] An, D., Childs, A. M., and Lin, L., “Quantum algorithm for linear non-unitary dynamics with near-optimal dependence on all
+parameters,” , 2023. https://arxiv.org/abs/2312.03916.
+[25] Bagherimehrab, M., Nakaji, K., Wiebe, N., and Aspuru-Guzik, A., “Fast quantum algorithm for differential equations,” , 2023.
+https://arxiv.org/abs/2306.11802.
+[26] Liu, J.-P., and Lin, L., “Dense outputs from quantum simulations,” , 2023. https://arxiv.org/abs/2307.14441.
+[27] Carleman, T., “Application de la théorie des équations intégrales linéaires aux systèmes d’équations différentielles non linéaires,”
+Acta Math., Vol. 59, 1932, pp. 63–87. https://doi.org/10.1007/BF02546499.
+[28] Liu, J.-P., Kolden, H. O ., Krovi, H. K., Loureiro, N. F., Trivisa, K., and Childs, A. M., “Efficient quantum algorithm for dissipative
+nonlinear differential equations,” PNAS, Vol. 118, No. 35, 2021, p. e2026805118. https://doi.org/10.1073/pnas.2026805118.
+[29] Liu, J.-P., An, D., Fang, D., Wang, J., Low, G. H., and Jordan, S., “Efficient quantum algorithm for nonlinear reaction–diffusion
+equations and energy estimation,” Commun. Math. Phys., Vol. 404, No. 2, 2023, pp. 963–1020. https://doi.org/10.1007/s00220023-04857-9.
+[30] Krovi, H., “Improved quantum algorithms for linear and nonlinear differential equations,” Quantum, Vol. 7, 2023, p. 913.
+https://doi.org/10.22331/q-2023-02-02-913.
+[31] Costa, P. C., Schleich, P., Morales, M. E., and Berry, D. W., “Further improving quantum algorithms for nonlinear differential
+equations via higher-order methods and rescaling,” npj Quantum Inf., Vol. 11, No. 1, 2025, p. 141. https://doi.org/10.1038/s41534025-01084-z.
+[32] Wu, H.-C., Wang, J., and Li, X., “Quantum algorithms for nonlinear dynamics: Revisiting Carleman linearization with no
+dissipative conditions,” SIAM J. Sci. Comput., Vol. 47, No. 2, 2025, pp. A943–A970. https://doi.org/10.1137/24M1665799.
+[33] Jennings, D., Korzekwa, K., Lostaglio, M., Sornborger, A. T., Subasi, Y., and Wang, G., “Quantum algorithms for general
+nonlinear dynamics based on the Carleman embedding,” , 2025. https://arxiv.org/abs/2509.07155.
+[34] Li, X., Yin, X., Wiebe, N., Chun, J., Schenter, G. K., Cheung, M. S., and Mülmenstädt, J., “Potential quantum advantage for
+simulation of fluid dynamics,” Phys. Rev. Res., Vol. 7, No. 1, 2025, p. 013036. https://doi.org/10.1103/PhysRevResearch.7.
+013036.
+[35] Penuel, J., Katabarwa, A., Johnson, P. D., Farquhar, C., Cao, Y., and Garrett, M. C., “Feasibility of accelerating incompressible
+computational fluid dynamics simulations with fault-tolerant quantum computers,” , 2024. https://arxiv.org/abs/2406.06323.
+[36] Sanavio, C., and Succi, S., “Lattice Boltzmann–Carleman quantum algorithm and circuit for fluid flows at moderate Reynolds
+number,” AVS Quantum Science, Vol. 6, No. 2, 2024. https://doi.org/10.1116/5.0195549.
+[37] Turro, F., Lignarolo, A., and Dragoni, D., “Practical Application of the Quantum Carleman Lattice Boltzmann Method in
+Industrial CFD Simulations,” , 2025. https://arxiv.org/abs/2504.13033.
+[38] Jennings, D., Korzekwa, K., Lostaglio, M., Ashworth, R., Marsili, E., and Rolston, S., “An end-to-end quantum algorithm for
+nonlinear fluid dynamics with bounded quantum advantage,” , 2025. https://arxiv.org/abs/2512.03758.
+[39] He, X., and Luo, L.-S., “Lattice Boltzmann model for the incompressible Navier–Stokes equation,” J. Stat. Phys., Vol. 88,
+No. 3, 1997, pp. 927–944. https://doi.org/10.1023/B:JOSS.0000015179.12689.e4.
+[40] Guo, Z., Shi, B., and Wang, N., “Lattice BGK model for incompressible Navier–Stokes equation,” J. Comput. Phys., Vol. 165,
+No. 1, 2000, pp. 288–306. https://doi.org/10.1006/jcph.2000.6616.
+[41] Krüger, T., Kusumaatmaja, H., Kuzmin, A., Shardt, O., Silva, G., and Viggen, E. M., The Lattice Boltzmann Method: Principles
+and Practice, Springer, 2016.
+[42] Bhatnagar, P. L., Gross, E. P., and Krook, M., “A model for collision processes in gases. I. Small amplitude processes in charged
+and neutral one-component systems,” Phys. Rev., Vol. 94, No. 3, 1954, p. 511. https://doi.org/10.1103/PhysRev.94.511.
+[43] Lin, L., “Lecture notes on quantum algorithms for scientific computation,” , 2022. https://arxiv.org/abs/2201.08309.
+
+24
+
+[44] Junk, M., and Yang, Z., “Outflow boundary conditions for the lattice Boltzmann method,” Prog. Comput. Fluid Dyn., Vol. 8,
+No. 1-4, 2008, pp. 38–48. https://doi.org/10.1504/PCFD.2008.018077.
+[45] Guo, Z., and Shu, C., Lattice Boltzmann method and its application in engineering, Vol. 3, World Scientific, 2013.
+[46] Dalzell, A. M., “A shortcut to an optimal quantum linear system solver,” , 2024. https://arxiv.org/abs/2406.12086.
+[47] Silva, G., and Semiao, V., “First-and second-order forcing expansions in a lattice Boltzmann method reproducing isothermal
+hydrodynamics in artificial compressibility form,” J. Fluid Mech., Vol. 698, 2012, pp. 282–303. https://doi.org/10.1017/jfm.
+2012.83.
+[48] Pope, S. B., Turbulent flows, Cambridge University Press, 2000.
+[49] Novikau, I., and Joseph, I., “Globalizing the Carleman linear embedding method for nonlinear dynamics,” , 2025. https:
+//arxiv.org/abs/2510.15715.
+
+25
+
+

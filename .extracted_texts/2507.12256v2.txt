@@ -1,0 +1,2700 @@
+Surrogate Quantum Circuit Design for the Lattice
+Boltzmann Collision Operator
+Monica Lăcătuşa,∗, Matthias Möllera
+
+arXiv:2507.12256v2 [quant-ph] 13 Nov 2025
+
+a Delft Institute of Applied Mathematics, Delft University of Technology, Mekelweg 4, 2628
+
+CD Delft, The Netherlands
+
+Abstract
+This study introduces a framework for learning a low-depth surrogate quantum circuit (SQC) that approximates the nonlinear, dissipative, and hence
+non-unitary Bhatnagar-Gross-Krook (BGK) collision operator in the lattice
+Boltzmann method (LBM) for the D2 Q9 lattice. By appropriately selecting the
+quantum state encoding, circuit architecture, and measurement protocol, nonunitary dynamics emerge naturally within the physical population space. This
+approach removes the need for probabilistic algorithms relying on any ancilla
+qubits and post-selection to reproduce dissipation, or for multiple state copies to
+capture nonlinearity. The SQC is designed to preserve key physical properties
+of the BGK operator, including mass conservation, scale equivariance, and D8
+equivariance, while momentum conservation is encouraged through penalization
+in the training loss. When compiled to the IBM Heron quantum processor’s native gate set, assuming all-to-all qubit connectivity, the circuit requires only 724
+native gates and operates locally on the velocity register, making it independent
+of the lattice size. The learned SQC is validated on two benchmark cases, the
+Taylor-Green vortex decay and the lid-driven cavity, showing accurate reproduction of vortex decay and flow recirculation. While integration of the SQC into a
+quantum LBM framework presently requires measurement and re-initialization
+at each timestep, the necessary steps towards a measurement-free formulation
+are outlined.
+Keywords: Lattice Boltzmann Method, Quantum Computing, Quantum
+Circuit Learning, Quantum Machine Learning, Quantum CFD, Quantum LBM.
+
+1. Introduction
+Despite decades of study, turbulence remains a central challenge in fluid
+mechanics, both numerically and theoretically. Turbulent fluctuations span a
+large range of length and time scales, differing by several orders of magnitude.
+∗ Corresponding author.
+
+Email addresses: m.i.l.lacatus@tudelft.nl (Monica Lăcătuş), m.moller@tudelft.nl
+(Matthias Möller)
+
+The grid resolution and time-step refinement required for accurate simulations
+increase steeply with the flow Reynolds number (Re). In practice, the total
+number of degrees of freedom in a direct numerical simulation (DNS) scale
+roughly as Re3 , meaning that fully resolving the flow field has, to date, been
+feasible only at low-Re numbers and for simple, canonical geometries [1, 2]. This
+limitation arises not only from the sheer number of arithmetic operations but also
+from the prohibitive memory demands of storing high-fidelity fields throughout
+the simulation. Moreover, as the historic pace of Moore’s Law is predicted to
+slow down [3], the gap between available classical hardware performance and the
+requirements of high-Re DNS continues to widen. This has prompted growing
+interest in alternative computing paradigms such as quantum computing.
+Quantum computers exploit superposition and entanglement to perform
+certain tasks more efficiently than classical computers. For example, Shor’s
+algorithm computes integer factorization in polynomial time [4], and Grover’s
+algorithm searches unsorted databases with a quadratic speedup [5]. Both algorithms thus demonstrate proven theoretical advantages over the best-known
+classical methods. Nevertheless, present quantum devices remain in the noisy
+intermediate-scale quantum (NISQ) era, with limited qubit counts and shallow
+circuit depths that preclude their use in real engineering applications. Nevertheless, ongoing developments in hardware design and error-mitigation techniques
+are steadily improving their reliability [6]. Once quantum hardware reaches a
+mature, fault-tolerant stage, its primary value will be in solving problems that
+classical computers struggle with. This potential has fueled sustained interest in
+developing quantum algorithms for computational fluid dynamics (QCFD) aimed
+at overcoming current limitations in resolving turbulence at high-Re numbers.
+Broadly speaking, these algorithms fall into three categories: methods that
+seek to solve the Navier-Stokes equations directly [7–11], quantum lattice-gas
+cellular automata (LGCA) simulations [12–16] and quantum versions of the
+lattice Boltzmann method (LBM). In this work, we focus exclusively on the
+latter.
+Classically, LBM operates at the mesoscopic level, recovering the NavierStokes equations in the weakly compressible limit by streaming and colliding
+particle distribution functions, often referred to as populations, on a discrete
+lattice. Unlike the Navier-Stokes formulation, in which nonlinearity and nonlocality are coupled by the convection term, LBM decouples these effects. The
+linear streaming step performs non-local transport, while the collision step
+handles local, nonlinear relaxation of the populations toward their local equilibrium distribution. This separation makes LBM inherently parallelizable, and
+GPU-accelerated implementations have demonstrated speedups of one-to-two
+orders of magnitude over traditional Navier-Stokes solvers on benchmark cases
+[17]. The same parallelism suggests a natural fit for quantum computing, since
+encoding the populations into the amplitudes of superposed quantum states
+allows a quantum implementation of the LBM to update an exponentially large
+configuration space in the same number of steps required classically for a single
+configuration.
+However, the development of an end-to-end quantum LBM (QLBM) algo2
+
+rithm has thus far encountered a major bottleneck. The collision step in LBM
+is a nonlinear and dissipative relaxation process and is therefore inherently
+non-unitary. This inherent non-unitarity is fundamentally incompatible with
+the unitarity of quantum operations. Consequently, early QLBM research has
+focused exclusively on the streaming step. Todorova and Steijl [18] implemented
+this transport as a quantum walk using multiple controlled-NOT (CNOT) gates.
+Schalkers and Möller [19] later reduced the total number of CNOTs and introduced an object-encoding scheme with robust boundary conditions in their
+Quantum Transport Method (QTM). In subsequent work [20], they developed
+an efficient technique for computing observables, such as the force acting on an
+object, by using a quantum version of the momentum-exchange method from
+classical LBM simulations.
+In recent years, various algorithms have been proposed to implement the
+collision step in a QLBM simulation. Many of these algorithms truncate the equilibrium distribution at first order in the macroscopic velocity, thereby discarding
+the quadratic nonlinear terms in the velocity [21–23]. The result is a fully linear
+collision operator such that the full Navier-Stokes equations can no longer be
+recovered. This confines QLBM to low-Re number regimes. Furthermore, despite
+its linearity, the collision operator remains non-unitary due to its dissipative
+nature. The common solution to deal with the non-unitarity is to use the linear
+combination of unitaries (LCU) technique [24]. With LCU, a non-unitary matrix
+can be implemented as a weighted sum of unitaries. This, however, comes at
+the cost of an extra ancilla qubit and the need to perform mid-circuit measurement and post-selection on the ancilla qubit. Since post-selection succeeds only
+probabilistically, each QLBM time step may require re-initializing and repeating
+the circuit several times until the desired outcome is obtained. This severely
+undermines any quantum advantage of a QLBM simulation over a classical LBM
+simulation, especially for long simulation times where the success probability
+reduces with each additional time step.
+Kumar and Frankel [25] follow a slightly different approach and express
+the QLBM algorithm as a matrix-vector product. The vector represents the
+populations, and the matrix represents the linear collision and streaming operators. As this matrix is non-unitary, they perform classical singular-value
+decomposition to break it down into a sum of unitary matrices that can be
+simulated using LCU. The main advantage of their algorithm is that, compared
+to earlier implementations of LCU, the number of unitaries needed is fixed (eight
+per time step) and does not depend on the problem size. Nevertheless, when
+these unitaries are decomposed into elementary gates, it results in a large circuit
+depth of O(105 ) per time step.
+Xu et al. [26] propose an ancilla-free algorithm for the D1 Q3 and D2 Q5
+lattices that uses only two registers, d and q, and implements the linear collision
+as a series of local unitary operations. This greatly reduces resource requirements
+compared to the LCU approach. However, the algorithm remains probabilistic
+and is driven by measurements on register q. A successful outcome on q collapses
+d into the correctly normalized state for the next iteration, while a failed outcome
+simply re-runs the same constant-depth circuit on (q, d). Since each re-run does
+3
+
+not require re-encoding d, the algorithm is significantly less costly than LCUbased methods.
+Alternative algorithms use Carleman linearization to handle the nonlinear
+collision by introducing a new variable for each monomial in the equilibrium
+distribution, resulting in a linear but infinite-dimensional system. Itani and Succi
+[27] map each monomial into a bosonic Fock space and truncate the expansion at
+a chosen total occupation number, discarding all higher order terms. This creates
+a trade-off between accuracy and qubit count. They show that both collision
+and streaming can then be implemented unitarily, with qubit requirements
+scaling only logarithmically in the Re number. However, a complete circuit
+design has yet to be demonstrated. Sanavio and Succi [28] instead assemble
+the truncated collision into a global relaxation matrix and simulate it via an
+LCU-based approach. This results in a very deep circuit scaling like (N Q)4 in
+the number of two-qubit gates, where N is the number of lattice points and
+Q the number of discrete lattice velocities. They also show results for a single
+time-step collision circuit that is independent of the lattice size but that still
+requires on the order of 30,000 two-qubit gates. To reduce circuit depth, Sanavio
+et al. [29] apply block-encoding techniques for sparse operators to embed both
+the collision and streaming operations into a single unitary. While this lowers
+the circuit depth, their algorithm still relies on ancilla post-selection, with the
+overall success probability falling off as the inverse of the fourth power of the
+number of discrete velocities.
+A hybrid approach introduced by Wang et al. [30] replaces the LBM collision
+with the linear collision operator used in LGCA simulations. They demonstrate
+accurate simulations of vortex pair merging at Re = 350 and 2D decaying homogeneous isotropic turbulence at Re = 51. However, their method requires a
+corrective step at each iteration to maintain near-equilibrium, which demands
+significant qubit resources and therefore negates any quantum advantage. Therefore, developing a unitary collision operator that preserves the classical collision’s
+nonlinear, dissipative relaxation dynamics, eliminates probabilistic post-selection,
+and requires only a low-depth circuit implementation remains an open challenge.
+The motivation behind our current study is to approach the modeling of
+the collision operator from a new perspective. As discussed above, previous
+works have mainly focused on reproducing the operator’s dissipative behavior
+through probabilistic algorithms that require ancilla qubits and post-selection,
+and are therefore inherently limited by their success probability. Moreover, these
+works have not directly attempted to model the operator’s nonlinearity. In
+contrast, our aim is to explore whether both dissipation and nonlinearity can
+be captured, at least partially, within a framework that avoids probabilistic
+algorithms as well as techniques such as introducing copies of the quantum state
+to reproduce the nonlinearity, which would incur additional costs in the number
+of copies required to perform multiple time steps. In the present formulation,
+nonlinearity and dissipation are not imposed directly at the level of the quantum
+state. Instead, they emerge in the classical population space from the combined
+effects of data encoding, unitary evolution, and the measurement protocol.
+The proposed formulation provides a low-depth circuit that is independent of
+4
+
+lattice size and capable of approximating more than a linear relaxation toward
+equilibrium, using a circuit depth several orders of magnitude shallower than
+previous formulations in literature. It is important to note that this formulation
+still requires measurement and re-initialization at each time step. However, we
+outline the steps needed to extend it toward a measurement-free framework,
+where measurement is performed only at the end of the simulation. Although
+this approach does not yet offer a complete solution to the collision modeling
+problem, it introduces a new way to conceptualize how non-unitary operators can
+be realized within the inherently unitary framework of quantum computation.
+Building on this motivation, we design and classically train a surrogate
+quantum circuit (SQC) that approximates the collision operator. Specifically,
+we focus on the Bhatnagar-Gross-Krook (BGK) collision operator on the D2 Q9
+lattice, although the method extends naturally to other lattices and collision
+models. To ensure physical fidelity, we embed mass conservation, scale equivariance, and symmetry preservation, formulated here as D8 equivariance, directly
+into the circuit design and momentum conservation in the learning objective.
+This approach encourages the SQC to approximate the classical BGK collision
+operator faithfully. During the development of this work, a related approach was
+independently presented in the doctoral thesis of Itani [31], who also investigated
+learning a quantum circuit for the BGK collision operator. In their formulation,
+D8 equivariance is introduced through additional ancilla qubits or by averaging
+outputs over D8 -transformed copies of the data. Furthermore, their proposed
+circuit does not explicitly ensure mass conservation. In contrast, our framework
+incorporates these physical invariances into the circuit design and achieves D8
+equivariance without requiring ancilla qubits or data augmentation, resulting in
+a more compact and physically consistent approximation of the collision process.
+Moreover, we demonstrate that the proposed framework can partially reproduce
+the nonlinear and dissipative behavior of the BGK collision operator.
+Our approach to designing and learning the SQC builds on recent work
+on data-driven modeling of LBM collision operators. Bedrunka et al. [32]
+introduced a neural formulation for the multi-relaxation-time (MRT) collision
+model, where a neural network learns to map local velocity moments to the nonhydrodynamic relaxation times, improving stability and accuracy compared to
+the classical MRT operator. Horstmann et al. [33] adopted a similar framework
+focused on the relaxation times associated with bulk viscosity, showing that a
+locally adaptive bulk viscosity can stabilize weakly compressible flows and reduce
+Galilean invariance errors. Corbetta et al. [34] then established a general learning
+framework for LBM collision operators, focusing on the BGK operator on the
+D2 Q9 lattice. Their work demonstrated that embedding mass and momentum
+conservation, scale equivariance, and D8 equivariance directly in the network
+architecture and training procedure is essential for obtaining physically consistent
+approximations of the true collision dynamics. Their D8 equivariance enforcement
+through group averaging proved effective in two dimensions but scales poorly in
+higher dimensions. Ortali et al. [35] addressed this shortcoming by introducing
+lattice equivariant neural networks with built-in symmetry constraints, enabling
+efficient and scalable equivariant learning in three dimensions.
+5
+
+For the construction and learning of the SQC, the framework of Corbetta et al.
+[34] serves as the foundation, with mass conservation and scale equivariance enforced directly at the circuit level, and momentum conservation promoted through
+the training objective. Following Ortali et al. [35], symmetry preservation is
+embedded in the architecture by designing each layer to be fully equivariant,
+thereby achieving D8 equivariance without relying on group-averaging strategies. Training is performed within a modified version of the quantum circuit
+learning (QCL) framework introduced by Mitarai et al. [36], which enables the
+approximation of complex functions with minimal circuit depth.
+The remainder of this paper is structured as follows. Section 2 introduces the
+LBM framework, outlines the main properties of the BGK collision operator, and
+reviews the QCL approach. Section 3 describes the design of the SQC, followed in
+Section 4 by the training setup and results. Section 5 discusses how nonlinearity
+and dissipation emerge within our framework, while Section 6 evaluates the
+performance of the SQC on the Taylor-Green vortex decay and lid-driven cavity
+benchmark cases. Finally, Section 7 summarizes the main findings and discusses
+possible directions for future work.
+2. Background and Theory
+In this section we cover the theoretical background that our study is based
+on. We start with a short overview of the LBM and focus primarily on its
+collision process. Readers seeking a more comprehensive overview of LBM may
+refer to [37]. We then introduce the fundamentals of QCL and explain how we
+will use QCL to learn an SQC for the BGK collision operator. We assume that
+readers already have a working knowledge of quantum computing principles and
+standard operations. For a more detailed introduction to these topics please
+refer to [38].
+2.1. Lattice Boltzmann Method
+LBM is a mesoscopic fluid-simulation approach in which discrete particle
+populations evolve on a Cartesian lattice in space and time. Each population
+fi (x, t) represents the probability density of particles moving with a discrete
+velocity ei at position x and time t. In two dimensions, the most common
+lattice is based on the D2 Q9 stencil. This stencil consists of nine populations
+with nine corresponding discrete velocities: a resting state e0 = (0, 0), four axisaligned velocities e1,3 = (±1, 0) and e2,4 = (0, ±1), and four diagonal velocities
+e5,6,7,8 = (±1, ±1). At each time step ∆t, the method proceeds in two stages:
+1. Collision: Populations at each lattice node relax toward their local equilibrium distribution, according to a collision operator Ω:
+fi∗ (x, t) = fi (x, t) + Ωi (x, t) ,
+2.
+
+i = 0, . . . , 8.
+
+(1)
+
+Streaming: Each post-collision population fi∗ (x, t) propagates from its
+current lattice node x to the neighboring node at x + ei ∆t :
+
+fi x + ei ∆t, t + ∆t = fi∗ (x, t), i = 0, . . . , 8.
+6
+
+(2)
+
+The simplest collision operator is the BGK operator:
+1
+Ωi,BGK (x, t) = − (fi (x, t) − fieq (x, t)) , i = 0, . . . , 8,
+(3)
+τ
+where τ is the relaxation time that governs how quickly the populations approach
+the local equilibrium distribution fieq (x, t). The kinematic viscosity ν of the
+fluid is directly related to τ by
+
+
+1
+2
+ν = cs τ −
+,
+(4)
+2
+with cs denoting the lattice speed of sound (for D2 Q9 , cs = √13 ). The equilibrium
+distribution follows from a second-order Hermite expansion of the MaxwellBoltzmann distribution:
+
+
+ei · u (ei · u)2 − c2s (u · u)
+eq
+fi (x, t) = wi ρ 1 + 2 +
+, i = 0, . . . , 8.
+(5)
+cs
+2 c4s
+Here, wi are the lattice weights, which for the D2 Q9 lattice are given as follows:
+4
+
+, i = 0,
+
+
+9
+
+
+
+1
+wi =
+(6)
+, i = 1, . . . , 4,
+
+9
+
+
+
+
+ 1 , i = 5, . . . , 8.
+36
+The macroscopic density ρ and momentum ρu are obtained from the zeroth and
+first moments of the populations:
+ρ=
+
+8
+X
+
+fi (x, t),
+
+ρu =
+
+i=0
+
+8
+X
+
+fi (x, t) ei .
+
+(7)
+
+i=0
+
+The BGK operator depends on the equilibrium distribution fieq (x, t), which in
+turn depends on the flow velocity u both linearly and quadratically, as shown in
+Eq. 5. This quadratic dependence makes the BGK operator inherently nonlinear.
+The operator also introduces dissipation through the relaxation timescale τ ,
+which is related to the kinematic viscosity ν by Eq. 4. The combined effects
+of nonlinearity and dissipation render the BGK operator non-unitary. The
+relaxation timescale τ further determines how strongly the system approaches
+equilibrium. For 0 < τ < 1, the pre-collision state contracts toward equilibrium,
+while for τ > 1 it overshoots it. When τ = 1 the operator becomes a full
+projection onto the equilibrium state.
+In this study, we focus on the case τ = 1, such that the post-collision
+populations satisfy fi∗ (x, t) = fieq (x, t). This choice simplifies the design of
+the SQC, as the post-collision state is fully determined by the equilibrium
+distribution. In contrast, for τ ̸= 1 the algorithm would need to represent
+varying degrees of contraction and over-relaxation while maintaining information
+7
+
+about the pre-collision state and coherently combining it with the equilibrium
+state. This is considerably more challenging than directly mapping the system
+onto equilibrium. The implications of fixing τ = 1 for QLBM simulations are
+discussed in Section 3.4.1. Finally, to ensure that the learned SQC accurately
+approximates the BGK operator, we require it to preserve the same symmetries
+and conservation properties as the original operator, which are discussed in the
+following section.
+2.2. Properties of the BGK Operator
+2.2.1. D8 Equivariance
+The ability of LBM to recover the weakly compressible Navier-Stokes equations relies on choosing a lattice whose discrete velocities and weights enforce full
+rotational invariance of both second- and fourth-order moments. This invariance
+ensures that the pressure tensor and the viscous stress tensor are isotropic. In
+two dimensions, the D2 Q9 stencil achieves this by being invariant under the
+dihedral group D8 , the full symmetry group of a square. D8 is generated by
+a 90◦ rotation r about the origin and a reflection s across one of the square’s
+symmetry axes (vertical, horizontal, or diagonal). Every symmetry operation in
+D8 can be written as rk or rk s for k = 0, 1, 2, 3, giving the eight group elements:
+D8 = [I, r, r2 , r3 , s, rs, r2 s, r3 s].
+
+(8)
+
+Figure 1 demonstrates how each of these symmetry operations rotates or
+reflects the D2 Q9 discrete velocity vectors and their corresponding populations.
+Both the streaming and collision steps in LBM commute with these operations.
+This property is known as D8 equivariance and can be written as follows for the
+BGK operator:
+ΩBGK σ · f
+
+
+
+= σ · ΩBGK (f ),
+
+∀ σ ∈ D8
+
+(9)
+
+where σ ·f denotes the action of the symmetry operation σ on the local population
+vector f = [f0 , f1 , ..., f8 ]T .
+2.2.2. Scale Equivariance
+The BGK operator is homogeneous of degree one. This means that if all
+pre-collision populations are scaled by the same positive factor λ > 0, the
+post-collision populations scale by the same factor:
+ΩBGK (λf ) = λΩBGK (f ),
+
+∀ λ>0
+
+(10)
+
+This property ensures that a uniform change of scale, such as a change of units
+(lattice units, SI units, etc.), in the magnitudes of the pre-collision populations
+does not affect the relative magnitudes of the post-collision populations.
+
+8
+
+Figure 1: Action of the dihedral group D8 on the D2 Q9 populations, highlighting the transformations of the axial f1 (blue) and diagonal f5 (red) under each group element. Here r is a
+90◦ anti-clockwise rotation about the origin, and s is a reflection across the horizontal axis.
+
+2.2.3. Mass and Momentum Invariance
+The BGK operator exactly conserves mass and momentum during the collision
+process:
+8
+X
+
+(fieq (x, t) − fi (x, t)) = 0,
+
+i=0
+
+8
+X
+(fieq (x, t) − fi (x, t))ei = 0.
+
+(11)
+
+i=0
+
+2.3. Quantum Circuit Learning
+QCL is a hybrid classical-quantum framework first proposed by Mitarai
+et al. [36]. In QCL, each input xi is encoded into a low-depth parametrized
+quantum circuit U (xi , θ) with parameters θ. After applying the circuit, the
+expectation value
+ of a chosen observable O is measured. A classical function
+F {⟨O(xi , θ)⟩} then produces the output yi = y(xi , θ). A classical optimizer
+adjusts the parameters θ to minimize a loss function L(h(xi ), y(xi , θ)), where
+h(xi ) is the target function.
+A typical parameterized circuit alternates layers of single-qubit rotation gates
+with layers of CNOT gates. A rotation on a single qubit about axis x, y or z is
+defined by:
+
+
+θ
+Un (θ) = exp −i σn ,
+(12)
+2
+where σn is the corresponding Pauli operator (σx , σy , or σz ). Applying such
+rotations in parallel to all N qubits introduces N continuous free parameters per
+layer. Each qubit is independently mapped to a chosen point on its Bloch sphere,
+determined by its individual rotation angle and axis. After this layer, the global
+state becomes a tensor product of N single-qubit states. A subsequent layer of
+CNOT gates then entangles the qubits by flipping each target qubit whenever
+its control qubit is in state |1⟩. This operation introduces correlations that
+
+9
+
+cannot be expressed as a simple product state. By repeating these rotation and
+entangling layers one obtains a universal gate set, meaning that any multi-qubit
+unitary operation can be approximated to arbitrary precision using only these
+two types of layers.
+In practice, however, the precision of such approximations is constrained by
+the trainability of the circuits. Increasing circuit depth or the number of qubits
+often leads to regions known as barren plateaus, characterized by gradients that
+vanish exponentially with system size or depth, as demonstrated by McClean et
+al. [39]. To avoid these plateaus, one must use few qubits and use a shallow but
+expressive circuit that incorporates the symmetries of the problem [40]. Under
+these conditions, QCL offers a promising direction for learning an SQC for the
+BGK operator. We refer to this approximation as a surrogate quantum circuit
+to emphasize that it does not reproduce the exact BGK collision but instead
+serves as a low-depth, quantum circuit approximation of it.
+3. Surrogate Quantum Circuit Design
+In this section, we present the construction and training framework of the
+SQC. The circuit is designed and trained to map the pre-collision populations
+fi (x, t) to the post-collision populations fˆieq (x, t), such that fˆieq (x, t) closely
+approximate the true post-collision populations fieq (x, t) computed using the
+BGK operator. The trainable circuit architecture is constructed to satisfy the
+properties of the BGK operator outlined in Section 2.2. This section details
+the quantum state encoding procedure, the design of the SQC architecture, the
+measurement protocol and the training routine.
+3.1. Quantum State Encoding
+To encode the pre-collision populations into the quantum state, we use a
+modified version of the rooted-density encoding introduced by Schalkers and
+Möller in [20]. This encoding maps the square root of each population to a
+corresponding quantum amplitude and uses a position register and a velocity
+register to represent the lattice node positions and the discrete velocity directions,
+respectively. The quantum state is thus prepared as:
+X
+1 Xp
+|ψ⟩ = √
+fi (x, t) |ei ⟩ ⊗ |x⟩ , M =
+fi (x, t),
+(13)
+M x, i
+x, i
+√
+where the normalization factor M equals the square root of the total mass
+of the system, obtained by summing all population fi (x, t) over every lattice
+site x and discrete velocity direction ei . Since unitary operations preserve
+vector norms, the quantum evolution conserves this total mass during both the
+streaming and collision steps, ensuring mass conservation throughout the QLBM
+simulation. The streaming step is a nonlocal operation that can be implemented
+as a unitary transformation permuting the position basis states in a manner
+consistent with the velocity discretization, without altering the quantum state
+amplitudes [18, 19].
+10
+
+In contrast, the collision step is purely local, meaning that the BGK operator
+acts independently and identically at each lattice site. To mirror this structure,
+the SQC architecture is designed to act only on the velocity register, enforcing the
+same locality principle. The global collision unitary can therefore be expressed as
+a direct sum of identical SQC unitaries, each operating on the velocity subspace
+of a single lattice site. The SQC is trained on the locally normalized quantum
+state of a single site (see Eq. 14), ensuring that it preserves local mass by
+maintaining unit norm within that subspace. When these SQC blocks are
+applied within the globally normalized state (Eq. 13), each acts independently
+and identically on its corresponding lattice site. The relative amplitudes within
+each local velocity subspace remain unaffected by the global normalization, so the
+post-collision distributions coincide with those produced by the locally trained
+SQC. Consequently, training on locally normalized states guarantees consistent
+predictions under global normalization and ensures both local and global mass
+conservation through unitarity.
+1 Xp
+|ψ⟩ = √
+fi (x, t) |ei ⟩ ,
+ρ i
+
+ρ=
+
+X
+
+fi (x, t).
+
+(14)
+
+i
+
+To encode the nine discrete velocity vectors ei , we use four qubits spanning
+a 16-dimensional Hilbert space. Table 1 shows the mapping from the discrete
+velocities ei to the corresponding four-qubit basis states stored in the velocity
+register. Nine of these basis states represent the discrete velocities ei of the
+D2 Q9 lattice, while the remaining seven are left unoccupied (initialized with
+zero amplitude). The SQC acts on the entire Hilbert space and can couple the
+occupied and unoccupied basis states, leading to a small transfer of amplitudes
+into the latter. To reduce this transfer, the circuit is trained using a loss function
+that penalizes it, as described in Section 3.4. However, this procedure does not
+guarantee zero amplitude transfer, and discarding the amplitudes in the unused
+states would lead to mass loss at each simulation time step. To address this
+issue, after measurement the probability associated with the additional seven
+basis states is treated as contributing directly to the f0 (x, t) population when
+computing macroscopic quantities such as density and momentum. Concretely,
+we assign them the same discrete velocity as the rest population, ei = (0, 0),
+so their contribution is effectively absorbed into f0 in the calculations. During
+a QLBM simulation, any amplitude that transfers into these states is kept at
+each time step and not re-initialized to zero, ensuring strict mass conservation.
+Although other ways of treating these additional states are possible, this approach
+performs well in our study.
+
+11
+
+Figure 2: Mapping of lattice symmetries to permutations of qubits in the velocity register:
+(center) the original 4 qubit basis state |Q3 Q2 Q1 Q0 ⟩, (left) the reflection induced by Us across
+the horizontal axis permutes qubits 3 ↔ 1 (leaving 2 and 0 fixed) giving |Q1 Q2 Q3 Q0 ⟩, (right)
+the 90◦ anti-clockwise rotation induced by Ur cyclically permutes the qubits 0 → 1 → 2 →
+3 → 0, giving |Q2 Q1 Q0 Q3 ⟩.
+
+Table 1: Mapping of the nine discrete lattice velocities ei to four-qubit basis states |ei ⟩.
+
+Population
+fi
+
+Discrete Velocity
+ei
+
+Velocity Basis State
+|ei ⟩
+
+f0
+f1
+f2
+f3
+f4
+f5
+f6
+f7
+f8
+
+(0, 0)
+(1, 0)
+(0, 1)
+(-1, 0)
+(0, -1)
+(1, 1)
+(-1, 1)
+(-1, -1)
+(1, -1)
+
+|0000⟩
+|0001⟩
+|0010⟩
+|0100⟩
+|1000⟩
+|0011⟩
+|0110⟩
+|1100⟩
+|1001⟩
+
+As already discussed in Section 2.2.1, the D2 Q9 lattice is invariant under the
+dihedral group D8 . The eight rotations and reflections that constitute D8 (see
+Eq. 8) act by permuting the discrete lattice velocities. Because each velocity is
+now represented in Hilbert space by a four qubit basis state, every symmetry
+element σ ∈ D8 is realized on the basis states by a unitary Uσ that permutes
+those qubits exactly as σ permutes the velocities. For example, a 90◦ physical
+rotation is implemented as the cyclic permutation of the four qubits by the
+unitary Ur . A physical reflection across a chosen axis is implemented as a swap
+of one specific pair of qubits that leaves the other two unchanged by the unitary
+Us . Figure 2 illustrates this arrangement, where the symmetries of the problem
+are visualized by placing the four qubits at the vertices of a square. The square
+symmetry of the D2 Q9 lattice is thus replicated in Hilbert space through the
+square arrangement of the qubits.
+To give a concrete example, consider the discrete velocity (1, 1), which we
+embed as the basis state |0011⟩. Under a 90◦ anti-clockwise rotation, the physical
+velocity becomes (−1, 1), and embedding it gives |0110⟩. Equivalently, if we start
+from |0011⟩ and then cyclically permute the four qubits through the unitary Ur
+12
+
+that applies the 90◦ anti-clockwise rotation in the Hilbert space, we arrive at
+|0110⟩ directly. In other words, embedding first and then applying the unitary
+representation Ur of the rotation, gives the same result as performing a physical
+rotation first and then embedding. A similar analysis can be made for a reflection
+operation. This perfect one-to-one correspondence proves that the encoding is
+equivariant with respect to the D8 group.
+3.2. SQC Architecture Construction
+To design an SQC architecture expressive enough to approximate the BGK
+collision operator, we embed the operator’s equivariances and invariances directly
+into the circuit design. As discussed in the previous section, mass conservation
+follows naturally from our encoding and from the unitarity of the quantum
+operations. Furthermore, since unitary transformations are linear and homogeneous of degree one, the scale equivariance of the collision operator is inherently
+preserved. Momentum conservation is more challenging to impose and is instead
+encouraged through a penalization term in the circuit’s loss function, as described
+in Section 3.4.2. Finally, full D8 equivariance, equivalent to invariance under
+conjugation by the group representation, is enforced by requiring that each layer
+of the SQC satisfy the following commutation condition:
+(l)
+
+(l)
+
+Uσ USQC (θ)Uσ† = USQC (θ),
+
+∀ σ ∈ D8 .
+
+(15)
+
+(l)
+
+Here, USQC denotes a generic parametrized layer of the circuit, and Uσ is the
+unitary that implements the action of a D8 symmetry operation in Hilbert
+space. This relation follows standard formulations of group-equivariant quantum
+circuits and quantum neural networks (see, for example, [40, 41]) and forms
+the basis for enforcing D8 equivariance in our SQC architecture. To satisfy
+the condition in Eq. 15, the circuit is constructed using single-qubit rotation
+layers and two-qubit entangling layers. In principle, more complex multi-qubit
+entangling operations could also satisfy this requirement, but we exclude them
+here, as the chosen combination of single- and two-qubit layers is sufficient to
+enforce the symmetry constraints while maintaining good learning performance.
+Exploring such multi-qubit entangling schemes remains an interesting direction
+for future work.
+3.2.1. Single-Qubit Rotation Layers
+The single-qubit rotation layers implement uniform single-qubit rotations that
+act identically on all four qubits, preserving the D8 symmetry by construction.
+Each layer applies a rotation by angle θ about a fixed axis n ∈ {x, z}:
+
+
+⊗4
+θ
+Un (θ) = exp −i σn
+2
+
+13
+
+(16)
+
+where σn = σx or σz denotes the Pauli operator acting on a single qubit.1
+Because the same unitary acts on every qubit, the unitaries Ux (θ) and Uz (θ)
+commute with all D8 symmetry operations. Consequently, each rotation layer
+satisfies the equivariance condition in Eq. 15:
+Uσ Un (θ)Uσ† = Un (θ),
+
+∀ σ ∈ D8 .
+
+(17)
+
+For notational simplicity, we denote Ux (θ) and Uz (θ) simply by X and Z for the
+remainder of this paper.
+3.2.2. Two-Qubit Entangling Layers
+To ensure D8 equivariance in the two-qubit entangling layers, we must identify
+which entangling gates and qubit couplings among the four qubits of the SQC
+preserve the equivariance condition in Eq. 15. This requires understanding
+how both the gates and the coupling structure transform under the symmetry
+operations of the D8 group. An entangling layer is D8 -equivariant if and only if
+it commutes with all unitaries representing the group’s symmetry operations:
+Y
+Uσ WE Uσ† = WE =
+Wij , ∀ σ ∈ D8 .
+(18)
+{i,j}∈E
+
+Here WE denotes the layer obtained by applying a two-qubit gate Wij to each
+coupled qubit pair {i, j} in the set E. Each unitary Uσ permutes or swaps the
+qubit indices in the velocity register according to the corresponding symmetry
+operation σ, as discussed in Section 3.1. Conjugating WE by Uσ thus relabels
+the qubit indices in every two-qubit gate:
+Y
+Wσ(i)σ(j) , ∀ σ ∈ D8 .
+(19)
+Uσ WE Uσ† =
+{i,j}∈E
+
+Therefore, the gate originally acting on the qubit pair {i, j} is mapped to one
+acting on {σ(i), σ(j)}. For the equivariance condition in Eq. 18 to hold, the
+conjugated layer must reproduce the original layer exactly:
+Y
+Y
+Wσ(i)σ(j) =
+Wij , ∀ σ ∈ D8 .
+(20)
+{i,j}∈E
+
+{i,j}∈E
+
+This imposes two conditions on the design of the layers:
+1. Connectivity invariance: The coupling set E must be invariant under
+all symmetry operations of the D8 group:
+{i, j} ∈ E ⇒ {σ(i), σ(j)} ∈ E,
+
+∀ σ ∈ D8 .
+
+(21)
+
+This condition means that if a given pair of qubits {i, j} is coupled through
+a two-qubit gate, then every other pair of qubits obtained from it by
+1 Restricting the rotations to the x and z axes is sufficient for expressivity, as any y-axis
+rotation can be decomposed into a sequence of x and z rotations.
+
+14
+
+applying any D8 symmetry operation must also be coupled. In other words,
+all qubit pairs related by a D8 operation must appear together in E.
+2. Gate uniformity: All two-qubit gates acting on such symmetry related
+pairs, as defined in the condition above, must be identical. This means
+Wij = W for all {i, j} ∈ E. Otherwise a D8 operation could exchange
+nonidentical gates and violate Eq. 18.
+To satisfy the first condition, consider once again the four-qubit system
+arranged on the vertices of a square with vertex set V = {0, 1, 2, 3}. The D8
+group acts on the set of unordered qubit pairs:
+E = {{0, 1}, {1, 2}, {2, 3}, {3, 0}, {0, 2}, {1, 3}}
+
+(22)
+
+by rotating or reflecting the square and thereby permuting or swapping the vertex
+labels. This geometric action corresponds to the same D8 symmetry operations
+discussed earlier in the context of the rooted-density encoding, illustrated in
+Figure 2. The D8 action partitions the set of pairs into orbits, where each orbit
+collects all pairs that can be transformed into one another by some D8 operation.
+Formally, the orbit of a pair {i, j} under the D8 symmetry operations is defined
+as:
+O({i, j}) = {{σ(i), σ(j)} | ∀ σ ∈ D8 }.
+
+(23)
+
+Two pairs belong to the same orbit if a D8 operation maps one pair onto the
+other. Under this action, the six possible qubit couplings in Eq. 22 fall into
+exactly two distinct orbits:
+1. The axial orbit consisting of the four nearest-neighbor pairs:
+Oaxial = {{0, 1}, {1, 2}, {2, 3}, {3, 0}}.
+
+(24)
+
+2. The diagonal orbit consisting of the two opposite-corner pairs.
+Odiag = {{0, 2}, {1, 3}}.
+
+(25)
+
+To satisfy the connectivity invariance condition in Eq. 21, the coupling set E
+must remain unchanged under all D8 symmetry operations. This means that if
+one pair {i, j} is included in E, then all pairs related to it by any D8 operation
+must also be included. Because each orbit already collects all such symmetry
+related pairs, any D8 invariant coupling set must be composed of entire orbits
+(never partial ones). Consequently, there are only two distinct D8 invariant
+coupling sets: one formed from the axial orbit Oaxial , and one from the diagonal
+orbit Odiag . These are visualized in Figure 3. In our circuit construction, each
+layer corresponds to one of these invariant coupling sets, an axial layer or a
+diagonal layer, ensuring that the connectivity pattern respects the square’s D8
+symmetry. These layers therefore take the following form:
+Y
+Y
+WOaxial =
+Wij and WOdiag =
+Wij .
+(26)
+{i,j}∈Oaxial
+
+{i,j}∈Odiag
+
+15
+
+Figure 3: D8 -invariant coupling sets on the square qubit configuration: (left) axial coupling
+pattern Oaxial = {{0, 1}, {1, 2}, {2, 3}, {3, 0}}, corresponding to the nearest-neighbor pairs
+along the edge of the square; (right) diagonal coupling pattern Odiag = {{0, 2}, {1, 3}},
+connecting opposite corners.
+
+Next, we analyze which two-qubit gates satisfy the gate-uniformity condition
+and therefore preserve D8 equivariance when applied across one of the invariant
+coupling sets. The commonly used CNOT gate provides a useful counterexample.
+For a qubit pair {i, j} the gate takes the following form:
+(i→j)
+
+Wij = UCNOT = |0⟩ ⟨0|i ⊗ Ij + |1⟩ ⟨1|i ⊗ NOTj
+
+(27)
+
+which acts asymmetrically on its two tensor factors, using qubit i as the control
+and j as the target. Applying the unitary Us that implements the reflection
+symmetry operation of the D8 group in Hilbert space, by swapping the indices
+of the two qubits in the velocity basis states, results in:
+(i→j)
+
+(j→i)
+
+(i→j)
+
+Us UCNOT Us† = UCNOT ̸= UCNOT .
+
+(28)
+
+Therefore, even if identical CNOT gates are placed on every edge of the square
+to form an axial CNOT layer corresponding to the invariant coupling set Oaxial
+Y
+(i→j)
+WOaxial =
+UCNOT ,
+(29)
+{i,j}∈Oaxial
+
+this layer fails to commute with the D8 symmetry operations:
+Y
+(σ(i)→σ(j))
+Uσ WOaxial Uσ† =
+UCNOT
+̸= WOaxial , ∀ σ ∈ D8 .
+
+(30)
+
+{i,j}∈Oaxial
+
+The asymmetry between control and target qubits breaks the exchange symmetry
+of each pair, violating the gate-uniformity condition and hence Eq. 18. An axial
+layer of CNOT gates therefore does not form a D8 equivariant entangling layer.
+By contrast, the two-qubit Ising gate, denoted as:
+
+
+θ
+n
+Wij = Uij (θ) = exp −i σn,i σn,j
+(31)
+2
+16
+
+where σn,i denotes a Pauli operator (σx or σz ) acting on qubit i, is symmetric
+(n)
+(n)
+under exchange of its two qubits, since Uij (θ) = Uji (θ). Because the Ising
+gate depends only on the product of identical single-qubit Pauli operators, it
+remains invariant under all D8 symmetry operations. A full Ising layer composed
+of such two-qubit gates is written as:
+Y
+(n)
+WIsing =
+Uij (θ).
+(32)
+{i,j}∈E
+
+Under the symmetry operation implemented by Uσ , the layer transforms as:
+Uσ WIsing Uσ† =
+
+Y
+
+(n)
+
+Y
+
+Uσ(i)σ(j) (θ) =
+
+{i,j}∈E
+
+(n)
+
+Uij (θ) = WIsing ,
+
+∀ σ ∈ D8 . (33)
+
+{i,j}∈E
+
+which shows that the layer is fully D8 equivariant and satisfies the commutation
+relation in Eq. 18. For convenience, we introduce shorthand notation for Ising
+layers defined on the two invariant coupling sets:
+Y
+Y
+(x)
+(z)
+XX A =
+Uij (θ), ZZ A =
+Uij (θ)
+(34)
+{i,j}∈Oaxial
+
+{i,j}∈Oaxial
+
+for the axial layers, and
+XX D =
+
+Y
+
+(x)
+
+Uij (θ),
+
+{i,j}∈Odiag
+
+ZZ D =
+
+Y
+
+(z)
+
+Uij (θ).
+
+(35)
+
+{i,j}∈Odiag
+
+for the diagonal layers. The complete SQC architecture is obtained by alternating
+the single-qubit rotation gate layers and two-qubit Ising gate layers described
+above. The exact ordering and number of layers that make up the final SQC
+architecture are analyzed in Section 4.
+3.3. Quantum State Measurement
+The SQC is trained to evolve the pre-collision quantum state into its corresponding post-collision state. For the pre-collision
+quantum state described by
+p
+Eq. 14, the amplitudes take the form ai = fi (x, t)/ρ. Let the SQC circuit be
+represented by the unitary operator U SQC , defined by its sequence of single-qubit
+and entangling layers. The post-collision amplitudes are then given by
+s
+15
+15
+X SQC
+X SQC fi (x, t)
+aj =
+Uji ai =
+Uji
+j = 0, . . . , 15.
+(36)
+ρ
+i=0
+i=0
+SQC
+Here, Uji
+denotes the (j, i)-th matrix element of the unitary U SQC , representing
+the contribution of the i-th pre-collision amplitude to the j-th post-collision
+amplitude. The indices i and j span the full basis of the velocity register, including
+the nine discrete velocities and the seven additional basis states introduced by
+the quantum encoding.
+
+17
+
+When we train the SQC, we interpret it as evolving the pre-collision quantum
+state into a post-collision quantum state, whose amplitudes encode the predicted
+post-collision populations fˆjeq (x, t). These amplitudes can therefore be written
+equivalently as:
+s
+fˆjeq (x, t) iφj
+aj =
+e , j = 0, . . . , 15.
+(37)
+ρ
+Each amplitudes aj is expressed in polar form, since √any complex number
+c = a + ib ∈ C can be written as c = |c|eiφ , where |c| = a2 + b2 is the magnitude and φ = arctan(b/a) the phase. In this representation, the magnitude |aj |
+encodes the square-root-normalized predicted post-collision population fˆjeq (x, t),
+while the phase φj arises from the single-qubit rotation and Ising gates within
+the SQC layers and reflects interference effects introduced by the quantum circuit.
+The significance of these phases for the expressivity of the SQC and for the
+overall QLBM algorithm will be further discussed in Section 5. Furthermore,
+eq
+we introduce seven fictitious populations fˆ9−15
+(x, t) that correspond to the
+additional seven basis states. As explained in Section 3.1, these fictitious populations essentially contribute to the fˆ0eq (x, t) rest population when computing
+macroscopic quantities such as mass and momentum.
+To recover fˆjeq (x, t) from the quantum state, we perform a projective measurement in the computational basis:
+pj = |aj |2 =
+
+fˆjeq (x, t)
+ρ
+
+j = 0, . . . , 15,
+
+(38)
+
+where pj is the probability of measuring the basis state |ej ⟩. The post-collision
+populations are then obtained by de-normalizing these probabilities:
+fˆjeq (x, t) = ρpj
+
+j = 0, . . . , 15.
+
+(39)
+
+This establishes a direct correspondence between the populations recovered in
+physical space through measurement and the normalized populations encoded in
+the quantum amplitudes.
+3.4. SQC Training Procedure
+3.4.1. Training Dataset
+To ensure that the SQC learns a general representation of the BGK operator
+rather than biasing toward any single flow case, we generate a fully synthetic
+dataset following the procedure introduced in the study of Corbetta et. al [34].2
+First, we uniformly sample density-velocity pairs (ρ, u) from ρ ∈ [0.95, 1.05] and
+|u| ∈ [0, 0.01]. To ensure an isotropic sampling of velocity directions, for each
+sampled velocity magnitude |u|, we draw a random angle θ ∈ [0, 2π) and define
+the velocity components as:
+2 All variables in this study are given in lattice units (l.u.).
+
+18
+
+ux = |u| cos θ,
+
+uy = |u| sin θ.
+
+(40)
+
+For each training sample, we first compute the equilibrium populations fieq .
+To prevent the pre-collision populations from equaling their equilibrium values
+and thus making the BGK collision step trivial, we introduce a non-equilibrium
+contribution fineq . The pre-collision populations are then obtained from:
+fi = fieq + fineq ,
+
+i = 0, . . . , 8,
+
+(41)
+
+where each fineq is obtained from zero-mean Gaussian samples with standard
+deviation σneq ∈ [0, 5 × 10−4 ], followed by a moment projection step that enforces
+zero density and momentum contribution. We then apply the BGK collision
+operator (Eq. 3) with a relaxation timescale of τ = 1, to obtain the ground-truth
+post-collision populations fieq . Repeating this procedure N = 106 times yields
+−1
+a training dataset {(fi , fieq )8i=0 }N
+n=0 . Seven additional fictitious populations
+are appended to each sample to match the 16-dimensional structure of the
+quantum state encoding (see Section 3.1). These extra pre-collision and postcollision values are set to zero, ensuring that the SQC learns to avoid transferring
+amplitude into the corresponding basis states during training. The final dataset
+N −1
+thus takes the form {(fi , fieq )15
+i=0 }n=0 . A complete summary of the parameter
+settings used for the data-generation, together with a visualization of the resulting
+dataset, is provided in Appendix A.
+The parameter choices used for dataset generation warrant further explanation. The density range was set to ρ ∈ [0.95, 1.05] in accordance with the weakly
+compressible assumption of LBM. In standard LBM formulations, a reference
+density ρ0 = 1 is used, and only small perturbations ρ = ρ0 +δρ with |δρ| ≪ 1 are
+allowed. Such small variations ensure that the pressure p = c2s ρ remains nearly
+linear in ρ and that compressibility effects are negligible. Limiting density fluctuations to within ±5% corresponds to low-Mach number flows (Ma = U/cs ≲ 0.1),
+for which LBM reduces, to leading order, to the incompressible Navier-Stokes
+equations.
+Next, we discuss the choice made for the velocity range. In LBM, the effective
+nonlinearity of the collision process is governed by the Mach number rather than
+the Reynolds number [42]. This decoupling is one of the main advantages of LBM
+and is particularly relevant for quantum implementations, where reproducing
+nonlinear dynamics remains a major challenge. In the Navier-Stokes equations,
+the nonlinear advection term scales with the Reynolds number, so high-Re flows
+become intrinsically more nonlinear and therefore more difficult to simulate. In
+contrast, in LBM the degree of nonlinearity increases with the Mach number.
+While higher lattice velocities strengthen nonlinear effects, the low-Mach number
+constraint keeps these velocities small. It is worth emphasizing that these lattice
+velocities correspond to much larger dimensional velocities once rescaled, such
+that the low-Mach number requirement does not restrict the physical flow regime
+that can be represented.
+Training the SQC over the full velocity range typically used in LBM would
+require sampling |u| ∈ [0, 0.1]. Near the upper end of this interval, however, the
+19
+
+equilibrium populations become strongly nonlinear, making the BGK relaxation
+considerably more difficult for the SQC to reproduce accurately. This is because,
+while the SQC can partially capture the nonlinearity of the relaxation, it cannot
+fully reproduce it as explained further in Section 5. To avoid this strongly
+nonlinear regime, we restrict the training data to the smaller velocity range
+|u| ∈ [0, 0.01]. Within this interval, the flow remains only weakly nonlinear and
+the circuit can learn the relaxation dynamics more effectively.
+This also motivates the choice made for the standard deviation range σneq ∈
+[0, 5 × 10−4 ] used when generating the non-equilibrium component fineq . The
+range is chosen to keep the system close to equilibrium and avoid strongly
+out-of-equilibrium states, which are difficult for the SQC to learn because the
+associated relaxation becomes strongly nonlinear and requires much higher
+effective dissipation. Empirically, these parameter settings provided the most
+stable and accurate training conditions.
+Since we fix τ = 1, which in turn fixes the lattice viscosity, and the velocity
+range is constrained by the low-Mach number condition, the only remaining
+way to increase the Reynolds number is by refining the spatial discretization.
+This refinement increases the total number of lattice sites. For LBM simulations
+executed on classical hardware, the total computational cost scales linearly with
+both the number of lattice sites N and the number of discrete velocity directions
+Q, resulting in a computational complexity of O(N Q). In contrast, the rooteddensity encoding described in Eq. 13 provides an exponential compression of the
+state representation. The position and velocity registers jointly encode the spatial
+and velocity information of all lattice populations within a single quantum state.
+Since the position and velocity registers require only ⌈log2 N ⌉ and ⌈log2 Q⌉
+qubits respectively, the total number of qubits scales as O(log2 N + log2 Q).
+This encoding thus achieves exponential compression in memory requirements,
+embedding the entire lattice configuration within a single quantum superposition.
+The resulting superposition allows unitaries implementing the streaming and
+collision steps to act coherently across all sites and directions, offering a new
+intrinsic type of parallelism not present in classical implementations. Therefore,
+while fixing τ = 1 imposes a major constraint on classical LBM simulations, a
+quantum implementation can exploit the exponential compression of the lattice
+state to overcome this limitation.
+3.4.2. Training Conditions
+The SQC is trained on classical hardware using standard mini batch gradient
+descent. We emphasize that every aspect of training, including all gradient
+evaluations, is performed entirely on classical processors and thus avoids the
+extra cost of running the optimization loop on a quantum computer. Training is
+performed in batches of size B = 5. This batch size allows training to proceed in
+mini-batches while keeping the compilation cost of training the circuit within
+practical limits.
+The loss function used for training is a mean-squared error (MSE) loss
+between the SQC’s predicted post-collision populations fˆieq and the reference
+populations fieq from the BGK operator, including the seven zero-amplitude
+20
+
+populations. By incorporating these additional populations in the loss, the SQC
+is explicitly penalized for transferring amplitude into basis states that should
+remain unoccupied. Formally, the MSE is defined as
+MSE =
+
+B−1
+X eq,(b)
+X Q+6
+1
+eq,(b) 2
+fi
+− fˆi
+(Q + 7)B
+i=0
+
+(42)
+
+b=0
+
+where Q = 9 is the number of discrete velocities in the D2 Q9 lattice.
+For each training run, we compute an accuracy metric that measures the
+fraction of post-collision population predictions falling within a prescribed tolerance. Let N be the number of samples in the test (or validation) set, and for
+eq,(n)
+eq,(n)
+each sample n and population index i let fi
+and fˆi
+denote the true and
+predicted values, respectively. We declare a prediction accurate whenever
+eq,(n)
+
+fi
+
+eq,(n)
+
+− fˆi
+
+< ε,
+
+where the tolerance is chosen as ε = 10−5 . Using the indicator function
+
+eq,(n)
+eq,(n)
+1{|fi
+− fˆi
+| < ε} =
+
+(
+1,
+0,
+
+if the prediction error is below ε,
+otherwise.
+
+the average accuracy for population i is simply the fraction of samples whose
+prediction is accurate within the given tolerance:
+Accuracy(fi ) =
+
+N −1
+1 X  eq,(n) ˆeq,(n)
+1 |fi
+− fi
+|<ε ,
+N n=0
+
+i = 0, . . . , 8.
+
+Since momentum conservation cannot be enforced exactly via the quantum
+state encoding or the circuit architecture, we add a penalty term to the MSE
+loss function that quantifies deviations from the exact conservation. For each
+batch sample b we compute the true momenta
+p(b)
+x =
+
+15
+X
+
+eq,(b)
+
+fi
+
+p(b)
+y =
+
+ei,x ,
+
+15
+X
+
+eq,(b)
+
+ei,y ,
+
+(43)
+
+eq,(b)
+fˆi
+ei,y .
+
+(44)
+
+B−1
+2
+ i
+1 X h (b)
+(b)
+(b) 2
+px − p̂(b)
++
+p
+−
+p̂
+.
+x
+y
+y
+B
+
+(45)
+
+i=0
+
+fi
+
+i=0
+
+and the predicted momenta
+p̂(b)
+x =
+
+15
+X
+
+eq,(b)
+fˆi
+ei,x ,
+
+p̂(b)
+y =
+
+i=0
+
+15
+X
+i=0
+
+The momentum penalty loss is then defined as:
+Lm =
+
+b=0
+
+The final loss function combines these terms:
+21
+
+Figure 4: End-to-end training loop for the SQC. The pre-collision populations fi are first
+encoded into a quantum state. The SQC then acts on this state to generate the post-collision
+state, from which the post-collision predictions fˆieq are obtained after measurement in the
+computational basis. These predictions are evaluated using the combined loss L = MSE + αLm ,
+and the circuit parameters θi are updated via classical gradient descent.
+
+L = MSE + α Lm
+
+(46)
+
+where α is a regularization weight that increases the relative strength of the
+momentum penalty over the training iterations. A schematic of the complete
+training loop is given in Figure 4.
+4. Training Results
+In this section, we perform several experiments to determine the optimal
+circuit architecture for the SQC and its best training configuration. Section
+4.1 compares several architecture designs to determine which arrangement of
+single-qubit rotation layers and two-qubit Ising entangling layers results in the
+most accurate SQC for the BGK operator. Building on these findings, Section
+4.2 presents a circuit depth analysis that quantifies the balance between collision
+accuracy and total gate count. In Section 4.3, we investigate whether including
+a momentum penalty in the loss function guides the training towards learning
+an SQC that better conserves momentum. A complete list of the fixed training
+parameters used in the above sections is provided in Appendix Sections B to D.
+Finally, Section 4.4 specifies the SQC architecture and training parameters that
+we use to benchmark the SQC on the LBM test cases in Section 6.
+4.1. Optimal Circuit Architecture
+The number of possible SQC architectures is too large to explore exhaustively,
+therefore we focus on designs built from identical blocks that consist of two
+successive single-qubit rotation layers (X and Z), and either one or two successive
+Ising entangling layers drawn from { XX A , XX D , ZZ A , ZZ D }. Since X and
+Z do not commute, the order of the rotation layers matters. We therefore
+
+22
+
+Figure 5: Average test-set MSE loss for each Ising entangling-layer configuration, showing only
+the rotation-order variant (X → Z or Z → X) that achieved the lowest loss.
+
+evaluate each design in both orders, X → Z and Z → X. When two Ising
+entangling layers are included, only the pairs (XX A , ZZ D ) and (XX D , ZZ A )
+fail to commute. These commutation properties result in exactly 24 distinct
+circuit blocks for constructing the SQC. In total, combining the two possible
+rotation orders with the four available Ising entangling layers and accounting for
+the two non-commuting entangler pairs, each of which must be tested in both
+possible sequences, results in 24 distinct circuit blocks for constructing the SQC.
+Each architecture is configured to have the same total number of trainable
+parameters. If one circuit has more free parameters than another, any observed
+performance gain might simply result from its greater number of degrees of
+freedom rather than from its specific gate arrangement. To enforce an equal
+number of parameters, circuits with a single Ising entangling layer use seven
+repeating blocks, while those with two Ising entangling layers use five blocks
+plus an additional single-qubit rotation layer at the end. That extra rotation
+layer restores the missing degree of freedom so that every design, regardless of
+its Ising entangling layer count, maintains an identical learning capacity.
+For each architecture, we perform three independent training runs and report
+the average test-set MSE loss (excluding momentum penalization), along with
+the average test-set accuracy for the following three predicted post-collision
+population groups: the rest population fˆ0eq , the averaged axial populations
+eq
+eq
+⟨fˆ1−4
+⟩, and the averaged diagonal populations ⟨fˆ5−8
+⟩. Figure 5 shows, for
+each Ising entangling layer configuration, the lower of the two MSE losses
+obtained under the X → Z or Z → X rotation orders, arranged from highest
+loss on the left to lowest loss on the right. Figure 6 displays, for the same
+configurations, the higher of the two test-set accuracies obtained for each of
+the three population groups under both rotation orders. The configurations
+are arranged from left to right in order of increasing combined accuracy. The
+best performing architecture is the one in which the repeating blocks follow the
+sequence {X, Z, XX A , ZZ D }. It achieves both the lowest average test-set MSE
+
+23
+
+Figure 6: Average test-set accuracy for the predicted post-collision rest population fˆ0eq , the
+eq
+eq
+averaged axial populations ⟨fˆ1−4
+⟩, and the averaged diagonal populations ⟨fˆ5−8
+⟩, obtained
+for each Ising entangling layer configuration. Shown is only the rotation-order variant (X → Z
+or Z → X) that achieved the highest accuracy.
+
+and the highest combined accuracy across the three population groups. We
+therefore select this SQC architecture for all subsequent training experiments.
+For reference, this architecture is exactly the one shown in the training loop in
+Figure 4.
+Across all analyzed architectures, a clear trade-off exists between the accuracy
+attainable for the post-collision population fˆ0eq and that for the axial and diagonal
+populations. This behavior can be understood from the analytical form of the
+equilibrium distribution for f0eq . Since its associated discrete lattice velocity is
+e0 = (0, 0), its equilibrium distribution is given by:
+
+
+(u · u)
+eq
+f0 = w0 ρ 1 −
+.
+(47)
+2 c2s
+This functional form differs fundamentally from those of the axial and diagonal
+equilibria, implying that the circuit must learn two distinct functional relationships. First, f0eq lacks both the linear term in the velocity (ei · u) and the
+24
+
+directional quadratic term (ei · u)2 , that appear in the equilibria of the other
+populations (see Eq. 5). Its sole dependence on the scalar quadratic term (u · u),
+makes f0eq purely nonlinear, requiring the circuit to capture a stronger quadratic
+mapping. Second, f0eq depends only on the magnitude of the velocity and not
+on its direction, whereas the other equilibria vary with directional projections
+through the inner products (ei · u). Therefore, f0eq is isotropic since its value remains the same for all flow directions, while the axial and diagonal equilibria are
+anisotropic, showing direction-dependent behavior. The circuit must therefore
+represent two qualitatively different behaviors: an isotropic quadratic dependence
+for f0eq , and directionally varying responses for the axial and diagonal equilibria.
+Because the latter constitute the majority of the lattice directions, achieving
+high accuracy for these anisotropic equilibria provides a more representative
+measure of the circuit’s overall predictive capability than optimizing solely for
+f0eq . The chosen SQC architecture ({X, Z, XX A , ZZ D }) attains the best overall
+accuracy when this weighting toward the axial and diagonal equilibria is taken
+into account.
+Architectures with two Ising entangling layers generally outperform those
+with a single layer, particularly when the layers differ in orientation (one axial
+and one diagonal) and in type (one XX and one ZZ). Combining different Ising
+entangling layers in this way, allows these circuits to correlate amplitudes across
+basis states more effectively and to explore a larger portion of Hilbert space via
+rotations about multiple axes. Several architectures that achieve high population
+accuracies, such as those relaying on the entangling layer configurations XX A ,
+ZZ D → XX A and XX A → ZZ A , do so at the cost of larger MSE losses. Recall
+that the MSE loss is computed over all 16 basis states (see Eq. 42), including
+those with zero target amplitudes. An architecture can lead to misleading
+results by transferring amplitude on the seven basis states which should remain
+unoccupied. This inflates the accuracies of the other nine basis states while
+penalizing the MSE loss. Our chosen SQC architecture avoids this trade-off
+entirely, resulting in both a low MSE loss and high population accuracies.
+4.2. Circuit Depth Analysis
+To evaluate how the SQC performance varies with circuit depth, we build SQC
+circuits with 5, 15, and 25 repeating blocks based on the best architecture design
+({X, Z, XX A , ZZ D }) identified in the previous section. For each circuit depth
+we conduct three independent training runs. Figure 7a shows the validation-set
+MSE loss as a function of the training step, with values averaged over all runs.
+Figure 7b presents the corresponding test-set accuracy for all nine populations,
+also averaged across runs.
+These results confirm that increasing circuit depth reduces the validation-set
+MSE loss and improves the average test-set accuracy across all nine post-collision
+populations. The final MSE loss decreases from 2.1 × 10−8 for 5 blocks to
+1.7 × 10−10 for 15 blocks, while a further increase to 25 blocks results only in a
+slight reduction to 8.9 × 10−11 . The mean accuracy across all nine populations
+rises sharply from 0.13 for 5 blocks to 0.80 for 15 blocks, with a modest gain to
+0.83 for 25 blocks. The improvement from 5 to 15 blocks is therefore much larger
+25
+
+(a) Average validation-set MSE loss vs. training
+step for the different circuit depths.
+
+(b) Average test-set population accuracy for
+different circuit depths. A star marks the highest accuracy attained across all depths.
+
+Figure 7: Training results for SQC circuit depth experiments.
+
+than that from 15 to 25, indicating that the circuit’s expressivity effectively
+saturates beyond this depth.
+During training, the gradient norms decreased as the MSE loss approached its
+minimum. For 5 blocks, they typically fluctuated around 1 × 10−5 and reached
+minima near 1 × 10−6 , while for 15 and 25 blocks they fluctuated around 1 × 10−6
+with minima close to 1 × 10−7 . This moderate decrease with depth indicates that
+parameter updates become smaller as the circuit depth increases. However, the
+gradient norms remain well above the level associated with barren plateaus. The
+slower improvement beyond 15 blocks is therefore primarily due to the limited
+increase in circuit expressivity rather than the onset of barren plateaus. Beyond
+this depth, adding more layers does not significantly enhance the circuit’s ability
+to reproduce the BGK operator, as it cannot fully approximate the quadratic
+nonlinearity of the equilibrium distribution (further discussed in Section 5).
+The SQC gate set {X, Z, XX A , ZZ D } includes gates that are not all native
+to current quantum hardware. To obtain a realistic estimate of the actual
+circuit depth, we compiled the 15-block and 25-block SQC circuits into their
+corresponding unitary matrices and subsequently transpiled these unitaries using
+Qiskit’s transpiler [43] into the native gate set of IBM’s Heron quantum processor.
+This native gate set is {RZ, SX, CZ}, where CZ is the only two-qubit gate [44].
+Transpilation was performed at Qiskit’s highest optimization level, assuming full
+all-to-all qubit connectivity. This setting allows the compiler to merge and cancel
+redundant rotations across layers, resulting in a globally optimized estimate
+of the native gate counts. The 25-block circuit transpiles to 733 native gates,
+while the 15-block circuit requires 724, meaning that the total native gate count
+increases by only about 1.2% despite adding ten additional blocks. In both
+cases, the number of two-qubit CZ gates is 95. The nearly identical native
+gate counts indicate that, once compiled into a full unitary, the transpiler no
+longer distinguishes between the nominal circuit depths. The decomposition cost
+depends primarily on the algebraic complexity of the overall unitary rather than
+on the number of layers used to construct it. Thus, increasing the number of
+
+26
+
+blocks does not necessarily result in a more complex unitary.
+Although the 25-block circuit attains slightly lower MSE losses during training,
+the 15-block circuit already achieves comparably low values and high population
+accuracies. Because training becomes increasingly expensive with circuit depth,
+the shorter circuit is preferable for testing different configurations and conducting
+detailed analyses. For these reasons, the 15-block circuit is used for all subsequent
+training experiments and simulations presented in Section 6.
+4.3. Momentum Loss Penalization
+To evaluate whether the penalty term in the loss function (see Eq. 46) helps
+the SQC learn to better conserve momentum during training, we perform a series
+of experiments with the penalty enabled. Starting from an initial regularization
+weight α = 10−4 , we increase α every 10,000 iterations as follows: in experiment
+1 up to α = 0.25, in experiment 2 up to α = 0.5, in experiment 3 up to α = 1.0.
+
+(a) Average validation-set MSE loss vs. training step for different regularization weights α.
+
+(b) Average test-set population accuracy for different regularization weights α. Star indicates
+the highest accuracy across all experiments.
+
+Figure 8: Training results for momentum penalty loss experiments.
+
+We conduct three independent training runs for each experiment. Figures
+8a and 8b show the average validation-set MSE loss and the average test-set
+population accuracy, respectively, each computed over the three runs. For
+comparison, both plots include the 15-block SQC trained without a momentum
+conservation penalty (α = 0) as a baseline. As we increase the penalty weight
+from α = 0 to α = 0.5, the validation-set MSE loss shows a modest decrease
+during training, while the test-set accuracy remains essentially unchanged or
+eq
+improves slightly in populations fˆ0eq and fˆ2−4
+. Over the same range, the average
+relative momentum loss on the test-set drops from 0.0028 at α = 0 to 0.0021
+at α = 0.5, as shown in Table 2. Raising α further to 1.0 continues to lower
+the momentum loss to 0.0019, but at the cost of increased validation-set MSE
+loss and reduced accuracy across all populations. This result indicates that a
+penalty weight of 1.0 overconstrains the learning process. Although the SQC
+trained without the penalty term (α = 0) achieves the highest overall accuracy
+eq
+for most populations (fˆ1eq and fˆ5−8
+), the configuration with α = 0.5 offers the
+
+27
+
+best balance, improving momentum conservation with only a minimal impact
+on accuracy.
+Table 2: Average test-set relative momentum loss for different regularization weights α.
+
+α
+
+Average Relative Momentum Loss
+
+0.0
+0.2
+0.5
+1.0
+
+0.0028
+0.0027
+0.0021
+0.0019
+
+4.4. Optimal Training Conditions
+Based on the experiments conducted throughout this section, we can now
+specify the best-performing training configuration and architecture for the SQC.
+These are summarized in Table 3.
+Table 3: Best-performing SQC training configuration.
+
+Training Configuration
+
+Setting
+
+Architecture
+Number of blocks
+Optimizer
+Learning Rate
+Training Iterations
+Batch Size (B)
+Momentum Conservation Penalty
+Regularization weight (α)
+Parameter Initialization (θ)
+
+{X, Z, XX A , ZZ D }
+15
+JAX Gradient Descent
+0.05
+750000
+5
+ON
+0.5
+Uniform on [−π, π]
+
+5. Emergence of Nonlinearity and Dissipation in the SQC Framework
+In this section, we show that the SQC framework, which combines the rooteddensity encoding, the SQC itself, and measurement in the computational basis,
+can approximate more than a purely linearized relaxation toward equilibrium,
+even though the circuit’s evolution is strictly unitary and therefore linear in
+Hilbert space. More specifically, we demonstrate that this framework can partially
+capture the nonlinear and dissipative behavior of the BGK operator. The
+nonlinearity arises from the nonlinear mapping between the classical populations
+and the quantum amplitudes that encode them, together with the measurement
+step that converts those amplitudes back into populations in physical space.
+The apparent dissipation originates from the same measurement process, which
+collapses the quantum state and thereby induces an irreversible relaxation toward
+equilibrium in physical space. In the remainder of this section, we explicitly
+28
+
+derive these effects and discuss their implications for extending the framework to
+avoid measurement and re-initialization at every time step when applied within
+a QLBM algorithm.
+5.1. Nonlinear Relaxation Towards Equilibrium
+To evaluate the SQC framework’s ability to reproduce the nonlinear relaxation
+behavior of the BGK operator, we test the trained SQC on a new synthetic
+dataset generated according to the procedure described in Section 3.4, using
+the optimal training configuration summarized in Section 4.4. The evaluation
+spans the full velocity magnitude range |u| ∈ [0, 0.1] usually encountered in
+LBM simulations. The velocity components3 are defined as ux = |u| cos(θ) and
+uy = |u| sin(θ), with θ = π/4.
+Each pre-collision population fi in the synthetic dataset is generated with a
+fixed density ρ = 1 and includes a small non-equilibrium perturbation drawn
+from a zero-mean Gaussian distribution with standard deviation σneq = 5 × 10−4 .
+For each velocity magnitude in the range |u| ∈ [0, 0.1], we compute three sets of
+post-collision populations: the nonlinear equilibrium populations fieq defined by
+Eq. 5, the predicted populations fˆieq obtained from the SQC, and a linearized
+reference filin obtained by truncating the LBM equilibrium to first order in the
+velocity u, thereby removing all quadratic nonlinear terms:
+
+
+ei · u
+lin
+fi = wi ρ 1 + 2
+, i = 0, . . . , 8.
+(48)
+cs
+Figure 9 compares the three sets of post-collision populations over the velocity
+magnitude range |u| ∈ [0, 0.1]. Unlike the linearized equilibrium, both the nonlinear equilibrium and the SQC results show clear curvature, indicating a nonlinear
+dependence on u. The SQC predictions follow the nonlinear equilibrium closely
+across the entire velocity range, accurately reproducing both the curvature and
+the relative scaling between populations. The different shapes of the population
+profiles come from how the discrete velocities in the D2 Q9 lattice are oriented
+relative to the diagonal flow direction at θ = π/4.
+Population f6 and f8 are associated with the discrete velocity vectors e6 =
+(−1, 1) and e8 = (1, −1) which are perpendicular to the flow direction at θ = π/4.
+This means that the linear and quadratic terms (ei · u) and (ei · u)2 are both
+equal to zero in their respective equilibrium distributions. Consequently, their
+equilibrium distributions depend only on the purely quadratic term (u · u). This
+explains why the curvature of their corresponding post-collision values appears
+more pronounced in the figure. A similar argument holds for the f0 population,
+whose equilibrium distribution also depends only on the quadratic term (u · u),
+since the other two terms vanish due to its discrete lattice velocity vector being
+e0 = (0, 0). Populations f5 and f7 have discrete velocity vectors e5 = (1, 1) and
+e7 = (−1, −1), which are aligned and anti-aligned, respectively, with the flow
+3 Varying θ changes the individual population profiles in Figure 9, yet the overall ability to
+capture the underlying nonlinearity remains unchanged.
+
+29
+
+direction at θ = π/4. Therefore, their equilibria include contributions from both
+the linear and quadratic terms, resulting in less curved profiles in the figure.
+Finally, for a flow direction at θ = π/4 the axial populations have relatively large
+and symmetric projections on u, such that their equilibria are dominated by
+the linear term (ei · u) and their post-collision populations have nearly linear
+profiles.
+
+Figure 9: Comparison of post-collision population profiles obtained from the nonlinear LBM
+equilibrium fieq , the SQC predictions fˆieq , and the linearized equilibrium filin for velocity
+magnitudes in the range |u| ∈ [0, 0.1].
+
+Altogether, these results confirm that although the SQC itself implements a
+unitary and therefore linear evolution, the overall SQC framework can partially
+reproduce the nonlinear relaxation behavior of the BGK operator.
+5.2. Origin of Nonlinearity and Dissipation in the SQC Framework
+In this section we analyze in detail how the SQC framework can partially
+reproduce the nonlinear and dissipative relaxation behavior of the BGK operator.
+At first glance this behavior appears counterintuitive. The SQC performs a
+unitary and therefore linear transformation in Hilbert space, yet the resulting
+mapping between pre- and post-collision populations shows a partially nonlinear
+dependence, as demonstrated in the previous section. This apparent contradiction
+can be understood by noting that the nonlinearity does not arise from the unitary
+30
+
+evolution itself, but from how the classical populations are connected to the
+quantum state through the encoding and measurement steps. The rooted-density
+encoding and the measurement in the computational basis are both nonlinear
+operations that link the classical and quantum descriptions. The encoding
+introduces a nonlinear relationship between the classical populations and the
+amplitudes of the quantum state, while the measurement converts the evolved
+amplitudes back into populations in physical space. This measurement step
+also breaks unitarity by collapsing the quantum state, introducing an effective
+relaxation process that mimics the dissipation of the BGK operator. Together,
+these elements preserve the linearity of the circuit evolution while giving rise
+to the effective nonlinearity and apparent dissipation observed in the measured
+outputs.
+To make this precise, we start by examining the rooted-density encoding,
+which maps the classical populations in physical space into the amplitudes of
+the quantum state:
+15
+
+1 Xp
+|ψ⟩ = √
+fi (x, t) |ei ⟩ ,
+ρ i=0
+
+ρ=
+
+15
+X
+
+fi (x, t).
+
+(49)
+
+i=0
+
+Here, only the first nine populations are nonzero, so the remaining seven amplitudes (i = 9, . . . , 15) are initialized to zero.
+p The amplitude associated with
+each velocity basis state is therefore ai = fi (x, t)/ρ. These amplitudes depend nonlinearly
+on the classical populations through the square-root mapping
+p
+fi (x, t) 7→ fi (x, t). This nonlinearity is confined to the encoding stage, after
+which the quantum state evolves linearly under the SQC and produces the
+post-collision amplitudes:
+s
+15
+X
+fi (x, t)
+SQC
+aj =
+Uji
+, j = 0, . . . , 15.
+(50)
+ρ
+i=0
+As shown in Section 3.3, we can also express these amplitudes in the following
+form:
+s
+fˆjeq (x, t) iφj
+aj =
+e , j = 0, . . . , 15.
+(51)
+ρ
+Finally, the measurement in the computational basis defines a nonlinear
+mapping between the populations fˆjeq (x, t) present in the quantum state and
+their classical counterparts in physical space. According to the measurement
+procedure described in Section 3.3, Eq. 38 and Eq. 39 together define:
+fˆjeq (x, t) = ρ|aj |2 ,
+
+j = 0, . . . , 15,
+
+(52)
+
+which makes the nonlinearity explicit, since the measured populations are obtained from the squared magnitudes of the amplitudes. Substituting Eq. 50 into
+Eq. 52, we obtain:
+
+31
+
+15
+X
+
+2
+
+s
+
+fi (x, t)
+ρ
+i=0
+s
+s
+! 15
+!
+15
+X
+X
+f
+(x,
+t)
+fk (x, t)
+i
+SQC
+SQC ∗
+=ρ
+Uji
+,
+(Ujk )
+ρ
+ρ
+i=0
+
+fˆjeq (x, t) = ρ
+
+SQC
+Uji
+
+j = 0, . . . , 15.
+
+k=0
+
+(53)
+SQC ∗
+SQC
+Here, (Ujk
+) denotes the complex conjugate of the matrix element Ujk
+. We
+now separate the diagonal terms (i = k) from the off-diagonal terms (i ̸= k):
+
+fˆjeq (x, t) =
+
+15
+X
+
+SQC 2
+| fi (x, t)
+|Uji
+
+i=0
+
++
+
+15
+15 X
+X
+
+(54)
+SQC
+SQC ∗
+Uji
+(Ujk
+)
+
+p
+fi (x, t)fk (x, t),
+
+j = 0, . . . , 15.
+
+i=0 k=0
+k̸=i
+
+Since fˆjeq (x, t) represent post-collision populations which are by definition real
+quantities, it is convenient to symmetrize the off-diagonal sum:
+
+fˆjeq (x, t) =
+
+15
+X
+
+SQC 2
+|Uji
+| fi (x, t)
+
+i=0
+
+|
++2
+
+{z
+
+linear
+15 k−1
+X
+X
+
+}
+(55)
+
+SQC
+SQC ∗ 
+ℜ Uji
+(Ujk
+)
+
+p
+fi (x, t)fk (x, t),
+
+j = 0, . . . , 15.
+
+k=1 i=0
+
+|
+
+{z
+
+}
+
+nonlinear
+
+Here, ℜ(·) denotes the real part of a complex number. The final expression
+in Eq. 55 contains two distinct contributions. The first is a linear redistribution term, in which each pre-collision population fi (x, t) contributes linearly
+to the post-collision population fˆjeq (x, t), with weights given by the squared
+magnitudes of the unitary matrix elements. The second, nonlinear term represents
+interference between populations fi (x, t) and fk (x, t), as it depends on the
+p
+product fi (x, t)fk (x, t). This interference is controlled by the relative phase
+SQC
+SQC ∗
+between the matrix elements Uji
+and (Ujk
+) , which determines whether the
+eq
+ˆ
+contribution to fj (x, t) is constructive or destructive.
+The structure of Eq. 55 closely mirrors that of the nonlinear LBM equilibrium in Eq. 5, which also combines linear and nonlinear terms. The difference
+lies in the mathematical form of the nonlinear coupling. In the LBM equilibrium, the quadratic dependence on velocity generates terms proportional
+32
+
+to fi (x, t)f
+p k (x, t), whereas in the SQC-derived expression the coupling enters
+through fi (x, t)fk (x, t). This square-root dependence arises directly from the
+rooted-density encoding. This is why the SQC predictions shown in Figure 9
+reproduce the same qualitative nonlinear behavior as the LBM equilibrium, but
+not its exact functional form.
+Furthermore, the measurement step acts as an effective dissipative process.
+Projecting the post-collision quantum amplitudes onto the classical populations in
+physical space is inherently non-unitary, as it collapses the superposed amplitudes
+into definite outcomes. This collapse leads to an apparent relaxation of the
+measured populations toward an equilibrium-like distribution as shown in Eq. 55.
+The effect is analogous to the dissipative action of the BGK collision operator,
+which irreversibly drives the system toward local equilibrium.
+The SQC framework therefore shows that a strictly linear quantum evolution
+can give rise to both effective nonlinearity and dissipation in the measured
+classical populations. The nonlinear encoding and measurement mappings,
+together with phase-dependent interference between amplitudes, generate the
+observed nonlinear dependence in physical space, while the projection inherent
+to measurement introduces the effective dissipation associated with relaxation
+toward equilibrium. As a result, the SQC framework reproduces the essential
+features of the BGK collision process, even though the underlying circuit evolution
+remains strictly unitary.
+5.3. Multi-time Step Extension
+As shown in the previous section, the rooted-density encoding, together with
+the unitary evolution implemented by the SQC and the measurement in the
+computational basis, produces an effective nonlinearity and dissipation in physical
+space that partially reproduces the relaxation toward the LBM equilibrium. It is
+important to clarify what this means for a multi-time step QLBM simulation, in
+particular when we want to avoid measurement and re-initialization after every
+time step. If Eq. 51 is substituted into Eq. 52, the following relation is obtained:
+s
+fˆjeq (x, t) = ρ
+
+fˆjeq (x, t) iφj
+e
+ρ
+
+2
+
+,
+
+j = 0, . . . , 15,
+
+(56)
+
+where the left-hand side represents the measured post-collision populations
+in physical space, while the right-hand side represents the same quantities
+encoded in the quantum state. Eq. 56 shows that these two quantities are
+identical. The post-collision populations in physical space are precisely those
+already contained in the quantum state before measurement. Measurement
+therefore simply retrieves the post-collision populations from the amplitudes
+of the quantum state. If we were to measure and immediately re-encode, we
+would recover the same quantum state as before measurement, up to the relative
+phases.
+This equivalence explains why measurement may not be required after every
+time step. The nonlinear and dissipative relaxation that appears in physical
+
+33
+
+space is not a separate process applied after each collision. It is the classical
+description of a unitary transformation that has already taken place in Hilbert
+space. The SQC evolves the encoded amplitudes coherently, and the apparent
+relaxation arises only when these amplitudes are interpreted as populations
+through the nonlinear mapping defined by the encoding and measurement. From
+this perspective, the same evolution can be viewed in two complementary ways. In
+Hilbert space, it is a strictly linear and unitary transformation of amplitudes. In
+physical space, it appears as a nonlinear and dissipative relaxation of populations
+toward equilibrium. The effective dissipation and nonlinearity are therefore
+properties of the mapping between the two descriptions and not of the underlying
+quantum evolution.
+The subsequent streaming operation simply permutes the basis states and
+therefore leaves the amplitudes unchanged. It does not alter their magnitudes
+or relative phases, but only reassigns them across lattice sites according to
+their discrete velocities [19]. As a result, the overall unitary evolution of the
+circuit remains intact, and it is reasonable to hypothesize that multiple time
+steps could be carried out coherently, with measurement performed only at
+the end of the simulation. However, it must still be shown explicitly that the
+combined application of the SQC and streaming over several coherent time steps
+can reproduce the same form of nonlinear relaxation that the BGK operator
+produces when coupled with streaming in the classical setting. An additional
+consideration concerns the introduction of relative phases. As discussed in the
+previous section, these phases play an important role because they expand the
+range of interference patterns the SQC can represent and thereby tune the
+effective nonlinearity it can model.
+If, at the next time step, the input state to the SQC already contains relative
+phases, the circuit’s predictions will change significantly. The SQC was trained
+only on real amplitudes, so additional phases in the inputs modify the interference
+patterns it has learned to reproduce. Extending the framework to a measurementfree, fully coherent evolution over multiple time steps would therefore require
+either a circuit capable of handling complex amplitudes or one that remains
+entirely real and prevents the introduction of phases. A purely real circuit,
+however, would lose the interference capability of the current SQC and would
+need to be designed to recover the missing degrees of expressivity. Designing such
+circuits lies outside the scope of the present study. What is demonstrated here
+is that by constructing a framework that reproduces nonlinearity and apparent
+dissipation in physical space while maintaining strictly unitary evolution in
+Hilbert space, it is possible to realize a low-depth circuit that provides an
+accurate approximation of the BGK operator.
+6. SQC Evaluation
+In this section, we compare the collision predictions obtained using the SQC
+with those from the BGK operator for the Taylor-Green vortex decay case in
+Section 6.1 and the lid-driven cavity flow case in Section 6.2. For simulations
+that use the SQC to predict collisions, the streaming and boundary conditions
+34
+
+are handled classically, while the collision step at each grid point is performed by
+the SQC. Both flow cases are simulated at Reynolds numbers Re = 10 and Re
+= 50, using a characteristic velocity of U = 0.05. This velocity is significantly
+higher than those encountered during training, allowing us to evaluate the SQC’s
+ability to extrapolate and accurately predict collisions when nonlinear terms in
+the LBM equilibrium distribution become dominant. All flow variables in this
+section are expressed in lattice units.
+6.1. Taylor-Green Vortex Decay
+The Taylor-Green vortex decay case models the decay of perfectly symmetric
+counter-rotating vortices in a fully periodic domain. In LBM the streaming step
+simply propagates populations between neighboring lattice nodes, introducing
+no physical dissipation. Vortex decay is therefore driven entirely by the collision
+process, which relaxes populations toward the local equilibrium and, in so doing,
+injects exactly the viscous dissipation that gives rise to the Navier-Stokes viscousstress tensor in the continuum limit. Without a properly formulated collision
+step, the flow remains effectively inviscid and the vortices never decay. For each
+Reynolds number (Re = 10 and 50), we run two simulations on a two-dimensional
+periodic square domain with sides of length L. Specifically, we use L = 34 for
+Re = 10 and L = 168 for Re = 50 and set ∆x = ∆t = 1. In one simulation, the
+collision step is carried out using the classical BGK operator, while in the other
+the SQC is used. Both simulations are initialized with a uniform density ρ = 1
+and the velocity field:
+ux (x, y) = u0 sin(kx x) cos(ky y),
+
+(57)
+
+uy (x, y) = −u0 cos(kx x) sin(ky y),
+
+(58)
+
+where the initial velocity amplitude is u0 = 0.05 and wave-numbers are kx =
+2π/L, ky = 2π/L. Each simulation is run up to a non-dimensional time t∗ = 0.1,
+defined as t∗ = tu0 /L.
+The velocity magnitude fields obtained at t∗ = 0.1 for the two SQC simulations at Re = 10 and Re = 50 are shown in Figures 10a and 10b, respectively.
+The SQC preserves the symmetry of the vortices throughout their decay process
+due to its D8 equivariant design and adapts well to the different dissipation
+levels associated with the two Reynolds numbers. For the simulation at Re =
+10, the maximum velocity amplitude decays to umax = 0.023, while at Re = 50
+it remains higher at umax = 0.043. The slower decay at Re = 50 results from
+the reduced effective viscosity associated with higher Reynolds numbers. This
+shows that the SQC can adjust its relaxation strength across different Reynolds
+number regimes, which explains the excellent agreement between the centerline
+horizontal and vertical velocity profiles shown in Figure 11.
+Figures 10c and 10d show the corresponding absolute error fields in velocity
+magnitude between the SQC and BGK simulations. The largest errors are
+concentrated near regions of strong velocity gradients, mainly along the separation
+lines between adjacent vortices (approximately at x/L = 0.25, 0.75 and y/L =
+35
+
+(a) Velocity magnitude field |u| and streamlines
+for the SQC simulation at Re = 10.
+
+(b) Velocity magnitude field |u| and streamlines
+for the SQC simulation at Re = 50.
+
+(c) Absolute error in velocity magnitude between
+SQC and BGK simulations, |∆|u||, at Re = 10.
+
+(d) Absolute error in velocity magnitude between
+SQC and BGK simulations, |∆|u||, at Re = 50.
+
+Figure 10: Comparison of velocity magnitude fields and streamlines obtained from the SQC
+simulation with the corresponding absolute error fields in velocity magnitude between the SQC
+and BGK simulations for the Taylor-Green vortex decay case at t∗ = 0.1, for Re = 10 and Re
+= 50.
+
+0.25, 0.75). Since the SQC can only partially reproduce the nonlinear terms of
+the LBM equilibrium, it cannot fully represent the higher-order moments that are
+needed to recover the viscous stresses in the Navier-Stokes equations. As a result,
+its predictions are less accurate in these regions of strong velocity gradients.
+Nevertheless, the absolute errors in the velocity magnitude fields remain small
+in both cases, with maximum values of |∆|u||max = 3.0 × 10−4 for Re = 10 and
+|∆|u||max = 9.2 × 10−4 for Re = 50. This is noteworthy given that the SQC is
+extrapolating in large parts of the domain due to the relatively high velocities
+at which the simulations are run. At Re = 10, although all vortices decay at
+the same rate, the absolute error field shows an alternating pattern between
+the four quadrants of the domain. This pattern arises because the vortices are
+counter-rotating, such that the direction of the local velocity gradients changes
+from one quadrant to the next, producing alternating regions of higher and lower
+error. At Re = 50, this alternating pattern is still present but less pronounced,
+as the overall error increases more uniformly across the domain. Although the
+
+36
+
+SQC can adapt its damping strength across the two Reynolds numbers, the
+higher errors at Re = 50 indicate that this adjustment is not perfect.
+
+(a) Profiles of the normalized horizontal velocity
+ux /u0 and normalized vertical velocity uy /u0
+along the domain mid-line at Re = 10.
+
+(b) Profiles of the normalized horizontal velocity
+ux /u0 and normalized vertical velocity uy /u0
+along the domain mid-line at Re = 50.
+
+Figure 11: Comparison of centerline velocity profiles obtained at t∗ = 0.1 for the SQC and
+BGK simulations of the Taylor-Green vortex decay case at Re = 10 and Re = 50.
+
+To better understand the errors in the prediction of each post-collision
+population during the course of the simulation, Figure 12 shows the domainaveraged time evolution of the absolute error between the SQC-predicted postcollision populations, fˆieq (x, t∗ ), and those computed using the BGK operator,
+fieq (x, t∗ ), for the simulations at Re = 10 and Re = 50. The magnitudes of
+the error curves are consistently higher for the Re = 50 case than for Re = 10,
+in agreement with the trends previously observed in the absolute error fields
+of the velocity magnitude. The magnitudes of the error curves follow a clear
+three-level hierarchy: the rest population shows the largest error, followed by
+the axial populations, and finally the diagonal populations. This ordering results
+from several factors, one of which is the relative magnitude of the equilibrium
+distribution that is used to compute each post-collision population. As given in
+Eq. 6, in the D2 Q9 lattice, the rest population equilibrium f0eq has the largest
+lattice weight (w0 = 4/9), which is four times that of the axial population
+equilibria (w1−4 = 1/9) and sixteen times that of the diagonal population
+equilibria (w5−8 = 1/36). As a result, similar fractional deviations between the
+SQC and BGK predictions appear as progressively smaller absolute errors when
+moving from the rest to the diagonal populations. Another contributing factor
+is the SQC circuit architecture itself, which is inherently less accurate for the
+rest population, as discussed in Section 4.1.
+Furthermore, the equilibrium distribution for the rest population depends
+only quadratically on the velocity through the term (u · u) (see Eq. 47), unlike
+the other equilibria, which also contain the term (ei · u) which is linear in the
+velocity. Because the SQC cannot fully reproduce this nonlinear dependence, the
+resulting discrepancy is strongest for this population. The slightly higher errors
+37
+
+observed in the axial populations compared with the diagonals can be explained
+by the structure of the velocity field. Along the x and y directions, the velocity
+components ux and uy vary significantly, which produces the strongest velocity
+gradients along the lines separating adjacent vortices. The axial populations
+have discrete velocity vectors oriented along these same directions, so they are
+more sensitive to small mismatches in how accurately the SQC captures the local
+velocity gradients. Along the diagonal directions, the flow varies more smoothly,
+and the velocity components ux and uy often act in opposite directions due to
+the counter-rotating vortices. These opposing contributions partially cancel,
+leading to smaller overall errors in the diagonal populations.
+Figure 12 also shows that, for both Re = 10 and Re = 50, the absolute error
+magnitudes for all populations decrease over time. This happens because, as
+the flow decays, the overall velocity in the domain decreases. Consequently, the
+nonlinear terms in the LBM equilibrium distribution become less significant
+compared with the linear term. Since the SQC cannot fully reproduce these
+nonlinear terms, the reduction in nonlinearity during the decay naturally leads
+to smaller prediction errors. The gradual rise and fall of the absolute error
+magnitudes reflects the evolution of the strain and vorticity fields during the
+vortex decay. As the flow evolves, kinetic energy is transiently redistributed
+between the velocity components, while the total energy decreases monotonically
+due to viscous dissipation. This redistribution produces small fluctuations in
+the local error amplitudes during the early stages, even though the overall decay
+of kinetic energy remains smooth and continuous. As a result, the apparent
+oscillations in the error curves are progressively damped, with the decay occurring
+more rapidly at Re = 10 than at Re = 50, as seen most clearly in the curves
+corresponding to the rest population. Furthermore, the errors for the axial and
+diagonal populations are identical within each group. This is a direct result of the
+D8 equivariant design of the SQC and the symmetric structure of the vortices,
+which together ensure that populations related by rotations and reflections
+within the D8 group experience identical local flow dynamics and therefore show
+identical errors.
+To quantify the mass transfer into the amplitudes associated with the seven
+additional basis states, Figure 13 shows the domain-averaged time evolution
+eq
+of the corresponding fictitious post-collision populations, fˆ9−15
+(x, t∗ ), for the
+Re = 10 and Re = 50 simulations. As discussed in Section 3.1, these fictitious
+populations contribute to the evaluation of macroscopic quantities such as density
+and momentum in the same way as the f0 population. The results show that the
+mass transferred into the amplitudes of these additional basis states is extremely
+small-on the order of 1 × 10−7 for the Re = 10 case and 1 × 10−8 for Re = 50.
+The reason for the smaller mass transfer observed at Re = 50 is not entirely
+clear. Several factors may contribute to this behavior, such as differences in how
+the SQC adjusts its predictions to conserve momentum, how it adapts to the
+effective dissipation level, or how it tries to reproduce the nonlinear terms in the
+equilibrium distribution.
+Although the flow is transient the profiles level off over time, indicating that
+the mass transfer into the amplitudes of the additional basis states tends to
+38
+
+(a) Time evolution of the absolute errors between the post-collision populations predicted by the
+SQC, fˆieq (x, t∗ ), and those computed using the BGK operator, fieq (x, t∗ ), averaged over the entire
+domain Ω, for the Re = 10 simulation.
+
+(b) Time evolution of the absolute errors between the post-collision populations predicted by the
+SQC, fˆieq (x, t∗ ), and those computed using the BGK operator, fieq (x, t∗ ), averaged over the entire
+domain Ω, for the Re = 50 simulation.
+
+Figure 12: Time evolution of the domain-averaged absolute errors between the post-collision
+populations obtained during the SQC and BGK simulations of the Taylor-Green vortex decay
+case at Re = 10 and Re = 50.
+
+39
+
+eq
+(a) Time evolution of the additional post-collision populations fˆ9−15
+(x, t∗ ), averaged over the entire
+domain Ω, at Re = 10.
+
+eq
+(b) Time evolution of the additional post-collision populations fˆ9−15
+(x, t∗ ), averaged over the entire
+domain Ω, at Re = 50.
+
+Figure 13: Time evolution of the domain-averaged additional post-collision populations during
+the Taylor-Green vortex decay simulations at Re = 10 and Re = 50.
+
+plateau after an initial period. This indicates that the exchange of mass between
+the amplitudes of the basis states corresponding to the D2 Q9 populations and
+those corresponding to the the additional basis states reaches a steady balance.
+At the start of the simulation, the additional basis states are initialized with zero
+amplitude. As the simulation progresses, mass is transferred both into and out
+of these amplitudes. This exchange continues until an approximate equilibrium
+is reached, where the inflow and outflow of mass balance each other, leading to
+the plateaus in mass accumulation.
+6.2. Lid-Driven Cavity
+The lid-driven cavity case simulates a fluid enclosed in a square cavity with
+its top lid moving at a constant speed, driving recirculation within the cavity.
+40
+
+For each Reynolds number (Re = 10 and 50), we run two simulations on a twodimensional square domain with sides of length L. Specifically, we use L = 34 for
+Re = 10 and L = 168 for Re = 50 and set ∆x = ∆t = 1. In one simulation, the
+collision step is carried out using the classical BGK operator, while in the other
+the SQC is used. Bounce-back boundary conditions are applied to the stationary
+walls, while the moving lid is modeled with a modified bounce-back condition
+imposing ulid = 0.05. The flow is initialized with a uniform density ρ = 1 and
+advanced in time until convergence. Convergence is monitored using the relative
+L2 norm of the change in the velocity field between successive iterations. The
+solution is declared converged once this relative L2 difference remains below a
+prescribed tolerance of 1 × 10−8 for several consecutive checks.
+
+(a) Velocity magnitude field |u| and streamlines
+for the SQC simulation at Re = 10.
+
+(b) Velocity magnitude field |u| and streamlines
+for the SQC simulation at Re = 50.
+
+(c) Absolute error in velocity magnitude between
+SQC and BGK simulations, |∆|u||, at Re = 10.
+
+(d) Absolute error in velocity magnitude between
+SQC and BGK simulations, |∆|u||, at Re = 50.
+
+Figure 14: Comparison of velocity magnitude fields and streamlines obtained from the SQC
+simulation with the corresponding absolute error fields in velocity magnitude between the SQC
+and BGK simulations for the lid-driven cavity case, obtained after convergence for Re = 10
+and Re = 50.
+
+The velocity magnitude fields obtained after convergence of the simulations
+for Re = 10 and Re = 50 are shown in Figures 14a and 14b, respectively. In
+both cases, the SQC successfully captures the primary recirculating flow within
+the cavity and the formation of secondary vortices near the bottom corners
+of the domain. A comparison of the absolute error in the velocity magnitude
+41
+
+fields between the SQC and BGK simulations, shown in Figures 14c and 14d,
+reveals that the overall errors increase significantly at Re = 50. The maximum
+absolute errors in the domain are |∆|u||max = 1.1 × 10−3 for Re = 10 and
+|∆|u||max = 5.1 × 10−3 for Re = 50. The absolute error distributions indicate
+that the largest discrepancies occur directly below the moving lid, where the fluid
+velocity decreases sharply from ulid to nearly zero due to the no-slip boundary
+condition. Elevated errors are also observed near the top corners, where the
+moving lid meets the stationary sidewalls and the flow turns abruptly, generating
+strong shear and steep velocity gradients. Along the vertical walls, additional
+errors arise within the boundary layers, which introduce further variations in
+the velocity field. In contrast, smaller errors are found near the bottom corners,
+where weaker recirculating vortices produce milder velocity gradients.
+
+(a) Profiles of the normalized horizontal velocity
+ux /ulid and normalized vertical velocity uy /ulid
+along the domain mid-line at Re = 10.
+
+(b) Profiles of the normalized horizontal velocity
+ux /ulid and normalized vertical velocity uy /ulid
+along the domain mid-line at Re = 50.
+
+Figure 15: Comparison of centerline velocity profiles obtained after convergence for the SQC
+and BGK simulations of the lid-driven cavity case at Re = 10 and Re = 50.
+
+When the Reynolds number increases, the velocity gradients near the moving
+lid and top corners steepen, and the boundary layers that develop along the
+walls become thinner. Flow separation at the corners intensifies, resulting in
+sharper shear layers and stronger vorticity. Therefore, the errors for Re = 50 are
+highest along the right sidewall and in the upper region of the cavity near the
+moving lid. As discussed previously for the Taylor-Green case, the SQC cannot
+fully capture the nonlinear terms in the LBM equilibrium and therefore cannot
+reproduce the complete Navier-Stokes stress tensor. This limitation leads to
+inaccuracies in resolving the velocity gradients that develop in the flow. As the
+Reynolds number increases and the influence of these gradients becomes more
+significant, the discrepancy between the SQC and BGK results correspondingly
+grows, as seen in Figure 14d. This behavior also explains why the mismatch
+between the BGK and SQC centerline velocity profiles in Figure 15 is larger for
+the Re = 50 case than for Re = 10.
+Similar to the Taylor-Green case, we track the time evolution of the pre42
+
+(a) Time evolution of the absolute errors between the post-collision populations predicted by the
+SQC, fˆieq (x, t∗ ), and those computed using the BGK operator, fieq (x, t∗ ), averaged over the entire
+domain Ω, for Re = 10.
+
+(b) Time evolution of the absolute errors between the post-collision populations predicted by the
+SQC, fˆieq (x, t∗ ), and those computed using the BGK operator, fieq (x, t∗ ), averaged over the entire
+domain Ω, for Re = 50.
+
+Figure 16: Time evolution of the domain-averaged absolute errors between the post-collision
+populations obtained during the SQC and BGK simulations of the lid-driven cavity case at Re
+= 10 and Re = 50.
+
+43
+
+diction errors for each post-collision population over the dimensionless time
+t∗ = tulid /L. Figure 16 presents the domain-averaged absolute error between the
+SQC-predicted post-collision populations, fˆieq (x, t∗ ) and those computed using
+the BGK operator, fieq (x, t∗ ), for the simulations at Re = 10 and Re = 50. In
+both cases, the errors increase sharply during the initial stage of the simulation
+as the lid begins to drive the flow and strong velocity gradients develop, before
+leveling off once the recirculating flow becomes fully developed. This behavior is
+evident in the rapid rise of the error curves during t∗ < 1, followed by a clear
+plateau once the flow reaches steady state.
+
+eq
+(a) Time evolution of the additional post-collision populations fˆ9−15
+(x, t∗ ), averaged over the entire
+domain Ω, at Re = 10.
+
+eq
+(b) Time evolution of the additional post-collision populations fˆ9−15
+(x, t∗ ), averaged over the entire
+domain Ω, at Re = 50.
+
+Figure 17: Time evolution of the domain-averaged additional post-collision populations during
+the lid-driven cavity simulations at Re = 10 and Re = 50.
+
+In the Re = 10 case, the highest errors are obtained for the prediction of
+the rest post-collision population, followed by the axial and then the diagonal
+44
+
+populations, consistent with the behavior observed in the Taylor-Green case. At
+Re = 50, however, the largest errors appear in the axial populations. Figure 16
+also shows that the largest differences among the axial populations occur for the
+fˆ2eq (x, t∗ ) and fˆ4eq (x, t∗ ) post-collision populations, which are associated with the
+lattice velocity directions e2 = (0, 1) and e4 = (0, −1), oriented vertically along
+the coordinate axis. These populations play a dominant role in determining the
+uy velocity component. Because the SQC scheme struggles to capture the steep
+velocity gradients and strong flow turning near the top-right corner and along the
+right wall, the predicted post-collision populations for these vertical directions
+show the largest errors. The other two post-collision axial populations, fˆ1eq (x, t∗ )
+and fˆ3eq (x, t∗ ), corresponding to e1 = (1, 0) and e3 = (−1, 0) and contributing
+primarily to the ux component, are less affected but still show increased errors
+due to the enhanced horizontal shear near the moving lid and in the recirculating
+region. At Re = 50, where the velocity gradients are even steeper, the errors
+in the axial populations become significantly larger and exceed those of the
+rest population. This also explains the larger deviations in the uy centerline
+velocity for the Re = 50 case shown in Figure 15b. The diagonal populations
+consistently show the smallest errors because they depend on both ux and uy
+velocity components. In regions where the two velocity components vary in
+opposite directions, these opposing contributions partially cancel, leading to
+smaller overall errors. Consequently, the diagonal populations are less sensitive
+to the steep local gradients that dominate the axial populations.
+To quantify the mass transfer into the amplitudes associated with the seven
+additional basis states, Figure 17 shows the domain-averaged time evolution of
+eq
+the fictitious post-collision populations, fˆ9−15
+(x, t∗ ), for the Re = 10 and Re =
+50 simulations. The results show that the mass transferred into the amplitudes of
+these additional basis states is small-on the order of 1 × 10−6 for the Re = 10 case
+and 1 × 10−8 for Re = 50. The reason for the smaller mass transfer observed at
+Re = 50, which was also observed in the Taylor-Green case, is not entirely clear.
+As previously explained, several factors may contribute to this behavior such
+as differences in how the SQC adjusts its predictions to conserve momentum,
+how it adapts to the effective dissipation level, or how it tries reproduce the
+nonlinear terms in the equilibrium distribution. Similar to the Taylor-Green
+case, the profiles level off over time, indicating that the mass transfer into and
+out of the amplitudes associated with these basis states reaches a balance over
+the course of the simulations.
+Overall, the results obtained for both the Taylor-Green and lid-driven cavity
+cases provide clear insight into the SQC’s performance. First, the SQC provides
+accurate predictions even when extrapolating to velocity ranges beyond those
+seen during training, where nonlinear terms in the LBM equilibrium distribution
+become significant. These findings support the analysis in Section 5.2, which
+shows that the SQC can partially capture the nonlinear behavior of the BGK
+operator. Second, the SQC successfully reproduces the effective dissipative
+behavior of the BGK operator and adapts its level of dissipation across different
+Reynolds numbers, as demonstrated in the Taylor-Green case. Finally, the
+
+45
+
+lid-driven cavity results show that the SQC is sensitive to the strong velocity
+gradients that develop in the flow. This limitation arises because the SQC
+only partially captures the nonlinear terms of the equilibrium distribution and
+therefore cannot fully reproduce the Navier-Stokes stress tensor, leading to larger
+errors in regions with strong velocity gradients.
+7. Conclusion
+This study presented the development and validation of a low-depth SQC
+for the BGK collision operator on the D2 Q9 lattice. The proposed framework
+combines a rooted-density encoding of the particle populations into the quantum
+state, the evolution of that state under the SQC, and a final measurement in the
+computational basis to recover the post-collision populations in physical space.
+Through analytical derivations and numerical validation, we showed that this
+framework can partially reproduce both the nonlinear and dissipative behavior
+of the BGK operator without relying on probabilistic algorithms such as LCU or
+on multiple copies of the quantum state. Instead, these effects emerge naturally
+through the mapping between the physical and quantum representations.
+By enforcing mass conservation, D8 equivariance and scale equivariance in
+the circuit design, and encouraging momentum conservation during training, the
+SQC achieves an accurate and physically consistent approximation of the BGK
+operator. The final 15-block architecture, built from alternating single-qubit
+rotation and two-qubit entangling layers, achieves a substantially lower circuit
+depth than previous quantum collision circuits while still capturing part of the
+essential nonlinear and dissipative effects. When compiled to the native gate set
+of IBM’s Heron quantum processor (assuming all-to-all connectivity), the circuit
+requires only 724 native gates. Moreover, since the collision operation is local,
+the same circuit can be applied independently at each lattice site, making the
+total gate count independent of the lattice size.
+The SQC was validated on the Taylor-Green vortex and lid-driven cavity
+flows at Re = 10 and Re = 50. The results demonstrate that the SQC generalizes
+well beyond its training range, accurately predicting flow behavior in regimes
+where nonlinear effects in the equilibrium distribution become significant. The
+SQC also reproduces the dissipative character of the BGK operator, adapting
+its effective dissipation with Reynolds number. At the same time, the results
+reveal the SQC’s sensitivity to strong velocity gradients. Since the SQC can only
+partially capture the nonlinear dependence of the equilibrium, it cannot fully
+reproduce the Navier-Stokes stress tensor, leading to larger errors in regions
+where the velocity gradients are strong.
+To overcome the current need for re-initialization and measurement at every
+time step, future work should verify that coherent application of the SQC over
+multiple time steps, in combination with streaming, can reproduce the nonlinear
+relaxation behavior characteristic of the BGK operator in the classical setting.
+Furthermore, it will be necessary to address the accumulation of relative phases
+that occurs when the SQC is applied repeatedly. This may require training a
+circuit that can handle complex amplitudes or designing one that avoids phase
+46
+
+buildup altogether while maintaining sufficient expressivity. Finally, one could
+explore whether the seven additional basis states, currently used to effectively
+contribute to the rest population when computing macroscopic quantities, could
+be assigned a more physically meaningful role. Since these states expand the
+accessible Hilbert space, they may offer a way to capture a larger portion of the
+dissipation represented by the BGK operator if used more effectively.
+8. CRediT authorship contribution statement
+Monica Lăcătuş: Conceptualization, Methodology, Software, Data curation,
+Investigation, Validation, Visualization, Writing - original draft, Writing - review
+& editing. Matthias Möller: Supervision, Funding acquisition, Writing review & editing.
+9. Acknowledgment
+We gratefully acknowledge support from the joint research project Quantum
+Computational Fluid Dynamics by Fujitsu Limited and Delft University of
+Technology, co-funded by the Netherlands Enterprise Agency under project
+number PPS23-3-03596728.
+References
+[1] Q. Li, P. Schlatter, L. Brandt, D. S. Henningson, DNS of a spatially
+developing turbulent boundary layer with passive scalar transport, International Journal of Heat and Fluid Flow 30 (5) (2009) 916–929. doi:
+10.1016/j.ijheatfluidflow.2009.06.007.
+[2] J. Yao, S. Rezaeiravesh, P. Schlatter, F. Hussain, Direct numerical simulations of turbulent pipe flow up to Reτ ≈ 5200, Journal of Fluid Mechanics
+956 (2023) A18. doi:10.1017/jfm.2022.1013.
+[3] T. N. Theis, H.-S. P. Wong, The End of Moore’s Law: A New Beginning
+for Information Technology, Computing in Science & Engineering 19 (2)
+(2017) 41–50. doi:10.1109/MCSE.2017.29.
+[4] P. W. Shor, Algorithms for Quantum Computation: Discrete Logarithms and
+Factoring, in: Proceedings of the 35th Annual Symposium on Foundations
+of Computer Science (FOCS), IEEE, Santa Fe, NM, USA, 1994, pp. 124–134.
+doi:10.1109/SFCS.1994.365700.
+[5] L. K. Grover, A Fast Quantum Mechanical Algorithm for Database Search,
+in: Proceedings of the Twenty-Eighth Annual ACM Symposium on Theory of
+Computing (STOC ’96), 1996, pp. 212–219. doi:10.1145/237814.237866.
+
+47
+
+[6] A. Kandala, K. Temme, A. D. Córcoles, A. Mezzacapo, J. M. Chow,
+J. M. Gambetta, Error mitigation extends the computational reach of
+a noisy quantum processor, Nature 567 (2019) 491–495. doi:10.1038/
+s41586-019-1040-7.
+[7] F. Gaitan, Finding flows of a Navier–Stokes fluid through quantum computing, npj Quantum Information 6. doi:10.1038/s41534-020-00291-0.
+[8] L. Budinski, Quantum algorithm for the Navier–Stokes equations by using
+the streamfunction-vorticity formulation and the lattice Boltzmann method,
+International Journal of Quantum Information 20 (02). doi:10.1142/
+S0219749921500398.
+[9] Y. Liu, Z. Chen, C. Shu, P. Rebentrost, Y. Liu, S. C. Chew, B. C. Khoo,
+Y. D. Cui, A variational quantum algorithm–based numerical method for
+solving potential and Stokes flows, arXiv preprint arXiv:2303.01805doi:
+10.48550/arXiv.2303.01805.
+[10] Z. Song, R. Deaton, B. Gard, S. H. Bryngelson, Incompressible
+Navier–Stokes solve on noisy quantum hardware via a hybrid quantum–classical scheme, arXiv preprint arXiv:2406.00280doi:10.48550/
+arXiv.2406.00280.
+[11] O. Kyriienko, A. E. Paine, V. E. Elfving, Solving nonlinear differential equations with differentiable quantum circuits, arXiv preprint
+arXiv:2011.10395doi:10.48550/arXiv.2011.10395.
+[12] J. Yepez, Quantum lattice-gas model for the Burgers equation, Journal of Statistical Physics 107 (1-2) (2002) 203–224. doi:10.1023/A:
+1014514805610.
+[13] A. D. Bastida Zamora, L. Budinski, O. Niemimäki, V. Lahtinen, Efficient quantum lattice gas automata, Computers & Fluids,doi:10.1016/j.
+compfluid.2024.106476.
+[14] N. Fonio, P. Sagaut, G. Di Molfetta, Quantum collision circuit, quantum
+invariants and quantum phase estimation procedure for fluid dynamic lattice
+gas automata, Computers & Fluids 299 (2025) 106688. doi:10.1016/j.
+compfluid.2025.106688.
+[15] M. A. Schalkers, M. Möller, On the importance of data encoding in quantum
+Boltzmann methods, Quantum Information Processing 23 (1) (2024) 20.
+doi:10.1007/s11128-023-04216-6.
+[16] P. Love, On Quantum Extensions of Hydrodynamic Lattice Gas Automata,
+Condensed Matter 4 (2) (2019) 48. doi:10.3390/condmat4020048.
+[17] H. Yu, R. Chen, H. Wang, Z. Yuan, Y. Zhao, Y. An, Y. Xu, L. Zhu,
+GPU accelerated lattice Boltzmann simulation for rotational turbulence,
+Computers & Mathematics with Applications 67 (2) (2014) 437–451. doi:
+10.1016/j.camwa.2013.09.017.
+48
+
+[18] B. N. Todorova, R. Steijl, Quantum algorithm for the collisionless Boltzmann
+equation, Journal of Computational Physics 409 (2020) 109347. doi:10.
+1016/j.jcp.2020.109347.
+[19] M. A. Schalkers, M. Möller, Efficient and fail-safe quantum algorithm for the
+transport equation, Journal of Computational Physics 502 (2024) Article
+112816. doi:10.1016/j.jcp.2024.112816.
+[20] M. A. Schalkers, M. Möller, Momentum exchange method for quantum
+Boltzmann methods, Computers & Fluids 285 (2024) Article 106453. doi:
+10.1016/j.compfluid.2024.106453.
+[21] M. Lee, Z. Song, S. Kocherla, A. Adams, A. Alexeev, S. H. Bryngelson, A multiple-circuit approach to quantum resource reduction with
+application to the quantum lattice Boltzmann method, arXiv preprint
+arXiv:2401.12248doi:10.48550/arXiv.2401.12248.
+[22] D. Wawrzyniak, J. Winter, S. Schmidt, T. Indinger, C. F. Janßen,
+U. Schramm, N. A. Adams, A quantum algorithm for the lattice–Boltzmann
+method advection–diffusion equation, Computer Physics Communications
+306 (2024) 109373. doi:10.1016/j.cpc.2024.109373.
+[23] L. Budinski, Quantum algorithm for the advection–diffusion equation simulated with the lattice Boltzmann method, Quantum Information Processing
+20 (2021) 57. doi:10.1007/s11128-021-02996-3.
+[24] A. M. Childs, N. Wiebe, Hamiltonian Simulation Using Linear Combinations
+of Unitary Operations, Quantum Inf. Comput. 12 (11–12) (2012) 901–924.
+doi:10.5555/2481569.2481570.
+[25] E. D. Kumar, S. H. Frankel, Quantum unitary matrix representation of
+the lattice Boltzmann model for low Reynolds fluid flow simulation, AVS
+Quantum Science 7 (1) (2025) 013802. doi:10.1116/5.0245082.
+[26] L. Xu, M. Li, L. Zhang, H. Sun, J. Yao, Improved quantum lattice Boltzmann
+method for advection-diffusion equations with a linear collision model,
+Physical Review E 111 (4) (2025) 045305. doi:10.1103/PhysRevE.111.
+045305.
+[27] W. Itani, K. R. Sreenivasan, S. Succi, Quantum Algorithm for Lattice
+Boltzmann (QALB) Simulation of Incompressible Fluids with a Nonlinear
+Collision Term, Physics of Fluids 36 (1) (2024) 017112. doi:10.1063/5.
+0176569.
+[28] C. Sanavio, S. Succi, Lattice Boltzmann–Carleman quantum algorithm and
+circuit for fluid flows at moderate Reynolds number, AVS Quantum Science
+6 (2) (2024) 023802. doi:10.1116/5.0195549.
+
+49
+
+[29] C. Sanavio, W. A. Simon, A. Ralli, P. Love, S. Succi, Carleman–lattice–
+Boltzmann quantum circuit with matrix access oracles, Physics of Fluids
+37 (3) (2025) 037123. doi:10.1063/5.0254588.
+[30] B. Wang, Z. Meng, Y. Zhao, Y. Yang, Quantum lattice Boltzmann method
+for simulating nonlinear fluid dynamics (2025). arXiv:arXiv:2502.16568,
+doi:10.48550/arXiv.2502.16568.
+[31] W. Itani, Towards a Quantum Algorithm for Lattice Boltzmann (QALB)
+Simulation with a Nonlinear Collision Term, Ph.d. dissertation, New York
+University Tandon School of Engineering, New York, New York (2025).
+URL
+https://www.proquest.com/openview/
+a52e013673992dcace5c320c9d4dcb09
+[32] M. C. Bedrunka, T. Horstmann, B. Picard, D. Reith, H. Foysi, Machine
+learning enhanced collision operator for the lattice boltzmann method based
+on invariant networks, arXiv preprint arXiv:2412.08229, physics.comp-ph.
+doi:10.48550/arXiv.2412.08229.
+[33] J. T. Horstmann, M. C. Bedrunka, H. Foysi, Lattice boltzmann method
+with artificial bulk viscosity using a neural collision operator, Computers &
+Fluids 272 (2024) 106191. doi:10.1016/j.compfluid.2024.106191.
+URL
+https://www.sciencedirect.com/science/article/pii/
+S0045793024000239
+[34] A. Corbetta, A. Gabbana, V. Gyrya, D. Livescu, J. Prins, F. Toschi, Toward
+learning lattice Boltzmann collision operators, European Physical Journal
+E 46 (3) (2023) 10. doi:10.1140/epje/s10189-023-00267-w.
+[35] G. Ortali, A. Gabbana, I. Atmodimedjo, A. Corbetta, Enhancing lattice
+kinetic schemes for fluid dynamics with lattice-equivariant neural networks,
+arXiv preprint arXiv:2405.13850, physics.comp-ph. doi:10.48550/arXiv.
+2405.13850.
+[36] K. Mitarai, M. Negoro, M. Kitagawa, K. Fujii, Quantum circuit learning,
+Phys. Rev. A 98 (3) (2018) 032309, published 10 September 2018. doi:
+10.1103/PhysRevA.98.032309.
+[37] T. Krüger, H. Kusumaatmaja, A. Kuzmin, O. Shardt, G. Silva, E. M. Viggen,
+The Lattice Boltzmann Method: Principles and Practice, 1st Edition, Graduate Texts in Physics, Springer, 2017. doi:10.1007/978-3-319-44649-3.
+[38] M. A. Nielsen, I. L. Chuang, Quantum Computation and Quantum Information, 1st Edition, Cambridge Series on Information and the Natural Sciences, Cambridge University Press, Cambridge, UK, 2000. doi:
+10.1017/CBO9780511976667.
+[39] J. R. McClean, S. Boixo, V. N. Smelyanskiy, R. Babbush, H. Neven,
+Barren plateaus in quantum neural network training landscapes, Nature Communications 9 (2018) 4812, published 16 November 2018. doi:
+10.1038/s41467-018-07090-4.
+50
+
+[40] Q. T. Nguyen, L. Schatzki, P. Braccia, M. Ragone, P. J. Coles, F. Sauvage,
+M. Larocca, M. Cerezo, Theory for Equivariant Quantum Neural Networks,
+PRX Quantum 5 (2024) 020328, published 6 May 2024. doi:10.1103/
+PRXQuantum.5.020328.
+[41] J. J. Meyer, M. Mularski, E. Gil-Fuster, A. A. Mele, F. Arzani, A. Wilms,
+J. Eisert, Exploiting Symmetry in Variational Quantum Machine Learning,
+PRX Quantum 4 (1) (2023) 010328. doi:10.1103/PRXQuantum.4.010328.
+[42] S. Succi, C. Sanavio, P. Love, The foundational value of quantum computing
+for classical fluids, arXiv preprint arXiv:2510.09178doi:10.48550/arXiv.
+2510.09178.
+URL https://arxiv.org/abs/2510.09178
+[43] IBM Quantum Documentation, Transpiler (‘qiskit.transpiler‘), accessed: 29
+July 2025.
+URL
+https://quantum.cloud.ibm.com/docs/en/api/qiskit/
+transpiler
+[44] IBM Quantum Documentation, Native gates and operations, accessed: 29
+July 2025.
+URL https://quantum.cloud.ibm.com/docs/guides/native-gates
+
+51
+
+Appendices
+A. Data Generations
+The parameters used for generating the training dataset are summarized in Table 4. A visualization of the sampled density distribution, the velocity-magnitude
+distribution together with the associated velocity-direction distribution, as well
+as the L2 -norm distribution of the non-equilibrium components, is provided in
+Figure 18.
+
+(a) Density distribution ρ.
+
+(b) Velocity magnitude distribution ∥u∥.
+
+(c) Velocity direction distribution
+θ = arctan 2(uy , ux ).
+
+(d) L2 -norm of the non-equilibrium vector
+∥f neq ∥2 .
+
+Figure 18: Distributions sampled for the training dataset. The plots show (a) the density
+distribution, (b) the magnitude of the velocity field, (c) the corresponding velocity-direction
+distribution, and (d) the L2 -norm of the non-equilibrium population vector.
+
+52
+
+Table 4: Parameters used in data generation.
+
+Parameter
+Number of training samples
+Density
+Velocity magnitude
+Std. deviation of non-eq. noise
+Relaxation time
+Test split fraction
+
+Symbol
+N
+ρ
+|u|
+σneq
+τ
+rsplit
+
+Value
+1,000,000
+Uniform on [0.95, 1.05]
+Uniform on [0.00, 0.01]
+Uniform on [0.00, 5 × 10−4 ]
+1
+0.001
+
+B. Optimal Circuit Architecture Experiments
+Table 5: Training parameters used in the circuit architecture experiments.
+
+Training Parameter
+
+Setting
+
+Optimizer
+Learning Rate
+Training Iterations
+Batch Size
+Momentum Conservation Penalty
+Accuracy Tolerance
+Parameter Initialization
+
+JAX Gradient Descent
+0.05
+250,000
+5
+OFF
+1 × 10−5
+Uniform on [−π, π]
+
+C. SQC Depth Analysis Experiments
+Table 6: Training parameters used in the circuit depth analysis experiments.
+
+Training Parameter
+
+Setting
+
+Optimizer
+Learning Rate
+Training Iterations
+Batch Size
+Momentum Conservation Penalty
+Accuracy Tolerance
+Parameter Initialization
+
+53
+
+JAX Gradient Descent
+0.05
+250,00
+5
+OFF
+1 × 10−5
+Uniform on [−π, π]
+
+D. Momentum Penalty Experiments
+Table 7: Training parameters used in the momentum penalty experiments.
+
+Training Parameter
+
+Setting
+
+Optimizer
+Learning Rate
+Training Iterations
+Batch Size
+Momentum Conservation Penalty
+Accuracy Tolerance
+Parameter Initialization
+
+54
+
+JAX Gradient Descent
+0.05
+250,000
+5
+ON
+1 × 10−5
+Uniform on [−π, π]
+
+

@@ -1,0 +1,2565 @@
+A Demonstration of
+Quantum Circuit Implementation for Obstacle Flow
+
+arXiv:2605.28135v1 [quant-ph] 27 May 2026
+
+Using Carleman-Linearized Lattice Boltzmann Method
+Kazumasa Ueno,1,2∗ Keita Kanno,1 and Yasunori Lee1
+1 QunaSys, Bunkyo, Tokyo 113-0001, Japan
+2 Department of Earth and Planetary Science,
+
+The University of Tokyo, Bunkyo, Tokyo 113-0033, Japan
+
+Fluid simulations, especially at high Reynolds numbers, are computationally expensive on classical computers, making them promising application targets for quantum
+computing. Recent studies have combined the lattice Boltzmann method (LBM) with
+Carleman linearization to design quantum algorithms for computational fluid dynamics
+(CFD). However, practical quantum-circuit implementations of these algorithms that
+incorporate non-periodic boundary conditions have not been fully explored. In this
+work, we implement a quantum algorithm for two-dimensional linearized fluid flow
+around an obstacle, using block-encoding of the linear-system matrix and quantum
+singular value transformation (QSVT) to solve it. Inflow, outflow, and no-slip boundary conditions are formulated as sparse matrix operations and efficiently embedded
+into quantum circuits using index-value encoding. We demonstrate logarithmic scaling of the required numbers of qubits and gates with respect to the number of lattice
+points, suggesting the potential feasibility of quantum-computational fluid dynamics
+simulations.
+
+∗
+
+kazumasa-e67@eps.s.u-tokyo.ac.jp
+
+Contents
+1 Introduction
+
+1
+
+2 Methods
+
+4
+
+2.1
+
+2.2
+
+2.3
+
+Lattice Boltzmann method (LBM) . . . . . . . . . . . . . . . . . . . . . . .
+
+4
+
+2.1.1
+
+Preliminaries . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+4
+
+2.1.2
+
+Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+4
+
+2.1.3
+
+Implementation of boundary conditions . . . . . . . . . . . . . . . . .
+
+6
+
+Quantum lattice Boltzmann method (QLBM) . . . . . . . . . . . . . . . . .
+
+8
+
+2.2.1
+
+LBE in vector matrix form . . . . . . . . . . . . . . . . . . . . . . . .
+
+8
+
+2.2.2
+
+Carleman linearization . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+11
+
+2.2.3
+
+Time evolution and final state idling . . . . . . . . . . . . . . . . . .
+
+13
+
+Quantum Circuit . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+14
+
+2.3.1
+
+State vector and velocity encoding . . . . . . . . . . . . . . . . . . .
+
+14
+
+2.3.2
+
+Block-encoding of matrix A(1) . . . . . . . . . . . . . . . . . . . . . .
+
+14
+
+2.3.3
+
+Block-encoding of matrix L . . . . . . . . . . . . . . . . . . . . . . .
+
+19
+
+2.3.4
+
+QLSA by QSVT . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+21
+
+3 Results
+
+23
+
+3.1
+
+Effective condition number of the matrix L . . . . . . . . . . . . . . . . . . .
+
+23
+
+3.2
+
+Simulation results of flow around an obstacle . . . . . . . . . . . . . . . . . .
+
+24
+
+3.2.1
+
+Quantum circuit simulation . . . . . . . . . . . . . . . . . . . . . . .
+
+25
+
+3.2.2
+
+Classical emulation via the Clenshaw algorithm . . . . . . . . . . . .
+
+26
+
+3.3
+
+Quantum computational costs of UL . . . . . . . . . . . . . . . . . . . . . . .
+
+29
+
+3.4
+
+Fault-tolerant T-gate cost estimation . . . . . . . . . . . . . . . . . . . . . .
+
+30
+
+4 Discussion
+
+31
+
+5 Conclusion
+
+33
+
+A Notation
+
+35
+
+1
+
+Introduction
+
+Research on the application of quantum computing to classical problems has become increasingly active in recent years. A prominent target is computational fluid dynamics (CFD),
+which is indispensable in many fields, ranging from automotive engineering to weather
+forecasting. Since high-fidelity numerical simulations of fluid flows on classical computers,
+especially at high Reynolds numbers, are prohibitively costly, quantum computing holds
+promise for breakthroughs in this area.
+Fluid flows are typically governed by nonlinear partial differential equations (PDEs),
+such as the Navier–Stokes equations. However, directly solving these equations is not the
+only way to simulate them. One alternative way is to use the lattice Boltzmann method
+(LBM), which is a mesoscopic method that represents fluid states by a distribution function fq (x, t) of fictitious particles moving on a discrete grid with discrete velocities, and
+models the dynamics by solving the Boltzmann kinetic equation in fq (x, t). Although the
+Boltzmann equation is still nonlinear, the LBM is notable for its structural feature that
+is advantageous for quantum implementations: it separates nonlinearity and nonlocality.
+Specifically, the collision step (relaxation toward equilibrium) is nonlinear but local to each
+lattice site, whereas the streaming step (propagation) is linear and nonlocal. This makes
+the nonlinearity in the LBM formulation more amenable to Carleman linearization than
+that in the original Navier-Stokes formulation.
+For quantum algorithms for solving time evolution equations, there are two main approaches. The first approach is to implement the quantum circuit corresponding to a singletime-step evolution and apply it repeatedly to the quantum state. For the LBM case, the
+collision and streaming operators can be block-encoded into quantum circuits based on their
+representation as linear combinations of unitaries (LCU) [MSL+ 15, Bud21, SS23] (while
+costly) or their structure [SSR+ 25] (with the help of linearization), for instance. However,
+this approach in general suffers from exponential decay in the amplitude of the target quantum state with respect to the number of time steps, which poses a significant challenge.
+This partly motivates the second approach, which embeds the full time evolution into
+a single linear system and solves it all at once using a quantum linear system algorithm
+(QLSA). For the LBM case, the discrete-time lattice Boltzmann equation (LBE) can be
+embedded into a linear system by Carleman linearization, and the matrix to be inverted
+can be block-encoded into quantum circuits based on its structure [LYW+ 23, PKJ+ 24].
+1
+
+A notable recent contribution in this line is the work of [JKL+ 25a, JKL+ 25b], which
+developed an end-to-end quantum algorithm for nonlinear fluid dynamics and achieved
+bounded quantum advantage under specific conditions, validated on nontrivial incompressible flow benchmarks.
+Despite this progress, there are two key aspects which remain to be addressed in more
+depth. First, the dependence of the condition number of the linear system on the problem
+parameters has not been fully characterized. In the analysis of [JKL+ 25a], all the simulation
+parameters (i.e., the number of lattice points N , the number of time steps Nt , and the
+relaxation time τ ) are simultaneously fixed as functions of Reynolds number through a
+specific parameter selection, and the scaling of the condition number is analyzed primarily
+with respect to Reynolds number. This somewhat obscures the independent contributions
+of Nt and N to the condition number, which is important for identifying the regime in
+which the quantum algorithm may be advantageous. Also, while [JKL+ 25a] constructed
+explicit quantum circuits for the collision and streaming operators in the periodic setting
+and [JKL+ 25b] extended the algorithm to incorporate nontrivial boundary conditions at the
+block-encoding level, a complete gate-level implementation of the block-encoding of system
+matrices that include realistic boundary conditions (e.g., inflow, outflow, and no-slip walls)
+and obstacle geometries is still lacking.
+In this work, we take a step toward filling these gaps by developing a quantum algorithm
+for simulating flows around an obstacle using first-order Carleman-linearized LBM and a
+QLSA based on quantum singular value transformation (QSVT). Following the discrete-time
+formulation of the LBE, we express the full time-discretized update (collision and streaming
+together with boundary conditions) as a sparse matrix acting on the vector of distribution
+functions. The resulting linear system is solved via matrix inversion based on QSVT. We
+analyze the condition number of the linear system and identify that it is primarily governed
+by the number of time steps Nt , with weak dependence on the spatial resolution. This finding suggests that the quantum algorithm may be most advantageous for problems requiring
+high spatial resolution but only moderate temporal extent. Furthermore, we decompose the
+block-encoding of this matrix into four oracle quantum circuits (OsetBC , Ocollision , Ostreaming ,
+OunsetBC ) that mirror the collision-streaming factorization of the evolution matrix, and describe each oracle’s construction in detail. We provide explicit gate-level resource estimates
+(qubit counts and gate counts) for representative obstacle-flow configurations.
+
+2
+
+The rest of the paper is organized as follows:
+• In Section 2, we describe the methods used in this study, including the formulation of
+boundary conditions and the implementation of the quantum circuits.
+• In Section 3, we present the results of our simulations, including the condition number
+analysis and the required numbers of qubits and gates.
+• In Section 4, we discuss the implications of our findings and possible future directions.
+• In Section 5, we summarize our conclusions.
+The notation used in this paper is summarized in Appendix A.
+lattice Boltzmann eq. (BGK)
+(2.10)
+rewrite
+nonlinear vector eq.
+(2.24)
+linearize
+infinite-dim. linear system
+(2.26), (2.27)
+truncate
+finite-dim. linear system
+
+for quantum
+computation
+
+(2.29)
+
+another finite-dim. linear system
+(2.33)
+
+matrix inversion (QSVT etc.)
+Figure 1: High-level overview of the quantum lattice Boltzmann method.
+3
+
+2
+
+Methods
+
+2.1
+
+Lattice Boltzmann method (LBM)
+
+Here we briefly summarize the lattice Boltzmann method. For more details, the reader is
+referred to standard textbooks, e.g., [KKK+ 16, Suc18].
+2.1.1
+
+Preliminaries
+
+The two key dimensionless parameters governing a fluid flow are the Reynolds number
+Re =
+
+Ul
+ν
+
+(2.1)
+
+and the Mach number
+
+U
+(2.2)
+cs
+where U is the characteristic velocity, l is the characteristic length, ν is the kinematic
+Ma =
+
+viscosity, and cs is the speed of sound. In the present study, we take U to be the inflow
+speed and l to be the channel width.
+2.1.2
+
+Description
+
+In the LBM, fluid states are represented by distribution functions fq (xn , t) at lattice node xn
+and time t with discrete velocity cq , from which the macroscopic density ρ and the macroscopic velocity u can be obtained as
+ρ(xn , t) =
+
+X
+
+fq (xn , t),
+
+(2.3)
+
+fq (xn , t)cq .
+
+(2.4)
+
+q
+
+ρu(xn , t) =
+
+X
+q
+
+The discrete velocity set {cq } is chosen so that it satisfies isotropy and moment-matching
+conditions required to recover the original Navier–Stokes equations. Such velocity sets in
+D spatial dimensions with Q discrete velocities are called DDQQ models. In this study, we
+consider an Nx × Ny square lattice and use the D2Q9 model whose discrete velocity vectors
+and associated weights are shown in Fig. 2 and Table 1, and the speed of sound is given by
+1 ∆x
+cs = √
+3 ∆t
+for the lattice spacing ∆x and the time step ∆t.
+4
+
+(2.5)
+
+cU
+
+cUL
+
+cUR
+crest
+
+cL
+
+cDL
+
+cR
+
+cDR
+
+cD
+
+Figure 2: Unit discrete velocity vectors of the D2Q9 lattice. The vectors cR , cU , . . . , cDR
+correspond to the eight directions connecting a node to its nearest neighbors, and
+crest denotes the rest velocity (|crest | = 0).
+Table 1: Weights wq associated with the discrete velocities in the D2Q9 lattice.
+wR
+
+wU
+
+wL
+
+wD
+
+wUR
+
+wUL
+
+1
+9
+
+wDL
+
+wDR
+
+wrest
+
+1
+36
+
+4
+9
+
+The evolution of fq in a time step ∆t is described by the lattice Boltzmann equation
+(LBE)
+fq (xn + cq ∆t, t + ∆t) = fq (xn , t) + Ωq (xn , t),
+
+(2.6)
+
+where Ωq is a collision operator. A widely used choice for Ωq is the Bhatnagar–Gross–Krook
+(BGK) collision operator [BGK54]
+Ωq (xn , t) = −
+
+i
+∆t h
+fq (xn , t) − fqeq. (xn , t) ,
+τ
+
+(2.7)
+
+where fqeq. is the equilibrium distribution function and τ is a parameter which determines
+the rate of relaxation towards it, related to ν as
+
+
+∆t
+2
+ν = cs τ −
+2
+
+(2.8)
+
+(as long as Ma ≪ 1 and Ma ≪ Re). Therefore, given a target value of Re, the relaxation
+time τ is fixed as
+
+1 U l ∆t
++
+.
+(2.9)
+c2s Re
+2
+In lattice units where the lattice spacing ∆x = 1 and the time step ∆t = 1, adopting BGK
+τ=
+
+collision operator reduces the LBE to
+i
+1h
+eq.
+fq (xn + cq , t + 1) = fq (xn , t) − fq (xn , t) − fq (xn , t) .
+τ
+5
+
+(2.10)
+
+The evolution in classical LBM is typically implemented in two steps: the collision step
+first updates the distribution function locally as
+i
+1h
+fq∗ (xn , t) = fq (xn , t) − fq (xn , t) − fqeq. (xn , t) ,
+τ
+
+(2.11)
+
+and then the streaming step advects fq∗ to neighboring nodes as
+fq (xn + cq , t + 1) = fq∗ (xn , t).
+
+(2.12)
+
+Hereafter, we work in the lattice units. Note that the equilibrium distribution function
+is given by low-order terms in the expansion of the Maxwell–Boltzmann distribution, which
+can be written in the lattice units as
+
+
+u(xn , t) · cq (u(xn , t) · cq )2 u(xn , t) · u(xn , t)
+eq.
+fq (xn , t) = wq ρ(xn , t) 1 +
++
+−
+. (2.13)
+c2s
+2c4s
+2c2s
+2.1.3
+
+Implementation of boundary conditions
+
+Periodic boundary conditions are straightforward to implement in LBM: during the streaming step, distribution functions that leave one side of the domain enter from the opposite
+side. In contrast, non-periodic boundaries require additional treatment.
+No-slip stationary walls. We use the bounce-back scheme, in which distributions impinging on the wall are reflected in the opposite directions. For example, for a wall located
+halfway between lattice nodes on the bottom boundary, the bounce-back condition is
+fU (xn , t + 1) = fD∗ (xn , t),
+∗
+fUR (xn , t + 1) = fDL
+(xn , t), and
+∗
+(xn , t).
+fUL (xn , t + 1) = fDR
+
+∗
+fDL
+(xn , t)
+
+fUR (xn , t + 1)
+
+Figure 3: Halfway bounce-back boundary condition at a stationary wall.
+
+6
+
+(2.14)
+
+Inflow. We impose a prescribed velocity using a moving-wall-type boundary condition.
+For example, let us consider an inflow at the left boundary with velocity uin . In this case,
+for a boundary located halfway between lattice nodes on the left boundary, we set
+2wL ρin uin · cL
+,
+c2s
+2wDL ρin uin · cDL
+∗
+fUR (xn , t + 1) = fDL
+(xn , t) +
+, and
+c2s
+2wUL ρin uin · cUL
+∗
+(xn , t) +
+fDR (xn , t + 1) = fUL
+,
+c2s
+fR (xn , t + 1) = fL∗ (xn , t) +
+
+(2.15)
+
+where ρin is the density at the boundary node. Note that Eq. (2.15) specifies, after the
+streaming step, only the distribution functions whose velocities point into the interior of the
+fluid domain (right-pointing at the left boundary). These are the directions that would otherwise remain undefined, since they would require streaming from outside the fluid domain.
+The remaining directions at the same boundary node are obtained by ordinary streaming
+from interior nodes.
+Outflow. We use a simple extrapolation from the interior.1 For example, let us consider
+an outflow at the right boundary. For a boundary located halfway between lattice nodes on
+the right boundary, we set
+fL (xn , t + 1) = fL (xn − cR , t + 1),
+fUL (xn , t + 1) = fUL (xn − cR , t + 1), and
+
+(2.16)
+
+fDL (xn , t + 1) = fDL (xn − cR , t + 1).
+As in the inflow case, Eq. (2.16) specifies, after the streaming step, only the distribution
+functions whose velocities point into the interior of the fluid domain (left-pointing at the
+right boundary), with the remaining directions at the same boundary node obtained by
+ordinary streaming from interior nodes.
+
+1
+
+Note that this outflow treatment is not commonly used in classical LBM simulations which use more
+accurate methods. However, it is equivalent to the zeroth-order Neumann boundary condition adopted
+in [JKL+ 25b] for the outlet, and is sufficient for the purpose of this study.
+
+7
+
+2.2
+
+Quantum lattice Boltzmann method (QLBM)
+
+In this section, we describe the quantum lattice Boltzmann method using a quantum linear
+system algorithm, developed in [LYW+ 23, PKJ+ 24, JKL+ 25a, JKL+ 25b]. While we largely
+adopt the formulation developed by the latter two, we depart from their choice of the shifted
+distribution function gq := fq −wq 2 and instead work with the standard distribution function
+fq throughout this paper. This choice is sufficient for the first-order Carleman linearization.
+2.2.1
+
+LBE in vector matrix form
+
+Hereafter, we adopt the following notation for the velocity and node indices that appear in
+the collision-streaming pipeline:
+• q, n: pre-collision (input) velocity and node indices.
+• q ∗ : post-collision velocity index. Nodes are unchanged by collision.
+• qout , nout : post-streaming (output) velocity and node indices.
+Primes ′ are reserved exclusively for additional summation dummy indices (all on the precollision side).
+Let us rewrite the equilibrium distribution function (2.13) in terms of the distribution
+functions f . By assuming a weakly compressible flow (1 − ρ ≪ 1), the inverse density is
+approximated as
+
+1
+= (1 − (1 − ρ))−1 ≈ 2 − ρ.
+ρ
+
+Substituting Eqs. (2.3) and (2.4) into Eq. (2.13), the equilibrium distribution function can
+
+2
+
+Note that we are using the shifted variables from the beginning and their f¯m corresponds to our fq .
+
+8
+
+be expressed as
+fqeq.
+∗ (xn , t)
+
+
+X
+
+≈ wq ∗
+
+fq (xn , t)
+
+q
+
++
+
+X
+
+fq (xn , t)
+
+q
+
+(cq · cq∗ )
+c2s
+
+
+
+X
+(cq · cq∗ )(cq′ · cq∗ )
++
+fq (xn , t)fq′ (xn , t) 2 −
+fq′′ (xn , t)
+2c4s
+q,q ′
+q ′′
+
+
+
+X
+X
+(cq · cq′ )
+−
+fq (xn , t)fq′ (xn , t) 2 −
+fq′′ (xn , t)
+2c2s
+′
+′′
+q,q
+q
+X
+
+
+= wq ∗
+
+
+
+(cq · cq∗ )
+fq (xn , t) 1 +
+c2s
+q
+
+
+X
+(cq · cq∗ )(cq′ · cq∗ ) (cq · cq′ )
+fq (xn , t)fq′ (xn , t)
++
+−
+4
+c
+c2s
+s
+′
+q,q
+
+
+X
+(cq · cq∗ )(cq′ · cq∗ ) (cq · cq′ )
++
+fq (xn , t)fq′ (xn , t)fq′′ (xn , t) −
++
+.
+2c4s
+2c2s
+q,q ′ ,q ′′
+X
+
+(2.17)
+
+We now vectorize the distribution functions to obtain a matrix-vector form of the discrete
+LBE. We define a vector f (t) ∈ RN Q by stacking fq (xn , t) as f (t)[nQ + q] = fq (xn , t), i.e.
+
+
+f0 (x0 , t)
+
+
+..
+
+
+
+
+.
+
+
+
+ f
+ Q−1 (x0 , t) 
+
+
+
+
+f
+(x
+,
+t)
+0
+1
+
+
+
+
+..
+.
+
+(2.18)
+f (t) = 
+.
+
+
+
+ fQ−1 (x1 , t) 
+
+
+
+
+..
+
+
+.
+
+
+
+
+.
+..
+
+
+
+
+fQ−1 (xN −1 , t)
+Using the expanded equilibrium distribution (2.17), the collision step (2.11) can be written
+in matrix-vector form as
+f ∗ (t) = (I + F1 )f (t) + F2 f (t)⊗2 + F3 f (t)⊗3 ,
+9
+
+(2.19)
+
+where ⊗ denotes the Kronecker product. Since the collision operator acts locally at each
+lattice node, the nonzero elements of F1 ∈ RN Q×N Q , F2 ∈ RN Q×(N Q) , and F3 ∈ RN Q×(N Q)
+2
+
+3
+
+are given as follows:
+
+
+cq · c q ∗
+− δq ∗ q + w q ∗ 1 +
+c2s
+
+
+1
+(cq · cq∗ )(cq′ · cq∗ ) (cq · cq′ )
+=
+wq∗
+−
+τ
+c4s
+c2s
+
+
+1
+(cq · cq∗ )(cq′ · cq∗ ) (cq · cq′ )
+=
+wq∗ −
++
+.
+τ
+2c4s
+2c2s
+1
+=
+τ
+
+(F1 )(nQ+q∗ )(nQ+q)
+(F2 )(nQ+q∗ )[(nQ+q)N Q+(nQ+q′ )]
+(F3 )(nQ+q∗ )[(nQ+q)(N Q)2 +(nQ+q′ )N Q+(nQ+q′′ )]
+
+
+
+(2.20)
+The streaming step (2.12) advects the post-collision distribution to neighboring nodes.
+In matrix-vector form, this is written as
+f (t + 1) = Sf ∗ (t),
+
+(2.21)
+
+where S is a permutation matrix. The matrix S is defined so that S(nout Q+qout )(nQ+q∗ ) = 1
+(and all other entries zero), where the output indices (nout , qout ) depend on the boundary condition at node xn for post-collision direction q ∗ . Corresponding to the boundary
+conditions in Sec. 2.1, the cases are
+
+
+
+(xn + cq∗ , q ∗ )
+
+
+
+
+
+
+(xn , q¯∗ )
+(xnout , qout ) =
+
+
+(xn , q¯∗ )
+
+
+
+
+
+
+(x + c ∗ + c , q ∗ )
+n
+q
+R
+
+(interior/periodic)
+(bounce-back (2.14))
+(inflow (2.15))
+
+(2.22)
+
+(outflow (2.16))
+
+where q̄ denotes the index of the velocity opposite to cq .
+In addition to the streaming, the inflow boundary condition (2.15) introduces a velocityP
+dependent correction proportional to the local density ρin = q fq (xn , t). In general, this
+correction is linear in f and can be absorbed into the streaming-collision matrix. However,
+for the quantum circuit implementation, it is more convenient to approximate ρin ≈ 1 and
+treat the inflow correction as a constant forcing. Under this approximation, the inflow
+boundary is handled by the same bounce-back mechanism as the no-slip walls, and the
+constant velocity corrections
+bnout Q+qout =
+
+2wqout uin · cqout
+c2s
+10
+
+(2.23)
+
+are grouped into a forcing vector b ∈ RN Q , with bnout Q+qout = 0 for nodes not on the inflow
+boundary or for non-outgoing directions. We adopt this approximation hereafter.
+Combining the collision, boundary correction, and streaming steps, the discrete LBE in
+matrix-vector form reads
+h
+i
+f (t + 1) = S (I + F1 )f (t) + F2 f (t)⊗2 + F3 f (t)⊗3 + b.
+
+2.2.2
+
+(2.24)
+
+Carleman linearization
+
+Implementing Eq. (2.24) on a quantum computer requires a linear formulation. The approach we adopt here is the Carleman linearization [Car32], which embeds the nonlinear recurrence into a linear recurrence on an extended space. Let us define the (infinitedimensional) Carleman vector by
+
+
+f (t)
+
+
+
+
+
+ f (t)⊗2 
+
+
+y (∞) (t) := 
+⊗3 
+ f (t) 
+
+
+..
+.
+
+(2.25)
+
+and similarly y ∗(∞) (t) by stacking f ∗ (t)⊗k ’s. Then, the collision step (2.19) can be represented as a linear map
+(2.26)
+
+y ∗(∞) (t) = C (∞) y (∞) (t)
+
+where the concrete form of the Carleman collision matrix C (∞) is derived by expanding each
+f ∗ (t) on the left-hand side. Similarly, the streaming step (2.21) and the constant forcing
+extend to the Carleman vector as
+(∞)
+
+y (∞) (t + 1) = S (∞) y ∗(∞) (t) + bC ,
+where S (∞) is the block-diagonal streaming matrix
+
+S
+
+ S ⊗2
+
+(∞)
+S
+=
+
+S ⊗3
+
+(∞)
+
+and bC
+
+(2.27)
+
+
+
+..
+
+.
+
+
+
+
+,
+
+
+
+(2.28)
+
+is the Carleman-extended forcing vector whose k-th block collects the terms in-
+
+volving b that arise when taking the k-fold Kronecker product of f (t + 1).
+11
+
+In practice, we truncate the Carleman vector at a finite order NC and reduce it to a
+P C
+k
+dC -dimensional vector (dC := N
+k=1 (N Q) )
+
+
+f (t)
+
+
+ f (t)⊗2 
+
+
+y (NC ) (t) :=  .
+.
+ ..
+
+
+
+⊗NC
+f (t)
+Correspondingly, the linear recurrence is also truncated as
+(N )
+
+(2.29)
+
+) (NC )
+y (NC ) (t + 1) = |S (NC{z
+C } y (NC ) (t) + bC C ,
+=:A(NC )
+
+where the collision-streaming matrix A(NC ) ∈ RdC ×dC . Furthermore, to improve the numerical stability of the time evolution, we introduce a step-size parameter h ∈ [0, 1] and replace
+the recurrence (2.29) with the interpolated update
+(N ) 
+
+y (NC ) (t + h) = (1 − h)y (NC ) (t) + h A(NC ) y (NC ) (t) + bC C
+(N )
+
+e(NC ) y (NC ) (t) + hb C
+=A
+C
+
+(2.30)
+
+where
+e(NC ) := (1 − h)I + hA(NC ) .
+A
+
+(2.31)
+
+This interpolation suppresses patchy inflow transients arising in the linearized dynamics.3
+For the first-order truncation (NC = 1), the Carleman embedding is equivalent to keeping
+only the linear term in Eq. (2.24), and the collision-streaming matrix reduces to
+A(1) = S(I + F1 ).
+
+(2.32)
+
+For each node n, input velocity index q, and post-collision velocity index q ∗ , the matrix
+element A(1) (nout Q+qout )(nQ+q) is determined by the boundary condition type at node n, where
+(nout , qout ) denotes the streaming destination of (n, q ∗ ) as defined in Eq. (2.22).
+
+3
+
+The update (2.30) advances the state by the fractional step h rather than a full lattice time unit. After Nt
+updates the physical time elapsed is T = Nt h. The choice h = 1 recovers the original recurrence (2.29).
+
+12
+
+2.2.3
+
+Time evolution and final state idling
+
+To compute y(Nt h) on a quantum computer, we unroll the recurrence (2.30) into a single
+linear system following the approach of [Ber10, JKL+ 25a] which at the same time amplifies
+the probability of extracting the final state upon measurement.
+The recurrence is first unrolled into Nt + 1 block rows (evolution steps). Then, to boost
+the probability of extracting the final state, (2W − 1)Nt − 1 additional idling steps are
+appended. During the idling phase, the state is simply copied. The corresponding linear
+system is
+
+
+I
+ e(NC )
+−A
+I
+
+
+..
+..
+
+.
+.
+
+
+e(NC ) I
+−A
+
+
+
+−I I
+
+
+..
+
+.
+
+|
+
+{z
+
+=:L
+
+
+
+
+y (NC ) (0)
+  (NC )
+  (N ) 
+ y
+(h)   hbC C 
+
+ 
+
+
+ 
+
+..
+..
+
+ 
+
+.
+.
+
+
+ 
+  (NC )
+  (N ) 
+(Nt h) =  hbC C  .
+ y
+
+ 
+
+ y (NC ) (N h)  0 
+t 
+
+
+
+
+ 
+
+..
+..
+..
+
+
+
+
+
+. 
+.
+.
+ 
+
+−I I
+y (NC ) (Nt h)
+0
+}
+|
+{z
+}
+y (NC ) (0)
+
+
+
+
+
+(2.33)
+
+=:bL
+
+Here, L is a 2W Nt dC × 2W Nt dC block bidiagonal matrix whose block rows 2 to Nt + 1 have
+e(NC ) (evolution) on the subdiagonal, while block rows Nt + 2 to 2W Nt have −I (idling)
+−A
+on the subdiagonal. The right-hand side contains the initial condition y (NC ) (0) in the first
+(N )
+
+block, the scaled forcing hbC C in blocks 2 to Nt + 1 (evolution), and zeros in the remaining
+blocks (idling).
+Solving this linear system, one obtains a vector y = L−1 bL whose first Nt + 1 blocks
+encode the full time history y (NC ) (0), y (NC ) (h), . . . , y (NC ) (Nt h), and the remaining (2W −
+1)Nt − 1 blocks all contain the final state y (NC ) (Nt h). As a result, the final state y (NC ) (Nt h)
+occupies a fraction (2W − 1)/2W of the solution vector y, which approaches 1 exponentially
+with increasing W . When carried out on a quantum computer with sufficiently large W ,
+this ensures that y (NC ) (Nt h) can be extracted with high probability upon measurement.
+
+13
+
+2.3
+
+Quantum Circuit
+
+The linear system (2.33) can be solved on a quantum computer using a quantum linear
+system algorithm (QLSA); see, e.g., [MPS+ 24] for a comprehensive survey of QLSAs. In
+this section, we describe the quantum-circuit implementation of QLBM using a QLSA based
+on the quantum singular value transformation (QSVT) [GSLW18].
+2.3.1
+
+State vector and velocity encoding
+
+The vector f (2.18) is encoded in a quantum state on nNx + nNy + nQ qubits as
+Q−1
+1 XX
+fq (xnx ,ny ) |nx ⟩ |ny ⟩ |q⟩ ,
+||f || n ,n q=0
+e
+
+x
+
+(2.34)
+
+y
+
+e = 2nQ . The coefficients
+where nNx = ⌈log2 Nx ⌉, nNy = ⌈log2 Ny ⌉, nQ = ⌈log2 Q⌉, and Q
+corresponding to out-of-range indices, namely those not included in the velocity set, are set
+to zero. For simplicity, we only consider the case where Nx and Ny are powers of two.
+To encode the D2Q9 velocities on nQ = 4 qubits, we use a binary encoding in which the
+lower two bits q[1 : 0] represent the x-component and the upper two bits q[3 : 2] represent
+the y-component:
+
+
+00
+
+
+ 2
+q[1 : 0] = 012
+
+
+
+10
+2
+
+
+
+00
+
+
+ 2
+q[3 : 2] = 012
+
+
+
+10
+
+cx = 0,
+cx = −1,
+cx = +1,
+
+2
+
+cy = 0,
+cy = −1,
+
+(2.35)
+
+cy = +1.
+
+For example, the velocity index corresponding to cUL in Fig. 2 is encoded as q[1 : 0] = 012
+and q[3 : 2] = 102 , giving q = 10012 = 9. The nine active velocity indices under this encoding
+are q ∈ {0, 1, 2, 4, 5, 6, 8, 9, 10}, while q ∈ {3, 7, 11, 12, 13, 14, 15} are non-physical padding
+indices. The opposite-direction mapping q → q̄ used in the bounce-back boundary reduces
+to swapping the two bits in each pair: q[0] ↔ q[1] for the x-component and q[2] ↔ q[3] for
+the y-component.
+2.3.2
+
+Block-encoding of matrix A(1)
+
+The matrix A(1) (2.32) is block-encoded in a unitary UA(1) as
+
+
+⟨0a | ⊗ I UA(1) |0a ⟩ ⊗ I = A(1) /αA ,
+14
+
+(2.36)
+
+where a is the number of ancilla qubits and αA is the subnormalization factor. Equivalently,
+for each input basis state |nx ⟩ |ny ⟩ |q⟩ on the system register,
+
+1 X
+A(1) (nout Q+qout )(nQ+q) |nout,x ⟩ |nout,y ⟩ |qout ⟩ |0a ⟩ + |⊥⟩ ,
+UA(1) |nx ⟩ |ny ⟩ |q⟩ |0a ⟩ =
+αA n , q
+out
+
+out
+
+(2.37)
+
+where |⊥⟩ is a state orthogonal to the subspace where ancilla qubits are |0 ⟩.
+a
+
+From the Eqs. (2.20) and (2.22), one can see that the structure of A(1) has two key
+properties:
+• The element value depends only on the velocity pair (q ∗ , q) and the boundary condition
+type, and does not depend on the node index n.
+• The output node nout depends only on (n, q ∗ ) and the boundary condition type, and
+does not depend on the input velocity q.
+Based on these properties, the block-encoding uses the following ancilla registers encoding
+• post-collision velocity index q ∗ (nQ qubits),
+• boundary condition type BC (2 qubits),
+• amplitude (1 qubit).
+The block-encoding unitary is decomposed as follows using four oracle quantum circuits:
+1. Apply Hadamard gates to prepare a uniform superposition over the q ∗ register.
+2. OsetBC : Compute the boundary-condition type at node xn for the post-collision velocity direction q ∗ .
+3. Ocollision : Encode the information of the collision matrix on the amplitude register.
+4. Ostreaming : Update the node register from n to nout and, when applicable, the velocity
+register from q ∗ to qout .
+5. OunsetBC : Uncompute the BC register based on the updated node and velocity registers.
+6. Apply Hadamard gates to the q ∗ register.
+7. Apply an X gate to the amplitude register so that the block-encoding condition
+projects onto |0⟩.
+15
+
+|nx ⟩ |ny ⟩
+|q⟩
+|0⟩q∗
+|0⟩BC
+
+nNx+nNy
+nQ
+nQ
+
+H ⊗nQ
+
+Ostreaming
+
+OsetBC
+
+OunsetBC
+
+Ocollision
+
+2
+
+H ⊗nQ
+
+|0⟩amp.
+
+X
+Figure 4: Quantum circuit for UA(1) .
+
+OsetBC . This oracle computes one of the following three boundary-condition types:
+• Bounce-back (|BC⟩ = |11⟩) for
+◦ nodes at the left boundary (nx = 0) with a left-pointing post-collision velocity.
+◦ nodes at the top (ny = Ny − 1) or bottom (ny = 0) boundaries with velocities
+pointing into the wall.
+◦ nodes adjacent to the obstacle with velocities pointing into it.
+Since inflow uses the same bounce-back mechanism as no-slip walls, no separate inflow
+flag is needed.
+• Outflow (|BC⟩ = |10⟩) for
+◦ nodes at the right boundary (nx = Nx − 1) with post-collision velocity being
+either right-pointing or non-physical (q ∗ = 00112 , 01112 , 10112 ).
+• Interior (|BC⟩ = |00⟩) otherwise.
+These conditions are implemented using multi-controlled NOT gates on the BC register,
+conditioned on specific bit patterns of (nx , ny , q ∗ ).
+Ocollision . This oracle encodes the matrix elements Cq∗ q of the collision matrix I + F1 into
+the amplitude register via controlled-RY gates. The rotation angle for each pair (q ∗ , q) of
+active velocity indices (i.e. both in {0, 1, 2, 4, 5, 6, 8, 9, 10}) is
+
+
+Cq ∗ q
+,
+θq∗ q = 2 arcsin
+maxq∗ ,q |Cq∗ q |
+16
+
+(2.38)
+
+nNx
+
+|nx ⟩
+
+nNy
+
+|ny ⟩
+
+bounce-back
+
+outflow
+
+nQ
+
+|q ∗ ⟩
+|0⟩BC[0]
+|0⟩BC[1]
+
+Figure 5: Quantum circuit for OsetBC . Each depicted gate actually consists of multiple
+multi-controlled NOT gates (controlled on each boundary condition).
+where, recalling Eq. (2.20),
+1
+wq ∗ 
+cq · c q ∗ 
+Cq ∗ q = 1 −
+δq ∗ q +
+1+
+.
+τ
+τ
+c2s
+
+
+(2.39)
+
+When Cq∗ q < 0, a controlled-Z gate needs to be additionally applied to correct the sign.
+For the outflow boundary (|BC⟩ = |10⟩, taken here as the right boundary), the Neumann
+condition requires that the outward (cx = +1) populations at the boundary be discarded
+(they have no upstream source) and that the inward (cx = −1) populations be supplied
+by extrapolation. To this end, additional RY gates load the extrapolation values at the
+non-physical post-collision indices q ∗ ∈ {3, 7, 11} (i.e., q ∗ [1 : 0] = 112 ), with coefficients corresponding to the left-pointing velocities q ∗ −2 ∈ {1, 5, 9}. The subsequent bit manipulation
+in Ostreaming then routes these values to the inward slot at the right boundary node.
+
+|q⟩
+|q ∗ ⟩
+
+nQ =4
+
+q
+
+q
+
+q∗
+
+q∗
+
+RY (θq∗ q )
+
+RY (θq∗ q )
+
+nQ =4
+
+|BC[0]⟩
+|BC[1]⟩
+|0⟩amp.
+
+Figure 6: Quantum circuit for Ocollision . Each depicted gate actually consists of multiple
+multi-controlled rotation gates.
+
+Ostreaming . This oracle first swaps the pre/post-collision velocity registers |q⟩ and |q ∗ ⟩. The
+streaming operations are then applied to the pre-collision velocity register |q ∗ ⟩q (encoding
+the post-collision velocity q ∗ after the swap) and the node register, controlled on BC:
+17
+
+• Interior (|BC⟩ = |00⟩): For each velocity component, a controlled adder (incrementer) or subtractor (decrementer) updates the corresponding coordinate register.
+Specifically, if q ∗ [0] = 1 (i.e., cx = −1), subtract 1 from nx ; if q ∗ [1] = 1 (i.e., cx = +1),
+add 1 to nx . The y-coordinate is updated analogously using q ∗ [2] and q ∗ [3].
+• Bounce-back (|BC⟩ = |11⟩): Controlled-SWAP gates exchange q ∗ [0] ↔ q ∗ [1] (conditioned on BC[1] = 1) and q ∗ [2] ↔ q ∗ [3] (conditioned on BC[0] = 1), mapping q ∗ to
+the opposite direction q¯∗ . The node register is unchanged.
+• Outflow (|BC⟩ = |10⟩): Building on the extrapolation values pre-loaded by Ocollision
+at q ∗ [1 : 0] = 112 , the controlled-SWAP 0 ↔ 1 (shared with bounce-back, conditioned
+on BC[1] = 1) followed by a controlled-X gate (conditioned on BC = 102 ) exchanging
+q ∗ [1 : 0] = 102 ↔ 112 :
+X
+
+SWAP
+
+1
+◦ The extrapolation entries follow 112 −−−→ 112 −→
+012 , becoming the boundary’s
+
+inward (cx = −1) component for the next time step.
+SWAP
+
+X
+
+1
+◦ The q ∗ [1 : 0] = 102 entries follow 102 −−−→ 012 −→
+112 , parked at the non-
+
+physical index and thereby decoupled from the LBM dynamics.
+The node register is updated for the y-coordinate as in the interior case, while the
+x-coordinate is unchanged. Concretely, the y-coordinate adder/subtractor is applied
+when BC[0] = 0 (i.e., BC ∈ {002 , 102 }), while the x-coordinate one is applied only
+when BC = 002 .
+|nx ⟩
+|ny ⟩
+
+nNx
+
++1
+
+nNy
+
+−1
++1
+
+−1
+
+|q[0]⟩
+|q[1]⟩
+q
+
+|q[2]⟩
+
+q∗
+
+SWAP
+
+|q[3]⟩
+|q ∗ ⟩
+
+nQ =4
+
+q∗
+
+q
+
+|BC[0]⟩
+|BC[1]⟩
+Figure 7: Quantum circuit for Ostreaming .
+18
+
+OunsetBC . This oracle uncomputes the BC register to |00⟩. The quantum circuit has
+the same form as (inverse of) OsetBC except that OunsetBC needs to control on the updated
+registers. For the streaming matrix S in Eq. (2.22), the boundary condition at (nout , qout )
+can be determined from (nout , qout ) alone, so the uncomputation is well-defined. Specifically,
+the classification in terms of the output registers is:
+• Bounce-back (|BC⟩ = |11⟩): Since Ostreaming reverses the velocity without shifting
+the node, the output velocity points away from the boundary. This is for
+◦ nodes at the left boundary (nout,x = 0) with a right-pointing output velocity.
+◦ nodes at the top (nout,y = Ny − 1) or bottom (nout,y = 0) boundaries with
+velocities pointing into the interior.
+◦ nodes adjacent to the obstacle with velocities pointing away from it.
+• Outflow (|BC⟩ = |10⟩): Since the nx shift is not applied for outflow, the node remains
+at the right boundary (nout,x = Nx − 1). Nodes at the right boundary with a leftpointing output velocity (qout [1 : 0] = 012 ) and non-physical output velocity (qout =
+00112 , 01112 , 10112 ) are classified as outflow.
+• Interior (|BC⟩ = |00⟩): All other output index pairs.
+2.3.3
+
+Block-encoding of matrix L
+
+The block-encoding unitary UA(1) is now used to construct a block-encoding unitary UL .
+First, let us decompose the block-row index l ∈ {0, 1, . . . , 2W Nt − 1} as l = s · Nt + t, where
+Nt = 2nNt is assumed. Then, it is encoded on a (nt + W )-qubit register |t⟩ |s⟩ where
+• |t⟩: time-step register, indexing the time step within each phase.
+• |s⟩: phase register, distinguishing the evolution (s = 0) and idling (s ≥ 1) phases.
+Since L is block bidiagonal, each block row contains at most two nonzero blocks: the
+e or −I depending on the phase. Here we
+diagonal block I and the subdiagonal block −A
+block-encode L as a sum of
+• the diagonal I’s and the evolution-phase (s = 0) subdiagonal −(1 − h)I’s, and
+
+19
+
+• the evolution-phase (s = 0) subdiagonal −hA(1) ’s and the idling-phase (s ≥ 1) subdiagonal −I’s
+using an ancilla qubit |·⟩INL to distinguish between the two. Since (1−h) ≤ 1, the maximum
+absolute value among the individual amplitudes is
+cL = max{1, max
+h |Cq∗ q |},
+∗
+q ,q
+
+(2.40)
+
+by which each rotation is normalized. Together with the factors due to the Hadamard gates
+acting on the q ∗ register and the summand-indicator INL register at both ends of the circuit,
+the overall subnormalization factor of the block-encoding is
+√ nQ +1 2
+αL = cL · ( 2
+).
+
+(2.41)
+
+The block-encoding of L proceeds as follows:
+1. Apply Hadamard gates to the q ∗ and INL registers.
+2. Diagonal term: Apply a controlled-RY gate to the amplitude register encoding the
+value +1/cL , conditioned on |0⟩INL |q0∗ ⟩q∗ for an arbitrarily chosen index q0∗ .
+3. Evolution subdiagonal, −(1 − h)I term: Apply a controlled-RY gate to the amplitude register encoding the value −(1 − h)/cL , conditioned on |0⟩INL |q1∗ ⟩q∗ |0⟩s for
+an arbitrarily chosen index q1∗ satisfying q1∗ ̸= q0∗ .
+4. Evolution subdiagonal, −hA(1) term: Controlled on |1⟩INL |0⟩s , apply the blockencoding UA(1) to the system register, which encodes hCq∗ q /cL into the amplitude.
+5. Idling subdiagonal, −I term: Apply a controlled-RY gate to the amplitude register
+encoding the value −1/cL , conditioned on |1⟩INL |q2∗ ⟩q∗ |s⟩s for any s ≥ 1 and for an
+arbitrarily chosen index q2∗ . The last block row (s = 2W − 1, t = Nt − 1) is excluded
+from this term using an auxiliary qubit.
+6. Row shift: Increment the block-row index l → l + 1 to map the subdiagonal column
+index to the correct row.
+7. Apply Hadamard gates to the q ∗ and INL registers.
+8. Apply an X gate to the amplitude register.
+20
+
+|t⟩time
+|s⟩idling
+
+nNt
+W
+
+|0⟩INL
+
+0
+
+≥1
+
+0
+
++1
+
++1
+
+H
+
+H
+
+|nx ⟩ |ny ⟩ |q⟩
+|0⟩q∗
+
+q0∗
+
+H ⊗nQ
+
+q1∗
+
+O−hA(1)
+
+|0⟩BC
+(+I)
+
+|0⟩amp.
+
+RY
+
+(−(1−h)I)
+
+q2∗
+
+q1∗
+
+(−I)
+
+RY
+
+H ⊗nQ
+X
+
+RY
+
+Figure 8: Quantum circuit for UL . Here, O−hA(1) is the inner part of the block-encoding
+circuit UA(1) in Fig. 4, i.e., the sequence of OsetBC , Ocollision , Ostreaming , and OunsetBC ,
+with Ocollision modified to encode −hCq∗ q /cL in place of Cq∗ q / maxq∗ ,q |Cq∗ q |. The
+control indices q0∗ , q1∗ , and q2∗ of the RY gates can be chosen arbitrarily as long as
+q0∗ ̸= q1∗ .
+2.3.4
+
+QLSA by QSVT
+
+To solve the linear system of equations (2.33), we employ a QLSA based on QSVT [GSLW18].
+For a block-encoded matrix M with the singular value decomposition V ΣW † , QSVT by an
+odd (resp. even) polynomial P realizes a block-encoding of PSV (M ) := V P (Σ)W † (resp.
+V P (Σ)V † ). A circuit which achieves this consists of alternating applications of the blockencoding unitary and its inverse, interleaved with controlled phase rotations corresponding
+to the polynomial P , as shown in Fig. 9.
+|0⟩
+|0a ⟩
+
+eiϕ0 Z
+0
+
+...
+
+eiϕ1 Z
+0
+
+0
+
+...
+
+0
+UL†
+
+UL
+|bL ⟩
+
+eiϕdeg P Z
+0
+
+0
+
+...
+
+Figure 9: A quantum circuit for the QSVT-based QLSA. The ancilla register |0a ⟩ includes
+all ancilla qubits used in the block-encoding of L (i.e., q ∗ , INL , BC, and the
+amplitude registers in our case).
+If one chooses an odd polynomial Pinv. approximating 1/(κeff. x) on [1/κeff. , 1] such that
+the range contains all the singular values of the (subnormalized) block-encoded matrix,
+21
+
+QSVT (approximately) achieves matrix inversion and solves the linear system. The degree
+dQSVT of the polynomial required to achieve an approximation error of at most ϵQSVT is
+known to be
+
+
+dQSVT = O(κeff. log
+
+κeff.
+ϵQSVT
+
+
+),
+
+(2.42)
+
+and this determines the number of queries to the block-encoding unitary.4
+For the case of QLBM (2.33), if the approximation parameter κeff. is chosen so that it
+satisfies
+κeff. ≥
+
+1
+σmin (L/αL )
+
+where the right-hand side accounts for both the condition number of the original linear
+system and the block-encoding subnormalization factor, then the range [1/κeff. , 1] contains
+all the singular values of the block-encoded matrix to be inverted by QSVT. According to
+[Ber10, Lem. 6],
+∥L−1 ∥2 = O(Nt κV )
+
+(2.43)
+
+where κV = ∥V ∥2 ∥V −1 ∥2 is the condition number of the matrix V that diagonalizes the
+evolution matrix I − SC. Since the subnormalization factor αL is independent of Nt , it
+follows that κeff. ≥ αL ∥L−1 ∥2 = O(αL Nt κV ).
+The output state, upon successful post-selection on the ancilla registers being |0⟩, is
+proportional to L−1 |bL ⟩. The success probability of this post-selection is Ω(1/κ2eff. ). In
+practice, when one uses quantum amplitude estimation to extract observables from the
+solution state, the estimation procedure internally handles the low success probability at
+the cost of an additional O(κeff. ) multiplicative overhead in the query complexity. It is
+therefore important to estimate κeff. to evaluate the quantum resources required for the
+QLBM, which we will investigate in Sec. 3.1.
+
+4
+
+In this work, we used the polynomial introduced in [GKS21] and computed the angles based on [BS24].
+
+22
+
+3
+
+Results
+
+In this study, we consider two-dimensional flow around a rectangular obstacle in a square
+computational domain as a benchmark problem to evaluate the performance of the proposed
+QLBM. The number of grid points are set to powers of two with Nx = Ny for simplicity,
+and an obstacle of size Nx /8 × Ny /4 is placed in the upstream region of the channel, as
+shown in Fig. 10.
+
+inflow
+
+outflow
+
+bounce-back (no-slip)
+Figure 10: Flow configuration for the 2D channel with a rectangular obstacle. The gray
+dashed lines are added to indicate the size and position of the obstacle.
+The common physical parameters are set as follows:
+step-size parameter
+
+:
+
+h = 0.5
+
+Carleman truncation order
+
+:
+
+NC = 1
+
+idling phase parameter
+
+:
+
+W =1
+
+Reynolds number
+
+:
+
+Re = 1 (based on the channel width)
+
+Mach number of the inflow velocity
+
+:
+
+Ma = 0.01
+
+The initial condition is the fluid at rest (zero velocity everywhere, i.e. fq (xn , 0) ∝ wq ).
+3.1
+
+Effective condition number of the matrix L
+
+We first compute the condition number and the maximum/minimum singular values of L
+for various grid sizes Nx (= Ny ) and time-step counts Nt . We take the channel width Ny
+(in lattice units) as the characteristic length l and Ma · cs as the characteristic velocity U .
+The relaxation time τ is then determined by Eq. (2.9).
+23
+
+The results are shown in Fig. 11. As the total simulation time T = Nt h increases, the
+condition number of L grows approximately linearly with T , which is due to the decrease
+of the minimum singular value. The growth of ∥L−1 ∥ with T is consistent with the bound
+in Eq. (2.43), ∥L−1 ∥ = O(Nt κV ), since Nt is proportional to T and κV is independent of T .
+Furthermore, neither the spatial resolution Nx nor the presence of the obstacle significantly
+affects these spectral properties, confirming that T is the dominant driver of κeff. . The
+effective condition number for a given problem instance is then obtained by multiplying
+1/σmin (L) by the subnormalization factor αL .
+
+Figure 11: Spectral properties of the matrix L as a function of the total simulation time
+T = Nt · h, for various grid sizes Nx (= Ny ).
+
+3.2
+
+Simulation results of flow around an obstacle
+
+We validate the proposed QLBM through two complementary approaches. First, we perform a state-vector simulation of the full quantum circuit on a small problem instance and
+compare it with a classical time-stepping simulation to confirm that the quantum algorithm
+correctly reproduces the linearized LBM dynamics. Second, we employ the Clenshaw algorithm to classically emulate the QSVT-based polynomial transformation. The state-vector
+simulation of the full quantum circuit requires simulating all qubits including the ancilla
+qubits used for block-encoding, which severely limits the tractable problem size. The Clenshaw algorithm operates directly on the matrix L without the ancilla overhead, enabling
+the same QSVT polynomial to be evaluated on significantly larger problem instances. This
+allows us to study larger Nt and the dependence of the solution accuracy on the polynomial
+degree dQSVT and the effective condition number κQSVT .
+24
+
+3.2.1
+
+Quantum circuit simulation
+
+We perform a state-vector simulation of the full quantum circuit to verify that the quantum algorithm correctly reproduces the expected linearized LBM dynamics. Due to the
+exponential cost of state-vector simulation, we consider a small-scale problem with
+• Nx = Ny = 8
+• Nt = 32 (T = 16)
+• κQSVT = 3500 : chosen to exceed 1/σmin (L) × αL ≈ 3488, where 1/σmin (L) ≈ 109 is
+read from Fig. 11 and αL = 1 · 25 = 32 is the subnormalization factor of Eq. (2.41).
+• dQSVT = 35001 : chosen based on Fig. 13 (presented later) to suppress the polynomial
+approximation error below 1%.
+We compare the QLBM result with two classical references: (i) a classical time-stepping
+simulation of the linearized LBM (linear reference), and (ii) a classical time-stepping simulation of the original nonlinear LBM (nonlinear reference). Figure 12 shows the velocity fields
+at an intermediate time t = 8 and at the final time t = T = 16, and the 2-norm of the error
+as a function of time t. The QLBM result is in good agreement with the linear reference
+at all times, confirming that the quantum circuit correctly implements the intended linear
+system solver. Notably, the error of QLBM with respect to the linear reference remains well
+below that with respect to the nonlinear reference, suggesting that, in this particular case,
+the numerical error introduced by the QSVT-based polynomial approximation is negligible
+compared to the truncation error in the Carleman linearization.
+
+Figure 12: State-vector simulation results of the QLBM
+(Nx = Ny = 8, Nt = 32 (T = 16), κQSVT = 3500, dQSVT = 35001).
+
+25
+
+3.2.2
+
+Classical emulation via the Clenshaw algorithm
+
+While the quantum circuit simulation validates the correctness of the QLBM, state-vector
+simulation of the full circuit requires exponential memory in the total number of qubits,
+including the numerous ancilla qubits introduced by the block-encoding construction. To
+circumvent this limitation and extend our analysis to problems with larger scale, we employ
+the Clenshaw algorithm [Cle55] to directly evaluate the polynomial transformation on the
+matrix L which is supposed to be realized by the QSVT quantum circuit.5
+In the QSVT-based approach, the solution vector of the linear system y = L−1 bL is
+obtained by applying a polynomial transformation to the singular values of L/αL :
+dQSVT
+
+
+
+
+L
+y ≈ PSV [L/αL ] bL =
+aj Tj SV
+bL ,
+α
+L
+j=0
+X
+
+(3.1)
+
+where Tj is the Chebyshev polynomial of degree j and {aj } are the expansion coefficients
+of the matrix-inversion polynomial P (x) ≈ 1/(κQSVT x) in the Chebyshev basis.
+The Clenshaw algorithm evaluates the sum in Eq. (3.1) efficiently using the three-term
+recurrence relation of the Chebyshev polynomials. Since L is non-Hermitian, we work with
+the extended Hermitian matrix
+H=
+
+0
+
+L/αL
+
+L† /αL
+
+0
+
+!
+(3.2)
+
+and the extended vector x = (bL , 0)T . The Clenshaw recurrence defines a sequence of
+vectors
+
+
+
+0
+
+
+
+yj = adQSVT x
+
+
+
+2H y + a x − y
+j+1
+
+and the result is given by
+
+PdQSVT
+j=0
+
+j
+
+(j = dQSVT + 1)
+(j = dQSVT )
+j+2
+
+(3.3)
+
+(otherwise)
+
+aj Tj (H) x = y0 −H y1 , whose lower half yields PSV [L/αL ] bL .
+
+Naively evaluating a degree-dQSVT matrix polynomial would require dQSVT matrix-matrix
+products, but the Clenshaw recurrence avoids this entirely. Each iteration requires only a
+5
+
+Note that an actual quantum circuit implementation additionally involves converting polynomial coefficients to QSVT phase angles and synthesizing the resulting rotation gates into Clifford+T gate sequences,
+each of which introduces its own approximation errors. The results presented here should therefore be
+understood as evaluations of the ideal polynomial transformation, not as predictions of the actual output
+of a physical quantum device.
+
+26
+
+single sparse matrix-vector product with H and vector additions, keeping the cost linear in
+dQSVT and tractable even for large polynomial degrees.
+Validation against the quantum circuit simulation. We first confirm that the Clenshaw algorithm reproduces the QSVT quantum circuit simulation results. Using the same
+problem size and parameters as in Sec. 3.2.1 (Nx = Ny = 8, Nt = 32), we compared
+the QSVT and Clenshaw outputs for several combinations of κQSVT and dQSVT , including
+deliberately under-resolved settings where κQSVT lies below the estimated αL /σmin (L).
+In all cases, the Clenshaw-based solution agrees with the QSVT output to within a relative ℓ2 error of 2×10−6 , even when the QSVT solution itself exhibits a relative error of several
+percent with respect to the linear LBM reference (e.g. κQSVT = 3000, dQSVT = 15001). We
+note that this ∼ 10−6 residual, while far above machine precision, is consistent with the
+error introduced when converting polynomial coefficients to QSVT phase angles, which the
+Clenshaw algorithm bypasses by evaluating the polynomial directly from the coefficients.
+Since this level of discrepancy is negligible compared to the polynomial approximation error
+itself, the Clenshaw algorithm can be used as a proxy for the QSVT quantum algorithm, in
+the following larger-scale studies.
+Table 2: Relative ℓ2 errors between the outputs (Nx = Ny = 8, Nt = 32, h = 0.5).
+κQSVT
+
+dQSVT
+
+QSVT vs. Clenshaw
+
+QSVT vs. linear LBM
+
+3000
+
+15001
+
+2.1 × 10−7
+
+4.8 × 10−2
+
+3000
+
+30001
+
+8.2 × 10−7
+
+4.0 × 10−3
+
+3500
+
+17501
+
+3.6 × 10−7
+
+8.5 × 10−3
+
+3500
+
+35001
+
+1.7 × 10−6
+
+4.8 × 10−5
+
+Larger-scale simulation. Having validated the Clenshaw algorithm, we apply it to larger
+problem sizes Nx = Ny = 16, 32 with total simulation times T = 16, 32, 64. Here T = Nt h
+is the total (maximum) simulation time, whereas t = nt h (nt = 0, 1, . . . , Nt ) denotes the
+intermediate time at step nt . For each T , we choose two values of the condition number
+parameter κQSVT : a low value, set below αL /σmin (L) estimated (and roughly extrapolated)
+from Fig. 11, and a high value, set above it. The accuracy is measured by the relative ℓ2 error between the Clenshaw-based solution and the linear reference, evaluated as a function
+of intermediate time t. We focus here on the most demanding case T = 64 (Nt = 128).
+27
+
+Figure 13: Accuracy of the Clenshaw-based solution with respect to the linear reference as
+a function of intermediate time t, with total simulation time T = 64.
+As expected, when κQSVT is set below the true effective condition number, the error
+remains at the 10−1 level or above, regardless of dQSVT . In contrast, when κQSVT exceeds the
+true value, the error drops to the 10−1 level or below for sufficiently large dQSVT . Moreover,
+the rate at which the error decreases with increasing dQSVT is substantially larger for the
+high-κQSVT cases, consistent with the polynomial approximation theory (2.42): when κQSVT
+is underestimated, increasing dQSVT alone cannot compensate for the mismatch.
+To visualize these effects in physical space, Fig. 14 compares the velocity fields at intermediate time for three representative parameter choices. When κQSVT is not large enough
+(Fig. 14a), the flow field is broadly correct in the interior but develops spurious artifacts near
+the outflow (right) boundary. When the polynomial degree is not large enough (Fig. 14b),
+the entire velocity field is corrupted by oscillatory noise. Only when both κQSVT and dQSVT
+are sufficiently large (Fig. 14c) does the Clenshaw-based solution achieve good agreement
+with the linear reference.
+
+(a) κQSVT not large enough
+
+(b) dQSVT not large enough .
+
+(c) Both sufficiently large
+
+Figure 14: Velocity fields at t = 25 (nt = 50) for Nx = Ny = 32, T = 64.
+28
+
+3.3
+
+Quantum computational costs of UL
+
+We analyze the quantum computational costs of the block-encoding UL by counting the
+required numbers of elementary gates and qubits for various Nx (= Ny ) and Nt . Figure 15a
+shows the count of each elementary gate for Nt = 64 as a function of Nx = 2nNx . The number
+of Toffoli gates grows logarithmically with Nx , while those of the other gates remain nearly
+constant. Figure 15b further shows the Toffoli gate count for Nt = 64, 128, 256, which is
+almost independent of Nt . This is consistent with the structure of UL , in which the time-step
+dependence enters only through a small number of operations on ancilla qubits. Figure 16
+shows the total and ancilla qubit counts, both of which again grow logarithmically with Nx ,
+in agreement with the asymptotic analysis of Sec. 2.
+
+(a) Gate counts vs. Nx (for Nt = 64).
+
+(b) Toffoli count (vs. Nx ) for different Nt ’s.
+
+Figure 15: Quantum gate counts of UL .
+
+Figure 16: Qubit counts of UL . The ancilla qubit counts are identical for all Nt values.
+29
+
+3.4
+
+Fault-tolerant T-gate cost estimation
+
+To translate the gate counts into fault-tolerant resource requirements, we roughly estimate
+the total number of T gates needed for a single application of the QSVT-based QLSA.
+Following [JKL+ 25a], we decompose
+• each Toffoli gate (in UL ) into 7 T gates, and
+• each RY gate (in UL ) and Rz gate (in QSVT circuit) into 3 log2 (1/ϵgate ) T gates via
+the Clifford+T approximation [RS14], where ϵgate is the per-gate synthesis precision.
+Because the QSVT circuit calls UL a total of dQSVT times, where dQSVT is the polynomial
+degree (2.42), the total T-gate count is
+
+
+
+
+1
+(total)
+(UL )
+(UL )
+NT
+= NToffoli · dQSVT · 7 + NRY · dQSVT + (dQSVT + 1) · 3 log2
+ϵgate
+(U )
+
+(3.4)
+
+(U )
+
+L
+where NToffoli
+(resp. NRYL ) is the Toffoli (resp. RY ) gate counts of a single invocation of UL
+
+(Fig. 15). For the polynomial degree, we use dQSVT = c·κQSVT +1, dropping the logarithmic
+factor in Eq. (2.42) and absorbing it into the proportionality constant c. The effective
+condition number is approximated as κQSVT ≈ 4 · T 1.2 · 32, obtained by fitting 1/σmin (L) for
+the Nx = 16 obstacle configuration in Fig. 11 and multiplying the subnormalization factor
+αL with an additional safety margin of 1.2. Because this fit is based on a single small grid
+size and is extrapolated to larger T values, it should be regarded as an order-of-magnitude
+approximation of κeff . The per-gate synthesis precision is set to ϵgate = ϵbase /dQSVT to keep
+the total synthesis error bounded by ϵbase . Based on the error analysis in Fig. 13, we set
+c = 10, i.e. dQSVT = 10κQSVT + 1. Under this choice, the QSVT approximation error is
+on the order of a few percent, so we set ϵbase = 0.01 to keep the gate-synthesis error at a
+comparable level.
+Figure 17 shows the resulting T-gate counts. The total T-gate count ranges from approximately 1010 to 1012 , depending primarily on T : each doubling of T increases the count
+by roughly an order of magnitude. In contrast, the dependence on Nx is weak: the curves
+are nearly flat, consistent with the logarithmic scaling of the gate cost (Fig. 15) and the
+finding that κeff is driven by T rather than Nx (Sec. 3.1). We stress that these estimates are
+order-of-magnitude figures that rely on several approximations, notably the extrapolated
+κQSVT fit, the choice of the proportionality constant c, and the asymptotic gate-synthesis
+30
+
+cost, and are intended to illustrate the relative scaling with T and Nx rather than to provide precise resource counts. Moreover, they do not include the additional overhead from
+amplitude estimation to be discussed in Sec. 4.
+
+Figure 17: Estimated total T-gate count for a single QSVT-based linear system solve as
+a function of Nx , with dQSVT = 10 κQSVT + 1. Under this setting, the QSVT
+approximation error and the total gate-synthesis error (ϵbase = 0.01) are both on
+the order of a few percent. The T-gate count is dominated by the simulation
+time T and depends only weakly on the spatial resolution Nx .
+
+4
+
+Discussion
+
+Comparison with [JKL+ 25a, JKL+ 25b]. As discussed in Sec. 1, the present work
+extends the framework of [JKL+ 25a, JKL+ 25b] in two directions:
+(i) a characterization of how the effective condition number κQSVT (hence the number of
+queries to the block-encoding unitary) depends on Nt and Nx separately, and
+(ii) an explicit gate-level construction of the block-encoding of the system matrix that
+incorporates realistic boundary conditions and obstacle geometry.
+Regarding (i), [JKL+ 25a] concluded that quantum advantage at high Reynolds numbers
+is at most polynomial over classical CFD. Our independent analysis (Sec. 3.1) provides a
+more detailed picture: κQSVT grows strongly with Nt but depends only weakly on Nx . At
+high Reynolds numbers, achieving a given physical simulation time requires resolving finer
+spatial and temporal scales, which translates to a larger Nt per advection time and thus a
+31
+
+e QSVT ), this
+polynomially growing κQSVT . Since the QSVT polynomial degree scales as O(κ
+drives up the overall quantum resource cost, consistent with their conclusion. In contrast,
+when Nt is fixed and the domain size (in effect Nx ) is increased, the condition number
+remains nearly constant, so the quantum computational cost grows only mildly with system
+size.
+Regarding (ii), the gate-level construction in Sec. 2.3 shows that the quantum computational cost scales as O(log Nx ), so the marginal cost of increasing spatial resolution is low.
+The fault-tolerant T-gate cost estimation in Sec. 3.4 quantitatively confirms this: the total
+T-gate count for a single QSVT-based solve is dominated by the simulation time T rather
+than Nx .
+Together, these two observations suggest that the most favorable regime for the proposed
+algorithm is one in which a large spatial domain is simulated over a moderate number
+of time steps. Concrete examples include computing ensemble statistics by superposing
+runs with slightly different initial conditions, or exploring design variations, such as small
+perturbations to the obstacle geometry, within a single quantum computation. Even under
+the constraint of a limited number of time steps, the logarithmic scaling with Nx makes it
+possible to accommodate a large number of lattice points, or equivalently a large number
+of ensemble members, at modest additional quantum cost.
+Algorithmic limitations and future improvements. The present implementation
+adopts the first-order Carleman truncation (NC = 1), which linearizes the nonlinear LBE
+by retaining only the leading-order term. While this is sufficient for the low-Ma and low-Re
+regime, it introduces a truncation error that grows with the Mach number. Higher-order
+Carleman truncation (NC ≥ 2) can reduce this error at the cost of an exponential increase
+in the state-space dimension. The work of [JKL+ 25a] developed scalable block-encoding
+strategies and presented gate-cost estimates for arbitrary truncation orders NC . Extending
+our circuit-level framework to support NC ≥ 2 is an important direction for future work.
+We note that for the first-order truncation adopted in this work (NC = 1), the shiftedLBM equilibrium distribution introduced in [JKL+ 25a] is not required. However, at higher
+truncation orders, the shifted formulation becomes essential: it keeps the norm of the state
+vector bounded as O(1), thereby controlling the overhead of extracting classical information
+from the quantum state.
+
+32
+
+Applicability at high Reynolds numbers. A fundamental challenge for Carlemanlinearization-based quantum algorithms is that the convergence of the Carleman series is
+not guaranteed at high Reynolds numbers. In the LBM setting, this translates to a restriction on the Mach number of the inflow, which must remain sufficiently small for the
+Carleman expansion to converge. The present study is conducted at Re = 1 and Ma = 0.01,
+well within this regime. Extending the algorithm to turbulent, high-Reynolds-number flows
+requires either higher-order Carleman truncation with provable convergence bounds or fundamentally different linearization strategies, and is left for future work.
+End-to-end resource estimates. The fault-tolerant T-gate cost estimation in Sec. 3.4
+provides a concrete resource estimate for the block-encoding-plus-QSVT portion of the
+algorithm. However, a complete end-to-end resource estimate must also account for several
+additional costs that are not addressed in this work. First, extracting flow observables
+such as the drag force from the quantum state requires quantum amplitude estimation
+(as described, for example, in [PKJ+ 24]), which introduces an additional multiplicative
+overhead of O(κQSVT /ϵ) relative to a single application of the QLSA, where ϵ is the target
+precision. Combined with the QSVT polynomial degree dQSVT = e
+O(κQSVT ), the total
+e 2
+number of queries to the block-encoding scales as O(κ
+QSVT /ϵ), which grows quadratically
+with Nt up to logarithmic factors. Second, the cost of preparing the initial quantum state
+encoding the initial condition bL has not been included in our estimates. This cost depends
+on the structure of the initial data and may itself require nontrivial quantum circuits. For
+uniform initial conditions such as the zero-velocity state adopted in this work, however,
+state preparation is straightforward, as the same value is assigned to all lattice points and
+the preparation cost does not scale with Nx . Accounting for these readout and statepreparation costs would substantially increase the total quantum resource requirements
+beyond the estimates in Sec. 3.4 and should be incorporated in future end-to-end analyses.
+
+5
+
+Conclusion
+
+In this work, we developed and validated a quantum algorithm for simulating two-dimensional
+flow around an obstacle based on Carleman-linearized LBM and QSVT-based matrix inversion. The central contribution is an explicit gate-level construction of the quantum circuit
+for the system matrix block-encoding UL , which faithfully encodes the full time-discretized
+LBM dynamics—including inflow, outflow, and no-slip boundary conditions as well as an
+33
+
+obstacle geometry—without relying on high-level oracle abstractions. To our knowledge,
+this is the first demonstration of a QLBM circuit that incorporates realistic inflow and
+outflow boundary conditions at the gate level.
+Furthermore, a systematic numerical study of the effective condition number κQSVT of
+the system matrix L reveals that κQSVT grows strongly with the number of time steps Nt ,
+whereas its dependence on the number of lattice points Nx is comparatively weak. This
+finding identifies Nt as the dominant driver of quantum resource costs in the global-in-time
+formulation, and suggests that the proposed algorithm is most competitive in the regime of
+large spatial resolution but moderate temporal extent.
+We validated the quantum algorithm through state-vector simulation and also confirmed
+that the Clenshaw algorithm faithfully emulates the QSVT polynomial transformation. The
+latter classical emulation allowed us to study larger problem sizes than are accessible to
+full state-vector simulation, and to directly observe how the choice of condition number
+parameter κQSVT and polynomial degree dQSVT affects the accuracy of the reconstructed
+flow field. This provides a practical tool for calibrating quantum resource parameters before
+running the algorithm on actual quantum hardware.
+Finally, a gate-count analysis of the block-encoding UL shows that the total number
+of gates scales approximately logarithmically with Nx , in agreement with the asymptotic
+analysis. When translated into fault-tolerant T-gate costs, the total count ranges from 1010
+to 1012 for the problem sizes considered (Nx = Ny ≤ 1016 and T ≲ 103 ), with the simulation
+time T remaining the dominant cost driver rather than the spatial resolution Nx . This
+logarithmic scaling is encouraging for large-scale applications, as it implies that substantially
+increasing the spatial resolution of the simulation requires only a modest increase in quantum
+circuit complexity.
+
+Acknowledgments
+The authors thank Hayato Higuchi and Kouki Nakamura for helpful discussions. This work
+was performed using the JAXA Supercomputer System ‘JSS3’. This work was also supported by MEXT as “Program for Promoting Researches on the Supercomputer Fugaku”
+and used computational resources of supercomputer Fugaku provided by the RIKEN Center for Computational Science (Project ID: ra250010). The authors would like to thank
+Masafumi Yamazaki for his valuable support on the use of Fugaku supercomputer system.
+34
+
+A
+
+Notation
+
+Lattice Boltzmann method
+D
+
+:
+
+spatial dimension
+
+Q
+
+:
+
+number of discrete velocities
+
+Nx , Ny
+
+:
+
+number of lattice nodes in each direction
+
+N
+
+:
+
+total number of lattice nodes (N = Nx × Ny )
+
+xn
+
+:
+
+position of the n-th lattice node
+
+cq
+
+:
+
+discrete velocity vector for index q
+
+wq
+
+:
+
+weight associated with cq
+
+fq (xn , t)
+
+:
+
+discrete distribution function
+
+fqeq. (xn , t)
+fq∗ (xn , t)
+
+:
+
+equilibrium distribution function
+
+:
+
+post-collision distribution function
+
+ρ(xn , t)
+
+:
+
+macroscopic density
+
+u(xn , t)
+
+:
+
+macroscopic velocity
+
+cs
+
+:
+
+√
+lattice speed of sound (= 1/ 3 in lattice units)
+
+ν
+
+:
+
+kinematic viscosity
+
+τ
+
+:
+
+relaxation time
+
+Ωq
+
+:
+
+collision operator
+
+q̄
+
+:
+
+index of the velocity opposite to cq
+
+uin
+
+:
+
+prescribed inflow velocity
+
+ρin
+
+:
+
+density at the boundary node
+
+Matrix-vector formulation and Carleman linearization
+f ∈ RN Q
+
+:
+
+vectorized distribution function
+
+F1 , F2 , F3
+
+:
+
+collision matrices (linear, quadratic, cubic)
+
+S
+
+:
+
+streaming permutation matrix
+
+b ∈ RN Q
+
+:
+
+inflow forcing vector
+
+A(1) = S(I + F1 )
+
+:
+
+collision-streaming matrix (first-order)
+
+q, n
+
+:
+
+pre-collision velocity and node indices (input)
+
+∗
+
+:
+
+post-collision velocity index (node unchanged by collision)
+
+qout , nout
+
+:
+
+post-streaming velocity and node indices (output)
+
+Cq ∗ q
+
+:
+
+collision matrix element of I + F1
+
+q
+
+35
+
+NC
+
+:
+
+Carleman truncation order
+
+y(t)
+
+:
+
+Carleman vector (stacked tensor powers of f )
+
+dC
+
+:
+
+dimension of the Carleman vector
+
+C, S
+
+:
+
+Carleman collision and streaming matrices
+
+bC
+
+:
+
+Carleman-extended forcing vector
+
+h
+e
+A
+
+:
+
+step-size parameter for interpolated update
+
+:
+
+interpolated evolution matrix, (1 − h)I + hA(1)
+
+Nt
+
+:
+
+number of time steps
+
+T
+
+:
+
+total simulation time (= Nt · h)
+
+W
+
+:
+
+idling phase parameter
+
+L
+
+:
+
+block bidiagonal matrix of the linear system
+
+y
+
+:
+
+solution vector
+
+bL
+
+:
+
+right-hand side vector
+
+Linear system
+
+Quantum circuit
+nNx , nNy
+
+:
+
+number of qubits for spatial registers
+
+nQ
+e
+Q
+
+:
+
+number of qubits for velocity register
+
+:
+
+padded number of velocities (= 2nQ )
+
+nNt
+
+:
+
+number of qubits for time-step register
+
+BC
+
+:
+
+boundary-condition type
+
+αA
+
+:
+
+subnormalization factor of A(1) block-encoding
+
+αL
+
+:
+
+subnormalization factor of L block-encoding
+
+cL
+
+:
+
+normalization factor for individual RY rotation amplitudes in UL
+
+κQSVT
+
+:
+
+condition number parameter for QSVT polynomial
+
+dQSVT
+
+:
+
+polynomial degree parameter for QSVT
+
+UA(1)
+
+:
+
+block-encoding unitary for A(1)
+
+UL
+
+:
+
+block-encoding unitary for L
+
+36
+
+References
+[Ber10]
+
+D. W. Berry, High-order quantum algorithm for solving linear differential
+equations, J. Phys. A Math. Theor. 47 (2014) 105301, arXiv:1010.2745
+[quant-ph].
+
+[BGK54]
+
+P. L. Bhatnagar, E. P. Gross, and M. Krook, A Model for Collision Processes in
+Gases. I. Small Amplitude Processes in Charged and Neutral One-Component
+Systems, Phys. Rev. 94 (1954) 511–525.
+
+[BS24]
+
+B. K. Berntson and C. Sünderhauf, Complementary polynomials in quantum
+signal processing, Commun. Math. Phys. 406 (2025) , arXiv:2406.04246
+[quant-ph].
+
+[Bud21]
+
+L. Budinski, Quantum algorithm for the advection-diffusion equation simulated
+with the lattice Boltzmann method, Quantum Inf. Process. 20 (2021) 1–17.
+
+[Car32]
+
+T. Carleman, Application de la théorie des équations intégrales linéaires aux
+systèmes d’équations différentielles non linéaires, Acta Math. 59 (1932) 63–87.
+
+[Cle55]
+
+C. W. Clenshaw, A note on the summation of Chebyshev series, Math. Comp.
+9 (1955) 118–120.
+
+[GKS21]
+
+S. Gribling, I. Kerenidis, and D. Szilágyi, An optimal linear-combination-ofunitaries-based quantum linear system solver, ACM Trans. Quantum Comput.
+5 (2024) 1–23, arXiv:2109.04248 [quant-ph].
+
+[GSLW18] A. Gilyén, Y. Su, G. H. Low, and N. Wiebe, Quantum Singular Value Transformation and beyond: Exponential improvements for quantum matrix arithmetics,
+STOC 2019: Proc. 51st Ann. ACM SIGACT Symp. on Theory of Computing
+(2019) 193–204, arXiv:1806.01838 [quant-ph].
+[JKL+ 25a] D. Jennings, K. Korzekwa, M. Lostaglio, R. Ashworth, E. Marsili, and S. Rolston, An end-to-end quantum algorithm for nonlinear fluid dynamics with
+bounded quantum advantage, arXiv:2512.03758 [quant-ph].
+[JKL+ 25b] D. Jennings, K. Korzekwa, M. Lostaglio, P. Mannix, R. Ashworth, E. Marsili, and S. Rolston, Simulating non-trivial incompressible flows with a quantum
+lattice Boltzmann algorithm, arXiv:2512.05781 [physics.flu-dyn].
+37
+
+[KKK+ 16] T. Krüger, H. Kusumaatmaja, A. Kuzmin, O. Shardt, G. Silva, and E. M.
+Viggen, The Lattice Boltzmann Method: Principles and Practice, Graduate
+Texts in Physics, Springer International Publishing, 2016.
+[LYW+ 23] X. Li, X. Yin, N. Wiebe, J. Chun, G. K. Schenter, M. S. Cheung, and J. Mülmenstädt, Potential quantum advantage for simulation of fluid dynamics, Phys.
+Rev. Res. 7 (2025) 013036, arXiv:2303.16550 [quant-ph].
+[MPS+ 24] M. E. S. Morales, L. Pira, P. Schleich, K. Koor, P. C. S. Costa, D. An, A. AspuruGuzik, L. Lin, P. Rebentrost, and D. W. Berry, Quantum linear system solvers:
+A survey of algorithms and applications. arXiv:2411.02522 [quant-ph].
+[MSL+ 15] A. Mezzacapo, M. Sanz, L. Lamata, I. L. Egusquiza, S. Succi, and E. Solano,
+Quantum simulator for transport phenomena in fluid flows, Sci. Rep. 5 (2015)
+13153, arXiv:1502.00515 [quant-ph].
+[PKJ+ 24] J. Penuel, A. Katabarwa, P. D. Johnson, P. Kuklinski, B. Rempfer, C. Farquhar,
+Y. Cao, and M. C. Garrett, Detailed assessment of calculating drag force with
+quantum computers: Explicit time-evolution precludes exponential advantage for
+nonlinear differential equations, arXiv:2406.06323 [quant-ph].
+[RS14]
+
+N. J. Ross and P. Selinger, Optimal ancilla-free Clifford+T approximation
+of z-rotations, Quantum Inf. Comput. 16 (2016) 901–953, arXiv:1403.2975
+[quant-ph].
+
+[SS23]
+
+C. Sanavio and S. Succi, Lattice Boltzmann-Carleman quantum algorithm and
+circuit for fluid flows at moderate Reynolds number, AVS Quantum Sci. 6 (2024)
+023802, arXiv:2310.17973 [quant-ph].
+
+[SSR+ 25]
+
+C. Sanavio, W. A. Simon, A. Ralli, P. Love, and S. Succi, Carleman-latticeBoltzmann quantum circuit with matrix access oracles, Phys. Fluids 37 (2025)
+037123, arXiv:2501.02582 [quant-ph].
+
+[Suc18]
+
+S. Succi, The Lattice Boltzmann Equation: For Complex States of Flowing Matter , Oxford University Press, 2018.
+
+38
+
+
