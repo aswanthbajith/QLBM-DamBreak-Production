@@ -1,0 +1,28 @@
+{
+  "polynomial_degree": 2,
+  "closure_type": "Quadratic (p=2) with Kowalski Reciprocal Cubic (p=3) extension",
+  "auxiliary_variables": [
+    "xi = 1/rho (Reciprocal density for variable-density extension)",
+    "Psi_local_kron2 (Local Kronecker quadratic monomials, dim 324 per node)"
+  ],
+  "carleman_order": 2,
+  "carleman_dimension": "342N",
+  "local_or_global_lifting": "Local Kronecker per node (324N quadratic variables)",
+  "streaming_is_permutation": true,
+  "boundary_operator_status": "Strictly Unitary Permutation (Exact S^T S = I)",
+  "single_step_error": 0.001663645,
+  "multi_step_error": {
+    "step_1": 0.00099968,
+    "step_5": 0.0032675,
+    "step_10": 0.0054475,
+    "step_20": 0.0096545,
+    "step_50": 0.025815,
+    "step_100": 0.0597,
+    "step_200": 0.1173
+  },
+  "invariant_manifold_error": {
+    "linear_sector_rel": 0.013,
+    "manifold_residual_linf": 0.02707
+  },
+  "status": "PASS"
+}
