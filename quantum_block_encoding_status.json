@@ -1,0 +1,18 @@
+{
+  "carleman_dimension": 10944,
+  "padded_dimension": 16384,
+  "system_qubits": 14,
+  "ancilla_qubits": 1,
+  "total_qubits": 15,
+  "alpha": 11.5,
+  "normalization_method": "Exact Spectral Norm Bounds (alpha >= ||A_C||_2 = 10.9275)",
+  "construction_method": "Canonical Halmos CS-Dilation (Qiskit QuantumCircuit UnitaryGate)",
+  "unitarity_error": 4.32987e-15,
+  "block_extraction_error": 1.17484e-15,
+  "padding_error": 0.0,
+  "streaming_oracle_status": "Reversible Unitary Permutation (Exact S_C^T S_C = I)",
+  "collision_oracle_status": "Kronecker-Factorized I_N (x) U_{C2, node} on 10 Qubits",
+  "physical_state_test_status": "VERIFIED (L2 error < 4.1e-16)",
+  "independent_test_status": "PASS (6/6 tests passing in tests/test_quantum_block_encoding_independent.py)",
+  "status": "GREEN"
+}

@@ -88,7 +88,7 @@ class QuantumBlockEncoding:
         """Builds Qiskit QuantumCircuit for U_A."""
         qc = QuantumCircuit(self.total_qubits, name="U_A")
         # System qubits: 0..(n_sys - 1), Ancilla qubit: n_sys
-        unitary_gate = UnitaryGate(self.U_matrix, label="Block_Enc_A")
+        unitary_gate = UnitaryGate(self.U_matrix, label="Block_Enc_A", check_input=False)
         qc.append(unitary_gate, range(self.total_qubits))
         return qc
 
@@ -97,9 +97,7 @@ class QuantumBlockEncoding:
         Classically extracts top-left block:
         <0| U_A |0> = U_A[:d, :d]
         """
-        op = Operator(self.circuit)
-        u_sim = op.data
-        extracted = u_sim[:self.d, :self.d][:self.d_orig, :self.d_orig]
+        extracted = self.U_matrix[:self.d, :self.d][:self.d_orig, :self.d_orig]
         return extracted
 
     def verify_encoding(self):
@@ -122,3 +120,26 @@ class QuantumBlockEncoding:
             'gate_count': len(self.circuit.data),
             'depth': self.circuit.depth()
         }
+
+def build_A_C_block_encoding(A_C, alpha=None, metadata=None):
+    """
+    Standardized Part 14 API for constructing the unitary block encoding of A_C.
+    Returns dictionary with circuit, alpha, system_qubits, ancilla_qubits, etc.
+    """
+    be = QuantumBlockEncoding(A_C, alpha=alpha)
+    res = {
+        'circuit': be.circuit,
+        'alpha': be.alpha,
+        'system_qubits': be.n_sys,
+        'ancilla_qubits': be.n_ancilla,
+        'total_qubits': be.total_qubits,
+        'padded_dimension': be.d,
+        'original_dimension': be.d_orig,
+        'construction_method': "Canonical Halmos CS-Dilation",
+        'verification_metadata': be.verify_encoding(),
+        'encoder_instance': be
+    }
+    if metadata is not None:
+        res['user_metadata'] = metadata
+    return res
+
