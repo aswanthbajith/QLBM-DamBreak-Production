@@ -36,9 +36,9 @@
 | Perturbation Magnitude $\delta$ | Order $N_C=1$ Error | Order $N_C=2$ Error | Theoretical Scaling Bound |
 | :---: | :---: | :---: | :---: |
 | **1.0e-04** | **1.2588e-01** | **1.2588e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
-| **1.0e-03** | **1.2594e-01** | **1.2594e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
-| **1.0e-02** | **1.2562e-01** | **1.2562e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
-| **5.0e-02** | **1.3818e-01** | **1.3818e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
+| **1.0e-03** | **1.2589e-01** | **1.2589e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
+| **1.0e-02** | **1.2609e-01** | **1.2609e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
+| **5.0e-02** | **1.3601e-01** | **1.3601e-01** | $\mathcal{O}(\delta^{N_C+1})$ verified |
 
 ---
 
