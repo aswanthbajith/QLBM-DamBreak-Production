@@ -1,0 +1,4 @@
+grid_nx,grid_ny,total_nodes,runtime_sec,front_rel_l2_error,height_rel_l2_error,front_max_error,height_max_error,mass_drift_rel
+32,16,512,0.079,0.67591,0.64606,1.2239,0.99288,0.011685
+64,32,2048,0.125,0.14541,0.24614,0.25425,0.38311,0.015021
+128,64,8192,0.286,0.0679,0.13468,0.12625,0.22448,0.013849
