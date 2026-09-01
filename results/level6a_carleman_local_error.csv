@@ -1,0 +1,9 @@
+node_type,step,local_error
+liquid,1,0.000254
+liquid,2,0.000759
+liquid,3,0.000936
+liquid,4,0.001378
+gas,1,8.7e-05
+gas,2,0.000271
+gas,3,0.000318
+gas,4,0.000484

@@ -28,8 +28,12 @@
 | $K = 3$ | 3 | 1 | **3x** |
 | $K = 4$ | 4 | 1 | **4x** |
 
-## 4. Key Scientific Conclusion
+## 4. Key Scientific Conclusions & Root-Cause Diagnosis
 
-1. **Demonstration of Coherent Multi-Timestep Evolution**: Level 6A successfully propagates the lifted tensor state $\mathbf{Y} \in \mathbb{R}^{342}$ across $K = 2, 3, 4$ steps without intermediate classical decoding or state reconstruction.
-2. **Exact Measurement Reduction**: For a block of $K=4$ steps, classical state reconstruction overhead is reduced by exactly **$4\times$** (from 4 measurements to 1 final validation readout).
-3. **Postselection Compounding**: Success probability scales as $p_{\text{succ}} = \alpha_C^{-2K}$, requiring Oblivious Amplitude Amplification (OAA) for deep horizons ($K > 4$).
+1. **Demonstration of Coherent Multi-Timestep Evolution**: Level 6A successfully propagates the lifted tensor state $\mathbf{Y} \in \mathbb{R}^{342}$ across $K = 2, 3, 4$ steps without intermediate classical decoding or state reconstruction, achieving an exact $K\times$ reduction in measurement roundtrips.
+2. **Single-Site Carleman Precision**: When isolated on a single node without spatial streaming, the algebraic Carleman collision map $C_2^K \mathbf{Y}_0$ is highly accurate ($< 0.14\%$ error across 4 steps).
+3. **Dual Root Causes of Multi-Step Spatial Divergence**:
+   - **Spatial Tensor Advection Mismatch**: $\mathcal{S}_{\text{lifted}}(\mathbf{z} \otimes \mathbf{z}) \ne \mathcal{S}(\mathbf{z}) \otimes \mathcal{S}(\mathbf{z})$, producing $746\%$ tensor de-correlation at $K=1$, which injects corrupted convective momentum into $M_2 \mathbf{Y}_{\text{quad}}$ at $K=2$.
+   - **Unitary Dilation Subspace Leakage**: $P U_C^K P \ne C_2^K$, introducing $2098\%$ leakage into the dilation complement subspace without mid-circuit ancilla projection/reset.
+4. **Rejection of $\mathcal{O}(K \text{Ma}^3)$ Spatial Scaling**: Empirical scaling fits show $E \propto \text{Ma}^{0.00}$ and $E \propto K^{5.59}$ in spatial simulations.
+5. **Decision Gate Verdict**: **YELLOW** — Coherent propagation works algebraically, but spatial tensor re-coupling / mid-circuit ancilla stabilization is required before Level-6B scaling.
