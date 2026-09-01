@@ -1,0 +1,36 @@
+{
+  "config": {
+    "nx": 4,
+    "ny": 4,
+    "timesteps": 1,
+    "order": 2,
+    "backend": "fake_ibm",
+    "mode": "quantum"
+  },
+  "metrics": [
+    {
+      "step": 0,
+      "density_rel_l2": 0.0,
+      "phase_rel_l2": 0.0,
+      "velocity_rel_l2": 0.0,
+      "max_density_error": 0.0,
+      "max_phase_error": 0.0,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "p_success": 1.0,
+      "alpha": 1.0
+    },
+    {
+      "step": 1,
+      "density_rel_l2": 6.879928515046433e-16,
+      "phase_rel_l2": 8.045994679410099e-16,
+      "velocity_rel_l2": 2.6569237220577066e-16,
+      "max_density_error": 7.771561172376096e-16,
+      "max_phase_error": 7.771561172376096e-16,
+      "total_mass_error": 6.832141690000962e-16,
+      "liquid_volume_error": 7.771561172376075e-16,
+      "p_success": 0.0021091346149039107,
+      "alpha": 58.74645334316233
+    }
+  ]
+}
