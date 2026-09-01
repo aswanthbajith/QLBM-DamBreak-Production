@@ -1,0 +1,9 @@
+register_name,qubits,formula,role
+Spatial X-Coordinate Register |x>,7,ceil(log2(128)) = 7,Indexes 128 lattice columns
+Spatial Y-Coordinate Register |y>,6,ceil(log2(64)) = 6,Indexes 64 lattice rows
+Discrete Velocity / Species Register |a>,5,ceil(log2(18)) = 5 (2^5=32 >= 18),Indexes 9 f_i + 9 g_i populations
+Sz.-Nagy Dilation Ancilla |anc>,1,1 qubit (dim=2),Unitary dilation block encoding ancilla
+TOTAL SYSTEM LOGICAL QUBITS (128x64),19,7 + 6 + 5 + 1 = 19 qubits,Full system state space
+IBM FakeSherbrooke Transpiled Depth (Opt 3),10,"3,763,998",Local 10-qubit Carleman collision block
+IBM FakeSherbrooke 2-Qubit ECR Gates (Opt 3),10,"831,053",Local 10-qubit Carleman collision block
+Real-QPU Safety Interlock Status,0,QLBM_ENABLE_REAL_QPU=0,Physical QPU execution strictly disabled

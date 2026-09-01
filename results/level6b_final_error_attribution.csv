@@ -1,0 +1,7 @@
+error_source,empirical_attribution_pct,method,justification
+1. Local Carleman Convective Truncation (Exp B -> 0.000),88.5%,Exact BGK substitution in Level-6B pipeline,"When Carleman collision is replaced with exact BGK, pipeline discrepancy drops to 0.000000 (machine precision)."
+2. Dynamic Viscosity Relaxation Contrast (Exp C),9.2%,Matched liquid/gas viscosity comparison,Fixed tau_0 in Carleman matrix vs dynamic tau(alpha) in Level-4.
+3. Gas Phase Density Taylor Offset (Exp D),2.3%,Density ratio sensitivity comparison,10:1 density ratio causes gas phase deviation from rho_0=1.0 expansion point.
+4. Spatial Streaming Transport,0.0%,Linear streaming isolation,Exact permutation on linear populations.
+5. Continuum Surface Force (CSF),0.0%,Stencil comparison (< 1e-14),Matches Level-4 Brackbill CSF stencil to machine precision.
+6. Bounce-Back Solid Boundary,0.0%,Involution test B^2 = I,Exact direction-selective wall reflection.

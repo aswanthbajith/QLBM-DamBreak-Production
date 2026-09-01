@@ -1,0 +1,7 @@
+experiment,grid,timesteps,Ma,rho_L,rho_G,nu_L,nu_G,sigma,gravity,density_error,phase_error,velocity_error,mass_error,front_error,height_error,runtime_sec,status
+Level-6B_vs_Level-4_T1,64x32,1,0.0022,1.0,0.1,0.05,0.05,0.001,-0.0005,0.0,0.0,0.0,0.0,0.0,0.0,0.172,Verified Reproducible
+Level-6B_vs_Level-4_T2,64x32,2,0.2598,1.0,0.1,0.05,0.05,0.001,-0.0005,0.000126,0.0001,0.005154,1e-05,0.0,0.0,0.253,Verified Reproducible
+Level-6B_vs_Level-4_T5,64x32,5,0.2598,1.0,0.1,0.05,0.05,0.001,-0.0005,0.166039,0.058456,0.591878,0.003147,0.066667,0.066667,0.591,Verified Reproducible
+Level-6B_vs_Level-4_T10,64x32,10,0.2598,1.0,0.1,0.05,0.05,0.001,-0.0005,0.303524,0.125696,0.544665,0.01088,0.0,0.0,1.093,Verified Reproducible
+Level-6B_vs_Level-4_T20,64x32,20,0.2598,1.0,0.1,0.05,0.05,0.001,-0.0005,0.484756,0.215559,0.529296,0.015323,0.058824,0.058824,2.09,Verified Reproducible
+Level-6B_vs_Level-4_T50,64x32,50,0.2598,1.0,0.1,0.05,0.05,0.001,-0.0005,0.926308,0.323433,0.5615,0.015281,0.0,0.0,5.297,Verified Reproducible

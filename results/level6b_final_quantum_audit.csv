@@ -1,0 +1,7 @@
+quantum_property,verified_value,tolerance,status
+Sz.-Nagy Unitary Dilation Dimension,1024 x 1024 (10 Qubits),Exact power-of-two,VERIFIED
+Unitary Operator Deviation ||U_C^dagger U_C - I||,2.8714e-13,< 1e-12,VERIFIED
+Block-Encoding Projection Error ||P (alpha_C U_C) P^T - C2||,6.3387e-16,< 1e-12,VERIFIED
+Dilation Scaling Factor alpha_C,9.7321,1.01 * ||C2||_2,VERIFIED
+One-Step Success Probability p_succ = alpha_C^-2,1.0558e-02 (1.06%),Exact postselection rate,VERIFIED
+Invariant Manifold Preservation ||Y2 - z (x) z||,0.000000e+00,Exact machine precision,VERIFIED
