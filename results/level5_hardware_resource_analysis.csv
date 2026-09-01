@@ -1,0 +1,5 @@
+mesh,nodes,system_qubits,total_qubits,hilbert_dim,carleman_dim,alpha_dilation,cond_number_nt10,qsvt_queries_nt10,transpiled_depth_4x4,cnot_count_4x4
+4x4,16,9,10,1024,5472,7.699,11.5,612,4233653,1085375
+8x8,64,11,12,4096,21888,7.699,11.5,612,N/A,N/A
+16x16,256,13,14,16384,87552,7.699,11.5,612,N/A,N/A
+32x32,1024,15,16,65536,350208,7.699,11.5,612,N/A,N/A
