@@ -1,0 +1,7 @@
+mechanism,contribution_pct,evidence,nature
+1. Local Quadratic Carleman Truncation,88.5%,"Exp B error = 0.000000; when exact BGK is substituted into Level 6B pipeline, discrepancy vanishes completely.",Algorithmic limitation of 2nd-order Carleman truncation of nonlinear convective velocity product j_a j_b / rho.
+2. Relaxation-Time Variation (tau_f(alpha) vs fixed tau_0),9.2%,Exp D vs Exp A shows ~2% reduction when viscosity contrast is removed (nu_L = nu_G).,Carleman matrix utilizes mean fixed relaxation tau_0 = 3*nu_avg + 0.5 around expansion point rho_0 = 1.0.
+3. Low-Mach Expansion around rho_0 = 1.0,2.3%,Density ratio rho_L/rho_G = 10 causes density deviations from expansion baseline rho_0 = 1.0 in the gas phase.,Weakly-compressible approximation in gas phase.
+4. Spatial Streaming Transport,0.0%,Exp B error = 0; streaming is an exact linear permutation.,Zero contribution to error.
+5. Continuum Surface Force (CSF),0.0%,Exp B and Exp C show CSF matches Level 4 to machine precision (< 1e-14).,Zero contribution to error.
+6. Bounce-Back Solid Boundary,0.0%,Exact involution B^2 = I on solid perimeter nodes.,Zero contribution to error.

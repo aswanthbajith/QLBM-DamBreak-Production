@@ -1,0 +1,5 @@
+relaxation_parameter,Level4_value,Level6B_value,delta
+Liquid Relaxation tau_L,0.65,0.65,0.0
+Gas Relaxation tau_G,0.65,0.65,0.0
+Phase Field Relaxation tau_phi,0.7,0.7,0.0
+Carleman Reference Expansion tau_0,Dynamic tau(alpha),0.65 (Fixed M1/M2),Local contrast

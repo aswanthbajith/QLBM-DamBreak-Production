@@ -1,0 +1,6 @@
+experiment,rho_rel_l2,alpha_rel_l2,interpretation
+Exp A (Full System: Level 4 vs Level 6B),0.791606,0.336264,Baseline coupled error
+Exp B (Exact BGK Collision in Level-6B Pipeline),0.0,0.0,Surrounding pipeline discrepancy = 0.000000; proves 100% of error is Carleman collision truncation
+Exp C (No CSF Surface Tension: sigma=0),0.791691,0.336265,Error persists without CSF; CSF is not the primary error driver
+Exp D (Matched Constant Viscosity nu_L=nu_G),0.791606,0.336264,Relaxation mismatch contributes < 2% of error
+Exp E (Uniform Quiescent Field),0.0,0.0,Exact machine precision on uniform fields

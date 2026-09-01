@@ -1,0 +1,5 @@
+force_component,L2_diff_6B_vs_Level4,status
+Gravitational Buoyancy F_g,0.000000e+00,Exact Consistency
+Continuum Surface Force F_s (CSF),0.000000e+00,Exact Consistency (< 1e-14)
+Total Combined Forcing F_tot,0.000000e+00,Exact Consistency
+Guo Source Term Shift S_i,1.250000e-05,Linearized Body Force in M1
