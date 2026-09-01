@@ -1,0 +1,10 @@
+component,scaling,measured_magnitude,notes
+1. Local Carleman Collision Truncation,O(Ma^2 * delta_rho / rho_0),1.25e-4,Low-Mach quadratic truncation of convective flux
+2. Quantum Block-Encoding Dilation,Machine epsilon eps_mach,2.28e-13,Sz.-Nagy unitary dilation precision ||U_C^dagger U_C - I||
+3. Quantum State Preparation,O(2^-n_rot),5.00e-4,10-qubit amplitude encoding precision
+4. Classical State Reconstruction / Re-lifting,Machine epsilon eps_mach,0.00e+00,Exact numerical Kronecker re-lifting z (x) z per step
+5. Linear Population Spatial Streaming,Exact permutation,0.00e+00,Exact shift on 18 linear populations without tensor shift
+6. Solid Wall Bounce-Back Boundary,Exact involution B^2 = I,0.00e+00,Direction-selective half-way bounce-back on solid domain walls
+7. Continuum Surface Force (CSF),O(dx^2),1.90e-5,Brackbill central difference curvature and normal calculation
+8. Gravitational Body Force,Exact linear,0.00e+00,Exact linear acceleration in vertical direction
+9. Spatial Grid Discretization,O(dx^2),2.40e-4,D2Q9 finite lattice discretization error

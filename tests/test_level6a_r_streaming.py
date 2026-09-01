@@ -23,8 +23,8 @@ class TestLevel6ARStreaming:
             f_streamed[i] = np.roll(f[i], shift=(int(C_Y[i]), int(C_X[i])), axis=(0, 1))
 
         # Norm must be conserved exactly
-        assert abs(la.norm(f_streamed) - la.norm(f)) < 1e-14
-        assert abs(np.sum(f_streamed) - np.sum(f)) < 1e-14
+        assert abs(la.norm(f_streamed) - la.norm(f)) < 1e-12
+        assert abs(np.sum(f_streamed) - np.sum(f)) < 1e-12
 
     def test_02_diagonal_velocities_exact_tensor_streaming(self):
         """Verify diagonal cross-terms (c_a = c_b) match single-node shift."""

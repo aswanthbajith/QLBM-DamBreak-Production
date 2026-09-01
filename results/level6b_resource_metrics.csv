@@ -1,0 +1,9 @@
+resource_metric,count,formula
+Logical System Qubits (128x64 grid),19,ceil(log2(Nx*Ny)) + 5 (velocities) + 1 (ancilla)
+Local Carleman Dimension,342,18 linear + 324 quadratic cross-products
+Block-Encoding Matrix Size,1024,2 * 512 (10 qubits with 1 dilation ancilla)
+Dilation Scaling Factor (alpha_C),7.9004,1.01 * ||C2||_2
+One-Step Dilation Success Probability,1.60e-2 (1.60%),1 / alpha_C^2
+Quantum Collision Calls per Timestep,Nx * Ny,"2,048 calls (for 64x32), 8,192 calls (for 128x64)"
+Two-Qubit Gates per Collision Block,320,Transpiled on IBM Heavy-Hex architecture
+Classical Reconstructions per Timestep,1,Exact K=1 hybrid boundary update

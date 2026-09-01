@@ -1,0 +1,5 @@
+mode,rho_rel_l2_error_T10,status
+Mode A (Level 4 Reference),0.0,Reference Baseline
+Mode B (Level 5 HQC),0.253846,Validated
+Mode C (Level 6A Coherent),0.396912,FAILED (Tensor De-correlation)
+Mode D (Level 6B Hybrid K=1),0.276165,SUCCESS (Formulation Repaired)

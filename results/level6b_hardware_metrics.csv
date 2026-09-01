@@ -1,0 +1,4 @@
+backend,logical_qubits,optimization_level,transpiled_depth,two_qubit_gates,total_gates,alpha_C,p_success_step
+FakeSherbrooke (127Q Heavy-Hex),10,1,4229200,1109309,7379865,7.9004,1.6021e-02
+FakeSherbrooke (127Q Heavy-Hex),10,2,3847534,774670,6783404,7.9004,1.6021e-02
+FakeSherbrooke (127Q Heavy-Hex),10,3,3763998,831053,6657706,7.9004,1.6021e-02
