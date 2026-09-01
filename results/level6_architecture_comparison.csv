@@ -1,0 +1,25 @@
+dimension,arch_A_hqc_score,arch_B_local_score,arch_C_qsvt_score,evaluation_notes
+01. Nonlinear Handling,5,4,2,A handles exact rational/clipping; B handles low-Mach quadratic; C requires static L
+02. Multi-Timestep Capability,2,4,5,C is fully all-at-once; B advances K coherent steps; A decodes every step
+03. Measurement-Free Timesteps,1,4,5,C has 0 intermediate measurements; B has 0 for K steps; A measures every step
+04. Reinitialization-Free,1,4,5,B avoids reinitialization for K steps; C avoids completely; A reinitializes every step
+05. Surface Tension Handling,5,4,1,A & B use exact hybrid CSF stencils; C cannot dynamically update F_s
+06. Boundary Treatment,5,4,3,A & B exact bounce-back involution; C requires block bidiagonal boundary embedding
+07. Physical Fidelity,5,4,2,A reproduces full Level-4 physics; B has bounded O(Ma^3) drift; C static L only
+08. Carleman Truncation Error,5,4,3,A exact per step; B bounded O(K*Ma^3); C accumulates over all Nt
+09. Qubit Count Efficiency,5,4,3,A needs 18Q; B needs 25Q; C needs 29Q for 128x64
+10. Ancilla Overhead,5,4,2,A needs 1 ancilla; B needs 1-2 ancillas; C requires QSVT phase ancillas
+11. Gate Complexity,4,3,1,C requires > 10^7 gates; B requires ~ 10^4 gates/step; A requires ~ 10^3 gates
+12. Circuit Depth,5,4,1,A shallowest depth; B moderate depth (K=3); C extreme depth (QSVT degree)
+13. Success Probability,4,3,2,A has single-step postselection; B compounds alpha_C^K; C has 1/Nt time readout
+14. Condition Number Scaling,5,4,3,A & B bounded local collision; C has linear kappa(L) ~ 2.5 Nt
+15. State Preparation Cost,2,3,5,C prepares initial state once; B prepares Nt/K times; A prepares Nt times
+16. Readout Cost,1,3,4,A requires full tomography per step; B requires it every K steps; C reads final state
+17. Mesh Resolution Scalability,3,5,5,B & C scale O(log N); A bottlenecked by classical O(N) readout
+18. NISQ Feasibility,4,3,1,A feasible today on mock/small QPUs; B requires low-noise FTQC; C mature FTQC
+19. Fault-Tolerant Feasibility,3,5,5,B & C ideal for logical FTQC architectures
+20. Mathematical Rigor,4,5,5,B & C fully derived quantum unitary operators
+21. Implementation Complexity,4,3,1,A is simplest; B is moderate; C requires full QSVT phase angle synthesis
+22. Validation Tractability,5,4,2,A & B step-by-step verifiable vs Level-4; C only final-time verifiable
+23. Scientific Novelty,2,5,4,B extends PRE 2026 local Carleman to coupled two-phase for the first time
+TOTAL SCORE (out of 115),85,90,70,Arch B achieves optimal balance between multi-timestep coherence and physical fidelity.
