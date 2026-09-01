@@ -104,13 +104,13 @@ class QLBMDamBreakSimulation:
         phi_clamped = np.clip(phi, 0.0, 1.0)
 
         # 1. Surge Front Position x_star
-        floor_phi = phi_clamped[:, 1]
+        floor_phi = phi_clamped[:, min(1, self.ny - 1)]
         liq_idx = np.where(floor_phi > 0.5)[0]
         x_front = float(np.max(liq_idx)) if len(liq_idx) > 0 else float(self.dam_w)
         x_star = x_front / self.dam_h
 
         # 2. Residual Column Height h_star
-        wall_phi = phi_clamped[1, :]
+        wall_phi = phi_clamped[min(1, self.nx - 1), :]
         col_idx = np.where(wall_phi > 0.5)[0]
         h_col = float(np.max(col_idx)) if len(col_idx) > 0 else float(self.dam_h)
         h_star = h_col / self.dam_h
@@ -120,7 +120,7 @@ class QLBMDamBreakSimulation:
 
         # 4. Downstream Wall Pressure (at sensor node x=nx-2, y=1)
         sensor_x = max(0, self.nx - 2)
-        sensor_y = 1
+        sensor_y = min(1, self.ny - 1)
         p_sensor = float(self.rho_L * (1.0 / 3.0) * np.sum(g_mat[:, sensor_x, sensor_y]))
 
         return {
@@ -154,6 +154,11 @@ class QLBMDamBreakSimulation:
         Y_carle = self.Y_0.copy()
         Y_quant = self.Y_0.copy()
 
+        # Pre-instantiate QSVT Solver Operator M = I + 0.01 * A
+        A_dense = self.carleman.A_C.toarray()
+        M_step = np.eye(self.dim_carleman, dtype=np.complex128) + 0.01 * A_dense
+        qsvt_solver = QSVTSolver(M_step, Y_quant, degree=self.qsvt_degree)
+
         # Record initial observables (t=0)
         obs_c = self.extract_observables(Psi_c)
         obs_carle = self.extract_observables(self.carleman.project_state(Y_carle))
@@ -184,12 +189,8 @@ class QLBMDamBreakSimulation:
             Y_carle = self.carleman.step(Y_carle)
 
             # 3. Quantum QSVT Solver Step
-            A_dense = self.carleman.A_C.toarray()
-            M_step = np.eye(self.dim_carleman, dtype=np.complex128) + 0.01 * A_dense
             rhs_step = Y_quant + 0.01 * (A_dense @ Y_quant)
-
-            qsvt_solver = QSVTSolver(M_step, rhs_step, degree=self.qsvt_degree)
-            res_qsvt = qsvt_solver.solve()
+            res_qsvt = qsvt_solver.solve_vector(rhs_step)
             Y_quant = np.real(res_qsvt['x_quantum'])
 
             # Fidelity between Quantum State and Carleman State
@@ -208,6 +209,7 @@ class QLBMDamBreakSimulation:
             hist_quant_shot_x.append(obs_q_shot['x_star']); hist_quant_shot_h.append(obs_q_shot['h_star'])
             hist_fidelity.append(fid)
             hist_qsvt_res.append(res_qsvt['residual'])
+
 
             print(f"Step {step:2d}/{self.total_steps} | t* = {t_star:4.2f} | Class x* = {obs_c['x_star']:4.2f} | Quant x* = {obs_q['x_star']:4.2f} | Fidelity = {fid:.6f} | QSVT Res = {res_qsvt['residual']:.2e}")
 

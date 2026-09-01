@@ -1,0 +1,25 @@
+{
+  "git_commit": "bf710dc27d200083ac092a7c367cba841616d2b9",
+  "git_branch": "master",
+  "operating_system": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+  "python_version": "3.14.4",
+  "qiskit_version": "2.5.2",
+  "numpy_version": "2.5.2",
+  "scipy_version": "1.18.0",
+  "phase14_tests_passed": "69/69",
+  "file_hashes": {
+    "classical/two_phase_lbm.py": "6bce1aac8167f481de60a8430ace12f2f5cd15fe347df6c3a0a0e4e99fda2378",
+    "classical/matrix_two_phase_lbm.py": "202951d1665e3415d03ef28b9648d8c1a9a63ebe1079bd302c50e5a04f2e75fa",
+    "quantum/carleman_lbm.py": "0c0def491f1cb00380768d662aff75d7f148b74677c7982949b40e7c4282eeb5",
+    "quantum/block_encoding.py": "925f2199fc9d0cf417387ad797e3a689f0094c4a6ebac725decd09a4abd275b4",
+    "quantum/qsvt_solver.py": "4256b3570187c7478b0b2002533783d8d35e8fbd61c3bb4ac5619b866aea0e68",
+    "quantum/dam_break_qlbm_sim.py": "f92bc8209750258447c8134f003d368147a3c91e0cc5340128e678607f837e3e",
+    "PHASE11_STREAMING_ORACLE.py": "33526a05e1d4c21c3cd75003cb1f2aaa3512a87a71cd2ecd4796966ea5f94a24",
+    "PHASE11_STRUCTURED_QSVT.py": "0daf1a3bce70ebc5fa65051f0f46fd1ebfb1877a5f9657d85502ef8231065def",
+    "phase14_final_status.json": "3ca613b615dd0e8ebe0a1c413e1cc8c7de905132a2896823ca81fd03c5368bc5",
+    "PHASE14_FINAL_HARDWARE_REPORT.md": "01fb5a3596eba8a7c42bc9fbfc5f10d4f3e52f6c98b18424074868d684fafd30",
+    "PHASE14_MASTER_HARDWARE_COMPARISON.csv": "b76f51219f20359a7c4757cff3ecaefe2c43fa24b72899591949659fe0331be6",
+    "PHASE14_REAL_HARDWARE_ERROR_MITIGATION.csv": "f30b9c6966d7c922b818f1299c10ecce00ffe57d0d6225eb0862b5cc678498da",
+    "PHASE14_FINAL_CLAIM_MATRIX.csv": "887c7d626bed805e1b42aa1466da269730f31cd943d2bee5a59cd4db5e71b38a"
+  }
+}

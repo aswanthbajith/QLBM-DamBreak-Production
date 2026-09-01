@@ -1,0 +1,31 @@
+{
+  "target_backend_identifier": "ibm_brisbane",
+  "backend_family": "Eagle r3 (Heavy-Hex Architecture)",
+  "qubits": 127,
+  "basis_gates": [
+    "ecr",
+    "id",
+    "rz",
+    "sx",
+    "x",
+    "reset"
+  ],
+  "emulated_basis_gates": [
+    "cx",
+    "id",
+    "rz",
+    "sx",
+    "x",
+    "reset"
+  ],
+  "average_T1_us": 234.5,
+  "average_T2_us": 145.2,
+  "average_single_qubit_error": 0.00028,
+  "average_two_qubit_error": 0.0084,
+  "average_readout_error": 0.012,
+  "single_qubit_gate_duration_ns": 35.5,
+  "two_qubit_gate_duration_ns": 300.0,
+  "authentication_status": "NOT_AUTHENTICATED (Dry-Run Mode Active)",
+  "safety_interlock_mode": "DRY_RUN=True",
+  "timestamp": "2026-08-19T19:05:00Z"
+}

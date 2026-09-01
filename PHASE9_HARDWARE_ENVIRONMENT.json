@@ -1,0 +1,19 @@
+{
+  "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+  "python_version": "3.14.4",
+  "qiskit_version": "2.5.2",
+  "qiskit_aer": "NOT_INSTALLED",
+  "qiskit_ibm_runtime": "NOT_INSTALLED",
+  "qiskit_ibm_provider": "NOT_INSTALLED",
+  "target_hardware_basis_gates": [
+    "cx",
+    "id",
+    "rz",
+    "sx",
+    "x",
+    "reset"
+  ],
+  "target_architecture": "IBM Heavy-Hex (e.g. Eagle 127Q / Heron 133Q)",
+  "local_transpiler_backend": "GenericBackendV2(num_qubits=127)",
+  "ibm_credentials_status": "NOT_CONFIGURED"
+}

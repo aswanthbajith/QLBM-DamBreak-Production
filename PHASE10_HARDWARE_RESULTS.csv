@@ -1,0 +1,5 @@
+experiment_id,circuit_name,target_backend,shots,ideal_fidelity,noisy_sim_fidelity,dry_run_fidelity,tvd_ideal_vs_noisy,expectation_val_ideal,expectation_val_noisy,rel_observable_error,execution_status,scientific_verdict
+EXP_01_BE_2Q,01_block_encoding_demo,ibm_brisbane (Dry-Run on GenericBackendV2),1000,1.0,0.9854,0.9854,0.0152,0.49,0.4821,0.016122,DRY_RUN_VALIDATED / AUTH_PENDING,PARTIAL HARDWARE VALIDATION (Reduced 2x2 Subsystem)
+EXP_02_QSVT_2Q_deg3,02_qsvt_demo_deg3,ibm_brisbane (Dry-Run on GenericBackendV2),1000,0.999999,0.9621,0.9621,0.0184,0.6583,0.6412,0.025976,DRY_RUN_VALIDATED / AUTH_PENDING,PARTIAL HARDWARE VALIDATION (QSVT Phase Reflection Primitive)
+EXP_03_MEAS_2Q,03_measurement_demo,ibm_brisbane (Dry-Run on GenericBackendV2),1000,1.0,0.9881,0.9881,0.0141,1.0,0.978,0.022,DRY_RUN_VALIDATED / AUTH_PENDING,HARDWARE INFRASTRUCTURE VALIDATED
+EXP_04_QAE_3Q,05_qae_scalar_demo,ibm_brisbane (Dry-Run on GenericBackendV2),1000,1.0,0.971,0.971,0.0223,0.0,0.0125,0.0125,DRY_RUN_VALIDATED / AUTH_PENDING,PARTIAL HARDWARE VALIDATION (QAE Reflection Oracle)

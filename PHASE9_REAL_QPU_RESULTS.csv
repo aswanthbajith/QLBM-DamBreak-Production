@@ -1,0 +1,5 @@
+primitive,backend,job_id,shots,ideal_fidelity,simulated_noisy_fidelity,real_qpu_status,disclosed_linf_err
+2Q_Block_Encoding,GenericBackendV2 (127Q),LOCAL_DRY_RUN_001,10000,1.0,0.9854,NOT_EXECUTED_DRY_RUN_ONLY,1.11e-16
+2Q_QSVT_deg3,GenericBackendV2 (127Q),LOCAL_DRY_RUN_002,10000,0.999999,0.9621,NOT_EXECUTED_DRY_RUN_ONLY,0.00096
+3Q_QAE_Mass_Scalar,GenericBackendV2 (127Q),LOCAL_DRY_RUN_003,10000,1.0,0.971,NOT_EXECUTED_DRY_RUN_ONLY,0.0
+13Q_Full_Dam_Break,IBM Heron/Eagle,UNSUBMITTED,0,0.999999,0.0,UNEXECUTABLE_ON_NISQ,0.0105

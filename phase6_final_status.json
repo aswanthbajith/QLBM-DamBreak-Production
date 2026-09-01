@@ -1,0 +1,51 @@
+{
+  "phase": 6,
+  "status": "FINALIZED",
+  "verdict": "CONDITIONAL PASS",
+  "classical_validation": "VERIFIED (Linear O(N) scaling from 8 to 30,000 nodes, Martin & Moyce dam break, mass drift < 0.43%)",
+  "carleman_validation": "VERIFIED (Local quadratic lifting D_C=342N, bounded error saturation ~1.05%, manifold defect < 0.14)",
+  "qsvt_validation": "VERIFIED (Chebyshev inversion degrees d=3..31, residual 5.03e-11 at d=15, kappa < 1.5 for dt <= 0.035)",
+  "quantum_execution": "VERIFIED CIRCUIT SYNTHESIS (Qiskit QuantumCircuit depth=2d, Phase Rotations R_z=d; dynamical simulation classically emulated)",
+  "hardware_execution": "NOT DEMONSTRATED (No physical QPU backend executed; all statevector evolutions simulated on CPU)",
+  "grid_scaling": "VERIFIED MULTI-SCALE (Logarithmic qubits n=ceil(log2(342N))+1; production 300x100 grid requires 25 qubits, 1.54 GB sparse RAM)",
+  "observable_advantage": "THEORETICAL (Restricted to global scalar integrals M, E_k, F_wall via QAE; dense velocity field tomography disproven)",
+  "noise_validation": "VERIFIED SIMULATION (Robust to depolarizing noise rate lambda <= 0.05 with fidelity > 0.949)",
+  "reproducibility": "ONE_COMMAND_REPRODUCIBLE (run_phase6_validation.sh passes cleanly with exit code 0)",
+  "major_limitations": [
+    "Quantum surrogate model is restricted to constant-density / moderate-density quadratic regime (p=2)",
+    "Full spatial velocity field reconstruction offers no quantum speedup due to Holevo tomography readout lower bound",
+    "Multi-step dynamical time evolution is evaluated via classical SVD functional calculus rather than physical hardware"
+  ],
+  "major_failures": [
+    "Exact cubic polynomial closure (p=3) for variable-density two-phase Allen-Cahn + Navier-Stokes (disproven)",
+    "Static Newton-Raphson reciprocal density lifting xi=1/rho (diverges for rho >= 10, disproven)",
+    "Exponential quantum speedup for dense CFD velocity field reconstruction (disproven)"
+  ],
+  "verified_claims": [
+    "C6-01: Classical D2Q9 Navier-Stokes + Allen-Cahn dam-break ground truth",
+    "C6-02: Constant-density quadratic surrogate model (p=2)",
+    "C6-05: Local quadratic Carleman lifting dimension D_C = 342N",
+    "C6-06: Carleman multi-step error remains stably bounded over 200 steps",
+    "C6-07: Canonical CS/Halmos unitary block encoding dilation",
+    "C6-08: Grid-invariant subnormalization constant alpha = 11.4739",
+    "C6-09: QSVT odd Chebyshev polynomial matrix inversion convergence",
+    "C6-10: Condition number kappa < 1.5 for time steps dt <= 0.035",
+    "C6-12: Classical emulation overhead factor (448.8x) of hybrid SVD solver",
+    "C6-13: Finite-shot Standard Quantum Limit scaling sigma ~ 1/sqrt(N_s) (R^2 = 0.9999)",
+    "C6-14: Logarithmic qubit register scaling n_tot = ceil(log2(342N)) + 1",
+    "C6-15: Quantum circuit depth scaling Depth = 2d",
+    "C6-18: Quantum noise robustness up to lambda ~ 0.05"
+  ],
+  "analytical_claims": [
+    "C6-14: Production 300x100 mesh 25-qubit resource extrapolation",
+    "C6-17: Quadratic quantum speedup for global scalar observables via QAE"
+  ],
+  "emulated_claims": [
+    "C6-11: Multi-step QSVT dynamical dam-break time evolution via SVD functional calculus"
+  ],
+  "disproven_claims": [
+    "C6-03: Exact cubic variable-density closure",
+    "C6-04: Static Newton-Raphson dynamic reciprocal density lifting",
+    "C6-16: Exponential speedup for dense spatial velocity field tomography"
+  ]
+}

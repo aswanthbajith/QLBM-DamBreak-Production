@@ -1,0 +1,33 @@
+{
+  "git_commit": "bf710dc27d200083ac092a7c367cba841616d2b9",
+  "environment": {
+    "os_platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+    "python_version": "3.14.4",
+    "qiskit_version": "2.5.2",
+    "numpy_version": "2.5.2",
+    "scipy_version": "1.18.0",
+    "pytest_version": "9.1.1"
+  },
+  "file_hashes": {
+    "classical/two_phase_lbm.py": "6bce1aac8167f481de60a8430ace12f2f5cd15fe347df6c3a0a0e4e99fda2378",
+    "classical/phase_field.py": "870e3047670f582129a359928f43edfe3ddaeb152eb992e61809baa7af167006",
+    "classical/forcing.py": "c34f0d94666250b234b037ba8c8c5638da28644f4f036ca06a74c019f6586621",
+    "classical/two_phase_physics.py": "6c26acc5e4cc0b8a63cfeba51e56be6e24f1866bac067026f5c34762ba42f098",
+    "classical/matrix_two_phase_lbm.py": "202951d1665e3415d03ef28b9648d8c1a9a63ebe1079bd302c50e5a04f2e75fa",
+    "quantum/carleman_lbm.py": "0c0def491f1cb00380768d662aff75d7f148b74677c7982949b40e7c4282eeb5",
+    "quantum/block_encoding.py": "925f2199fc9d0cf417387ad797e3a689f0094c4a6ebac725decd09a4abd275b4",
+    "quantum/qsvt_solver.py": "4256b3570187c7478b0b2002533783d8d35e8fbd61c3bb4ac5619b866aea0e68",
+    "quantum/dam_break_qlbm_sim.py": "f92bc8209750258447c8134f003d368147a3c91e0cc5340128e678607f837e3e",
+    "PHASE7_FINAL_SCIENTIFIC_REPORT.md": "2e7e80858b80769041d391e4e8535d255663bd425a02cd210eeddbcf03333ac0",
+    "PHASE7_PUBLICATION_NARRATIVE.md": "3c1169cf3792761aec080428451319ae5601232e2647894307b042f6b55fb30b",
+    "PHASE7_FINAL_CLAIM_MATRIX.csv": "a1c55dbf50cd7172dcfeb14cbe446a6b5ad3d5521009b2cf1ad1b20db3e72081",
+    "PHASE7_CLASSICAL_FINAL_VALIDATION.csv": "8a390be99f4306671873396544157d729f10fd7fd81fb2bc88d84d69945a3050",
+    "PHASE7_CARLEMAN_ERROR.csv": "b052fd8d020eaeecc35464663026f6d4be45c8f02dc230fa8770cc7a9b590cdf",
+    "PHASE7_BLOCK_ENCODING_AUDIT.md": "82452692a844f432d8ab766390e6f19769d9c0966bad66cbc84d509d7ed9c8f5",
+    "PHASE7_QSVT_FINAL_AUDIT.csv": "42b6befe9801bc70c8b52a3e7864e7e5fe4942d37bb5adc4d3d42dca359b4e13",
+    "PHASE7_RESOURCE_ESTIMATES.csv": "292d5d7eb66f517f883d229a54f7222e6c366d88229df00a23fc03ed3fd1a344",
+    "PHASE7_ERROR_BUDGET.csv": "d067460ae1159f2e3e84d10442c927e042557d2ff8e364c63a386af628c8c251",
+    "PHASE7_FAILURE_BOUNDARIES.csv": "ea6f77261a023d19d2661e2a19587ca784a5a57d41271c92ffa017726ec7297b",
+    "phase7_final_status.json": "001fee34c0a016a10b1cbbfea8d911d525e61b91ab74613ddfac205c1ec62a1e"
+  }
+}

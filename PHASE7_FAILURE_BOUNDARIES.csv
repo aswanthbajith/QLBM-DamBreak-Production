@@ -1,0 +1,7 @@
+parameter,safe_range,threshold,failure_regime,symptom,cause,failure_type
+Time Step dt,dt <= 0.020,dt = 0.035,dt >= 0.050,Condition number kappa > 1.5; residual increases to 2.9e-5,Spectral norm growth of (I + dt A_C),SPECTRAL_CONDITIONING
+Density Ratio rho_L/rho_G,rho = 1.0 (Surrogate),rho = 2.0,rho >= 10.0,Divergence to 4.3e7 at rho=10; 9.9e23 at rho=1000,"Static reciprocal lifting initial guess outside basin (0, 2/rho)",MATHEMATICAL_CLOSURE
+Mach Number u_max/c_s,u < 0.05 c_s,u = 0.10 c_s,u >= 0.20 c_s,Compressibility error > 5%; shock instability,Quadratic equilibrium expansion truncates O(u^3) terms,HYDRODYNAMIC_ASYMPTOTIC
+QSVT Degree d,"d in [11, 21]",d = 7,d <= 5,Inversion residual >= 9.14e-5; observable error > 1%,Chebyshev truncation error in polynomial inverse,ALGORITHMIC_APPROXIMATION
+Noise Rate lambda,lambda <= 1e-3,lambda = 0.010,lambda >= 0.050,State fidelity < 0.95; mass error > 2.65%,Depolarizing noise leaks into dilation padding subspace,QUANTUM_DECOHERENCE
+Shot Budget N_s,N_s >= 10000,N_s = 1000,N_s <= 100,Statistical uncertainty > 3.7%; obscures spatial wavefront,Standard Quantum Limit finite sampling variance,STATISTICAL_SAMPLING

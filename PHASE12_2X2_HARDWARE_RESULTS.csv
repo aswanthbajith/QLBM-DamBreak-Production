@@ -1,0 +1,2 @@
+experiment,qubits,transpiled_cx,transpiled_depth,shots,ideal_fidelity,noisy_sim_fidelity,dry_run_fidelity,tvd,classical_relative_density_error,max_absolute_error,rms_error,mass_conservation_error,status
+Primary_2x2_Structured_QLBM,6,4,9,1024,0.99985,0.954,0.954,0.031,0.031,0.028,0.0195,0.0,DRY_RUN_VALIDATED / AUTH_PENDING

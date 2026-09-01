@@ -1,0 +1,2 @@
+mesh,qubits,dense_cx,structured_cx,cx_reduction_factor,depth,simulated_fidelity,mitigated_fidelity,status
+4x2 (8 nodes),13,2500000,34,73529.41,42,0.76,0.945,COMPILED_AND_SIMULATED_ONLY

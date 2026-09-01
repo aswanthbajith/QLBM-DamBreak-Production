@@ -31,18 +31,18 @@ class QSVTSolver:
         self.x_classical = la.solve(self.A, self.b_orig)
         self.x_classical_norm = self.x_classical / la.norm(self.x_classical)
 
-        # Singular values & condition number
-        svs = la.svd(self.A, compute_uv=False)
-        self.sigma_max = float(np.max(svs))
-        self.sigma_min = float(np.min(svs))
-        self.kappa = self.sigma_max / (self.sigma_min + 1e-15)
-
         # Block Encoding
         self.block_enc = QuantumBlockEncoding(self.A, alpha=alpha)
         self.alpha = self.block_enc.alpha
         self.total_qubits = self.block_enc.total_qubits
         self.n_sys = self.block_enc.n_sys
         self.d = self.block_enc.d
+
+        # Precompute matrix SVD once
+        self.U_svd, self.S_svd, self.Vh_svd = la.svd(self.A / self.alpha)
+        self.sigma_max = float(self.S_svd[0] * self.alpha) if len(self.S_svd) > 0 else 1.0
+        self.sigma_min = float(self.S_svd[-1] * self.alpha) if len(self.S_svd) > 0 else 1.0
+        self.kappa = self.sigma_max / (self.sigma_min + 1e-15)
 
         # Normalized RHS state vector |b>
         self.b_pad = np.zeros(self.d, dtype=np.complex128)
@@ -55,6 +55,10 @@ class QSVTSolver:
 
         # Build Full QSVT Qiskit Circuit
         self.circuit = self._build_qsvt_circuit()
+
+        # Precompute matrix polynomial inverse operator
+        p_S = np.polynomial.chebyshev.chebval(self.S_svd, self.poly_coeffs)
+        self.A_inv_approx = self.Vh_svd.conj().T @ np.diag(p_S) @ self.U_svd.conj().T
 
     def _compute_optimal_inversion_polynomial(self):
         """
@@ -110,11 +114,15 @@ class QSVTSolver:
         qc = QuantumCircuit(self.total_qubits, name="QSVT_Inversion")
 
         # 1. Prepare initial state |0_anc> |b>
-        qc.initialize(self.b_norm, range(self.n_sys))
-
-        # 2. Block encoding unitary and dagger
-        U_gate = UnitaryGate(self.block_enc.U_matrix, label="U_A")
-        U_dagger_gate = UnitaryGate(self.block_enc.U_matrix.conj().T, label="U_A_dag")
+        if self.n_sys <= 8:
+            qc.initialize(self.b_norm, range(self.n_sys))
+            U_gate = UnitaryGate(self.block_enc.U_matrix, label="U_A", check_input=False)
+            U_dagger_gate = UnitaryGate(self.block_enc.U_matrix.conj().T, label="U_A_dag", check_input=False)
+        else:
+            from qiskit.circuit import Gate
+            qc.h(range(self.n_sys))
+            U_gate = Gate("U_A", self.total_qubits, [])
+            U_dagger_gate = Gate("U_A_dag", self.total_qubits, [])
 
         anc_idx = self.n_sys
 
@@ -130,28 +138,33 @@ class QSVTSolver:
 
     def solve(self):
         """
-        Simulates the QSVT circuit and polynomial transformation, extracting the quantum solution.
+        Simulates the QSVT circuit and polynomial transformation for the initial b_orig.
         """
-        # SVD polynomial evaluation on A / alpha
-        U_svd, S_svd, Vh_svd = la.svd(self.A / self.alpha)
-        p_S = np.polynomial.chebyshev.chebval(S_svd, self.poly_coeffs)
-        A_inv_approx = Vh_svd.conj().T @ np.diag(p_S) @ U_svd.conj().T
+        return self.solve_vector(self.b_orig)
 
-        x_raw = A_inv_approx @ self.b_orig
-        p_success = float(la.norm(x_raw)**2 / (la.norm(self.b_orig)**2 + 1e-15))
+    def solve_vector(self, b_vec):
+        """
+        Evaluates the QSVT polynomial matrix inversion for an arbitrary RHS vector b_vec.
+        """
+        b_vec = np.array(b_vec, dtype=np.complex128)
+        x_classical = la.solve(self.A, b_vec)
+        x_classical_norm = x_classical / la.norm(x_classical)
+
+        x_raw = self.A_inv_approx @ b_vec
+        p_success = float(la.norm(x_raw)**2 / (la.norm(b_vec)**2 + 1e-15))
 
         x_quantum_norm = x_raw / la.norm(x_raw)
 
         # 1. Quantum Fidelity: |<x_quantum | x_classical>|^2
-        fidelity = float(np.abs(np.vdot(x_quantum_norm, self.x_classical_norm))**2)
+        fidelity = float(np.abs(np.vdot(x_quantum_norm, x_classical_norm))**2)
 
         # 2. Linear System Residual: ||A * x_quantum - b|| / ||b||
-        scale = float(np.real(np.vdot(self.A @ x_quantum_norm, self.b_orig) / la.norm(self.A @ x_quantum_norm)**2))
+        scale = float(np.real(np.vdot(self.A @ x_quantum_norm, b_vec) / la.norm(self.A @ x_quantum_norm)**2))
         x_quantum_scaled = x_quantum_norm * scale
-        residual = float(la.norm(self.A @ x_quantum_scaled - self.b_orig) / la.norm(self.b_orig))
+        residual = float(la.norm(self.A @ x_quantum_scaled - b_vec) / la.norm(b_vec))
 
         # 3. Relative Solution Error: ||x_quantum_scaled - x_classical|| / ||x_classical||
-        sol_error = float(la.norm(x_quantum_scaled - self.x_classical) / la.norm(self.x_classical))
+        sol_error = float(la.norm(x_quantum_scaled - x_classical) / la.norm(x_classical))
 
         return {
             'x_quantum': x_quantum_scaled,
@@ -166,3 +179,4 @@ class QSVTSolver:
             'gate_count': len(self.circuit.data),
             'depth': self.circuit.depth()
         }
+

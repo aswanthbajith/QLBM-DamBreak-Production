@@ -1,0 +1,191 @@
+{
+  "A_collision_only": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 0.018418965963402794,
+      "phase_rel_l2": 0.0
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 1.2312088171279118e-15,
+      "phase_rel_l2": 0.0
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 0.01841896596340313,
+      "phase_rel_l2": 0.0
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 0.018418965963403897,
+      "phase_rel_l2": 0.0
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 2.771613737382712e-15,
+      "phase_rel_l2": 4.4408920985006055e-16
+    }
+  },
+  "B_streaming_only": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 8.274308832837546e-16,
+      "phase_rel_l2": 1.0406903344374412
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 5.565859146765442e-16,
+      "phase_rel_l2": 1.7384539747206904
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 8.274308832837546e-16,
+      "phase_rel_l2": 1.0406903344374412
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 8.274308832837546e-16,
+      "phase_rel_l2": 1.0406903344374412
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 5.565859146765442e-16,
+      "phase_rel_l2": 1.7384539747206904
+    }
+  },
+  "C_boundary_only": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 4.768353211870313e-16,
+      "phase_rel_l2": 0.0
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 4.768353211870313e-16,
+      "phase_rel_l2": 0.0
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 4.768353211870313e-16,
+      "phase_rel_l2": 0.0
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 4.768353211870313e-16,
+      "phase_rel_l2": 0.0
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 4.768353211870313e-16,
+      "phase_rel_l2": 0.0
+    }
+  },
+  "D_collision_streaming": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 0.045178033802811164,
+      "phase_rel_l2": 1.055600696231553
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 1.2096192769976337,
+      "phase_rel_l2": 2.2177615186283366
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 2.248891694480707,
+      "phase_rel_l2": 2.568734068834258
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 14.932736031973436,
+      "phase_rel_l2": 2.742638558064316
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 5816.162704917196,
+      "phase_rel_l2": 2.90316138432626
+    }
+  },
+  "E_collision_boundary": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 0.01841896596340271,
+      "phase_rel_l2": 0.0
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 0.04105894336573915,
+      "phase_rel_l2": 0.0
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 0.30606075116139403,
+      "phase_rel_l2": 0.0
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 8.184664730314532,
+      "phase_rel_l2": 0.0
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 59666.26544370136,
+      "phase_rel_l2": 2.2204460492503022e-16
+    }
+  },
+  "F_streaming_boundary": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 8.332070852312163e-16,
+      "phase_rel_l2": 1.0406903344374412
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 6.018891835215099e-16,
+      "phase_rel_l2": 0.5788433705809467
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 7.667296845182057e-16,
+      "phase_rel_l2": 1.2978699832372922
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 8.274308832837546e-16,
+      "phase_rel_l2": 1.0406903344374412
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 5.990125260629385e-16,
+      "phase_rel_l2": 0.5788433705809467
+    }
+  },
+  "G_complete_step": {
+    "t_1": {
+      "step": 1,
+      "density_rel_l2": 0.04517803380281119,
+      "phase_rel_l2": 1.055600696231553
+    },
+    "t_2": {
+      "step": 2,
+      "density_rel_l2": 1.067939476524714,
+      "phase_rel_l2": 1.860242402156905
+    },
+    "t_3": {
+      "step": 3,
+      "density_rel_l2": 3.060789986498591,
+      "phase_rel_l2": 2.4004555745191074
+    },
+    "t_5": {
+      "step": 5,
+      "density_rel_l2": 29.701673542681743,
+      "phase_rel_l2": 2.5542158911386377
+    },
+    "t_10": {
+      "step": 10,
+      "density_rel_l2": 17827.535526168103,
+      "phase_rel_l2": 2.852762133049665
+    }
+  }
+}

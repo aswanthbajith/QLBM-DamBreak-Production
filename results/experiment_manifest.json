@@ -1,0 +1,46 @@
+{
+  "project": "QLBM-DamBreak",
+  "scientific_claim": "Fully working reduced quantum two-phase LBM dam-break proof-of-concept",
+  "python_version": "3.14.4",
+  "qiskit_version": "2.5.2",
+  "qiskit_ibm_runtime_version": "0.43.1",
+  "target_backends": [
+    "aer_ideal",
+    "aer_noisy",
+    "fake_ibm",
+    "real_ibm"
+  ],
+  "shots_budget": [
+    1024,
+    4096,
+    16384,
+    100000
+  ],
+  "grids_evaluated": [
+    "4x4",
+    "8x4",
+    "8x8"
+  ],
+  "timesteps_evaluated": [
+    1,
+    2,
+    5,
+    10
+  ],
+  "carleman_truncation_order": 2,
+  "physical_parameters": {
+    "rho_liquid": 1.0,
+    "rho_gas": 0.1,
+    "nu_liquid": 0.1,
+    "nu_gas": 0.05,
+    "tau_liquid": 0.8,
+    "tau_gas": 0.65,
+    "gravity_y": -0.001
+  },
+  "real_hardware_status": {
+    "mode": "DRY_RUN_INTERLOCKED",
+    "dual_lock_variable_1": "QLBM_ENABLE_REAL_QPU=1",
+    "dual_lock_variable_2": "QLBM_CONFIRM_REAL_QPU=YES",
+    "execution_allowed_without_keys": false
+  }
+}

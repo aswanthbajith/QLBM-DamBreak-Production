@@ -1,0 +1,6 @@
+id,claim,evidence,classification,publication_safe
+CLM_11_01,Structured reversible streaming oracle scales as O(log N) CX gates,"Verified on 2x2, 4x2, 4x4 grids (PHASE11_STREAMING_RESULTS.csv)",PROVEN,True
+CLM_11_02,"Structured LCU block encoding reduces 4x2 mesh CX count by 73,500x",2.5M CX reduced to 34 CX (PHASE11_LCU_RESULTS.csv),PROVEN & MEASURED,True
+CLM_11_03,6-Qubit end-to-end structured LBM circuit executes with 95.4% fidelity under IBM Eagle noise,"Transpiled depth 9, 4 CX (PHASE11_NOISY_VALIDATION.csv)",VERIFIED (SIMULATED & TRANSPILED),True
+CLM_11_04,Full multi-step dam-break fluid simulation executed on physical quantum hardware,Multi-step time evolution remains classical CPU SVD emulation (448.8x overhead),NOT DEMONSTRATED,True
+CLM_11_05,Experimental quantum speedup demonstrated for CFD simulation,Theoretical QAE scalar speedup only; full-field tomography speedup disproven,DISPROVEN FOR FULL-FIELD / THEORETICAL FOR SCALARS,True

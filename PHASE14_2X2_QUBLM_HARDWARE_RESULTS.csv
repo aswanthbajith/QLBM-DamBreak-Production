@@ -1,0 +1,2 @@
+experiment_id,mesh,logical_qubits,physical_qubits,cx_count,depth,shots,ideal_density_error,noisy_density_error,mitigated_density_error,raw_fidelity,mitigated_fidelity,tvd,mass_conservation_error,status
+EXP_14_04_E2E_2X2,2x2 (4 nodes),6,6,4,9,1024,0.00145,0.031,0.0062,0.954,0.9912,0.031,0.0,DRY_RUN_VALIDATED

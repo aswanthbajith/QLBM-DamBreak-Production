@@ -1,0 +1,5 @@
+circuit_name,qubits,ideal_probabilities,p_00,p_01,p_10,p_11,expectation_val,fidelity_target,block_extraction_error
+01_block_encoding_demo,2,"[np.float64(0.7225), np.float64(0.01), np.float64(0.084383), np.float64(0.183117)]",0.7225,0.01,0.084383,0.183117,0.465,1.0,0.0
+02_qsvt_demo_deg3,2,"[np.float64(0.395679), np.float64(0.085248), np.float64(0.206483), np.float64(0.312591)]",0.395679,0.085248,0.206483,0.312591,-0.038147,0.999999,0.00096
+03_measurement_demo,2,"[np.float64(0.5), np.float64(0.5), np.float64(0.0), np.float64(0.0)]",0.5,0.5,0.0,0.0,0.0,1.0,0.0
+05_qae_scalar_demo,3,"[np.float64(0.213388), np.float64(0.213388), np.float64(0.213388), np.float64(0.213388), np.float64(0.036612), np.float64(0.036612), np.float64(0.036612), np.float64(0.036612)]",0.213388,0.213388,0.213388,0.213388,0.707107,1.0,0.0

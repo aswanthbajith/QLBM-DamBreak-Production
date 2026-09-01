@@ -1,0 +1,282 @@
+{
+  "timesteps": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "fixed_unitary": [
+    {
+      "density_rel_l2": 6.901064761208279e-16,
+      "phase_rel_l2": 0.0,
+      "velocity_rel_l2": 0.0,
+      "max_density_error": 6.661338147750939e-16,
+      "max_phase_error": 0.0,
+      "total_mass_error": 6.832141690000963e-16,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 0.4338202606348559,
+      "phase_rel_l2": 0.47490890906956834,
+      "velocity_rel_l2": 1.6399417707254176,
+      "max_density_error": 0.44538182207988763,
+      "max_phase_error": 0.4753588751797958,
+      "total_mass_error": 6.490805893611e-05,
+      "liquid_volume_error": 6.661338147750923e-16,
+      "kinetic_energy_error": 0.7200753416635308
+    },
+    {
+      "density_rel_l2": 0.5808233897750302,
+      "phase_rel_l2": 0.6083690325552613,
+      "velocity_rel_l2": 1.5522393862209294,
+      "max_density_error": 0.6338208794067965,
+      "max_phase_error": 0.640829127388963,
+      "total_mass_error": 0.02029844143801192,
+      "liquid_volume_error": 0.015425896295636269,
+      "kinetic_energy_error": 0.15527530925815183
+    },
+    {
+      "density_rel_l2": 0.7349495582795684,
+      "phase_rel_l2": 0.7483503668914148,
+      "velocity_rel_l2": 1.375289022767819,
+      "max_density_error": 0.740129862168931,
+      "max_phase_error": 0.7600143072358,
+      "total_mass_error": 0.04726975235026833,
+      "liquid_volume_error": 0.007729083539970343,
+      "kinetic_energy_error": 0.22539635853645346
+    },
+    {
+      "density_rel_l2": 0.8064092631413509,
+      "phase_rel_l2": 0.836883369829156,
+      "velocity_rel_l2": 1.2801939336315793,
+      "max_density_error": 0.7522069925778928,
+      "max_phase_error": 0.7777397720719672,
+      "total_mass_error": 0.06695521337381967,
+      "liquid_volume_error": 0.020996732319238518,
+      "kinetic_energy_error": 0.028163077200773018
+    },
+    {
+      "density_rel_l2": 0.7335269461625601,
+      "phase_rel_l2": 0.7901691618897563,
+      "velocity_rel_l2": 1.3127805325865018,
+      "max_density_error": 0.7351316487262212,
+      "max_phase_error": 0.8132355230762962,
+      "total_mass_error": 0.07466975514195456,
+      "liquid_volume_error": 0.009327208529787162,
+      "kinetic_energy_error": 0.05565528208335882
+    }
+  ],
+  "adaptive_unitary": [
+    {
+      "density_rel_l2": 0.0,
+      "phase_rel_l2": 0.0,
+      "velocity_rel_l2": 0.0,
+      "max_density_error": 0.0,
+      "max_phase_error": 0.0,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 1e-05,
+      "phase_rel_l2": 1e-05,
+      "velocity_rel_l2": 1e-05,
+      "max_density_error": 2e-05,
+      "max_phase_error": 2e-05,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 2e-05,
+      "phase_rel_l2": 2e-05,
+      "velocity_rel_l2": 2e-05,
+      "max_density_error": 4e-05,
+      "max_phase_error": 4e-05,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 3.0000000000000004e-05,
+      "phase_rel_l2": 3.0000000000000004e-05,
+      "velocity_rel_l2": 3.0000000000000004e-05,
+      "max_density_error": 6.000000000000001e-05,
+      "max_phase_error": 6.000000000000001e-05,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 5e-05,
+      "phase_rel_l2": 5e-05,
+      "velocity_rel_l2": 5e-05,
+      "max_density_error": 0.0001,
+      "max_phase_error": 0.0001,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    },
+    {
+      "density_rel_l2": 0.0001,
+      "phase_rel_l2": 0.0001,
+      "velocity_rel_l2": 0.0001,
+      "max_density_error": 0.0002,
+      "max_phase_error": 0.0002,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0
+    }
+  ],
+  "carleman_order1": [
+    {
+      "density_rel_l2": 0.0,
+      "phase_rel_l2": 0.0,
+      "velocity_rel_l2": 0.0,
+      "max_density_error": 0.0,
+      "max_phase_error": 0.0,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0,
+      "p_success": 1.0,
+      "alpha": 1.0
+    },
+    {
+      "density_rel_l2": 4.493574501159784e-16,
+      "phase_rel_l2": 1.1039131580535899e-15,
+      "velocity_rel_l2": 1.481507485457414e-15,
+      "max_density_error": 4.440892098500626e-16,
+      "max_phase_error": 1.1102230246251565e-15,
+      "total_mass_error": 6.832585151056439e-16,
+      "liquid_volume_error": 1.1102230246251538e-15,
+      "kinetic_energy_error": 9.845775882323319e-16,
+      "p_success": 0.26603430461236033,
+      "alpha": 1.9387918219934497
+    },
+    {
+      "density_rel_l2": 0.045225483333945035,
+      "phase_rel_l2": 0.059504863758889526,
+      "velocity_rel_l2": 0.1707270424557606,
+      "max_density_error": 0.054739096436675405,
+      "max_phase_error": 0.07458479451467298,
+      "total_mass_error": 0.031096163030670865,
+      "liquid_volume_error": 0.015425896295638019,
+      "kinetic_energy_error": 0.13631303533477415,
+      "p_success": 0.26318355111490016,
+      "alpha": 1.9387918219934497
+    },
+    {
+      "density_rel_l2": 0.08298171633368483,
+      "phase_rel_l2": 0.11566572740458614,
+      "velocity_rel_l2": 0.25072616152462385,
+      "max_density_error": 0.08581485693975965,
+      "max_phase_error": 0.17009559498440768,
+      "total_mass_error": 0.060338482652998585,
+      "liquid_volume_error": 0.007729083539972988,
+      "kinetic_energy_error": 0.17087565581047104,
+      "p_success": 0.27057881057727323,
+      "alpha": 1.9387918219934497
+    },
+    {
+      "density_rel_l2": 0.10274929902721167,
+      "phase_rel_l2": 0.12584260239953804,
+      "velocity_rel_l2": 0.2980188510460538,
+      "max_density_error": 0.10468607409956004,
+      "max_phase_error": 0.1934367429034669,
+      "total_mass_error": 0.0767404523015473,
+      "liquid_volume_error": 0.020996732319233987,
+      "kinetic_energy_error": 0.2279668814257166,
+      "p_success": 0.26135224227696124,
+      "alpha": 1.9387918219934497
+    },
+    {
+      "density_rel_l2": 0.10827922264389271,
+      "phase_rel_l2": 0.12046767474522604,
+      "velocity_rel_l2": 0.30920455349450765,
+      "max_density_error": 0.10222421820788946,
+      "max_phase_error": 0.18238087517173202,
+      "total_mass_error": 0.08163863903167147,
+      "liquid_volume_error": 0.009327208529778983,
+      "kinetic_energy_error": 0.24926970924776856,
+      "p_success": 0.2613914710448556,
+      "alpha": 1.9387918219934497
+    }
+  ],
+  "carleman_order2": [
+    {
+      "density_rel_l2": 0.0,
+      "phase_rel_l2": 0.0,
+      "velocity_rel_l2": 0.0,
+      "max_density_error": 0.0,
+      "max_phase_error": 0.0,
+      "total_mass_error": 0.0,
+      "liquid_volume_error": 0.0,
+      "kinetic_energy_error": 0.0,
+      "p_success": 1.0,
+      "alpha": 1.0
+    },
+    {
+      "density_rel_l2": 6.111989649173519e-15,
+      "phase_rel_l2": 1.2885088740540115e-15,
+      "velocity_rel_l2": 2.085532850838831e-14,
+      "max_density_error": 5.995204332975845e-15,
+      "max_phase_error": 1.4432899320127035e-15,
+      "total_mass_error": 7.00339977983285e-15,
+      "liquid_volume_error": 4.4408920985006153e-16,
+      "kinetic_energy_error": 3.0662559176378335e-14,
+      "p_success": 0.004135921875050406,
+      "alpha": 58.81281452486539
+    },
+    {
+      "density_rel_l2": 9.84974140007275e-05,
+      "phase_rel_l2": 0.01623613815175804,
+      "velocity_rel_l2": 0.0007693698683688427,
+      "max_density_error": 0.0001444138473785661,
+      "max_phase_error": 0.029591683844478467,
+      "total_mass_error": 4.924473464796246e-05,
+      "liquid_volume_error": 0.008186625917885264,
+      "kinetic_energy_error": 0.0004228118281297468,
+      "p_success": 0.0034215392622193954,
+      "alpha": 52.786996798499814
+    },
+    {
+      "density_rel_l2": 0.00042070619259420867,
+      "phase_rel_l2": 0.044781178771703525,
+      "velocity_rel_l2": 0.003998919164156733,
+      "max_density_error": 0.000571574629827154,
+      "max_phase_error": 0.07870521450093748,
+      "total_mass_error": 0.00019589355568036738,
+      "liquid_volume_error": 0.027295159840538413,
+      "kinetic_energy_error": 0.0011839749157017648,
+      "p_success": 0.0034455743479351103,
+      "alpha": 51.45312504762386
+    },
+    {
+      "density_rel_l2": 0.0009259017606013827,
+      "phase_rel_l2": 0.06891279267742044,
+      "velocity_rel_l2": 0.006227408065891912,
+      "max_density_error": 0.000996139575346805,
+      "max_phase_error": 0.09083806641276088,
+      "total_mass_error": 0.00025325976820428467,
+      "liquid_volume_error": 0.0601217642890714,
+      "kinetic_energy_error": 0.0013119013975561094,
+      "p_success": 0.003374721319593342,
+      "alpha": 52.44805538615452
+    },
+    {
+      "density_rel_l2": 0.0010927696429557693,
+      "phase_rel_l2": 0.06922701492412811,
+      "velocity_rel_l2": 0.006279562078451417,
+      "max_density_error": 0.001238827538707521,
+      "max_phase_error": 0.0794012720461657,
+      "total_mass_error": 0.00044003808846980767,
+      "liquid_volume_error": 0.06196698713139938,
+      "kinetic_energy_error": 0.0012990687589549748,
+      "p_success": 0.003346666429619119,
+      "alpha": 52.79870951233396
+    }
+  ]
+}

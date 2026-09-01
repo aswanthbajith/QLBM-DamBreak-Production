@@ -1,0 +1,4 @@
+method,total_time_sec,step_time_ms,peak_ram_mb,surge_front_x_star,residual,fidelity,overhead_factor_vs_classical,classification
+Classical Direct LBM (Nonlinear),0.1746,8.73,0.026,1.0,0.0,1.0,1.0,MEASURED
+Carleman Linear Solver (Exact Matrix-Vector),0.1554,7.768,15.69,1.0,0.0,0.9455,0.89,MEASURED
+Hybrid QSVT Simulation (SVD Emulation),72.8167,3640.836,3090.646,1.0,9.07e-11,0.9455,417.04,HYBRID EMULATION

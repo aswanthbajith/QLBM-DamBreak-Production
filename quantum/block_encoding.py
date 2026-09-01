@@ -37,8 +37,9 @@ class QuantumBlockEncoding:
             for i in range(self.d_orig, self.d):
                 self.A[i, i] = 1.0
 
-        # Spectral norm and subnormalization alpha
-        norm_A = float(la.norm(self.A, 2))
+        # Compute SVD once for norm and dilation
+        U, S, Vh = la.svd(self.A)
+        norm_A = float(S[0]) if len(S) > 0 else 1.0
         if alpha is None:
             self.alpha = max(norm_A * 1.05, 1.0)
         else:
@@ -47,49 +48,33 @@ class QuantumBlockEncoding:
             self.alpha = float(alpha)
 
         self.A_norm = self.A / self.alpha
+        S_clamped = np.clip(S / self.alpha, 0.0, 1.0)
+        C = np.sqrt(np.maximum(0.0, 1.0 - S_clamped**2))
 
         # Construct exact dilated unitary matrix U_A (2d x 2d)
-        self.U_matrix = self._build_dilated_unitary()
+        top_right = U * C[None, :]
+        bot_left = C[:, None] * Vh
+        bot_right = -np.diag(S_clamped)
+
+        self.U_matrix = np.block([
+            [self.A_norm, top_right],
+            [bot_left, bot_right]
+        ])
 
         # Build Qiskit QuantumCircuit
         self.circuit = self._build_qiskit_circuit()
 
-    def _build_dilated_unitary(self):
-        """
-        Constructs canonical CS-decomposition / Halmos dilation:
-        U_A = [[ A_norm,           sqrt(I - A_norm * A_norm^dagger) ],
-               [ sqrt(I - A_norm^dagger * A_norm), -A_norm^dagger ]]
-        """
-        d = self.d
-        I_d = np.eye(d, dtype=np.complex128)
-
-        # Singular Value Decomposition: A_norm = U * S * Vh
-        U, S, Vh = la.svd(self.A_norm)
-        # S is array of singular values in [0, 1]
-        S_clamped = np.clip(S, 0.0, 1.0)
-        C = np.sqrt(np.maximum(0.0, 1.0 - S_clamped**2))
-
-        # Dilation components
-        Sigma = np.diag(S_clamped)
-        Cosine = np.diag(C)
-
-        R_sigma = np.block([
-            [Sigma, Cosine],
-            [Cosine, -Sigma]
-        ])
-
-        U_ext = la.block_diag(U, np.eye(d, dtype=np.complex128))
-        Vh_ext = la.block_diag(Vh, np.eye(d, dtype=np.complex128))
-
-        U_A = U_ext @ R_sigma @ Vh_ext
-        return U_A
 
     def _build_qiskit_circuit(self):
         """Builds Qiskit QuantumCircuit for U_A."""
         qc = QuantumCircuit(self.total_qubits, name="U_A")
         # System qubits: 0..(n_sys - 1), Ancilla qubit: n_sys
-        unitary_gate = UnitaryGate(self.U_matrix, label="Block_Enc_A", check_input=False)
-        qc.append(unitary_gate, range(self.total_qubits))
+        if self.total_qubits <= 8:
+            unitary_gate = UnitaryGate(self.U_matrix, label="Block_Enc_A", check_input=False)
+            qc.append(unitary_gate, range(self.total_qubits))
+        else:
+            from qiskit.circuit import Gate
+            qc.append(Gate("Block_Enc_A", self.total_qubits, []), range(self.total_qubits))
         return qc
 
     def extract_block(self):

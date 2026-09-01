@@ -1,0 +1,24 @@
+{
+  "git_commit": "bf710dc27d200083ac092a7c367cba841616d2b9",
+  "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+  "python_version": "3.14.4",
+  "file_hashes": {
+    "classical/two_phase_lbm.py": "6bce1aac8167f481de60a8430ace12f2f5cd15fe347df6c3a0a0e4e99fda2378",
+    "classical/phase_field.py": "870e3047670f582129a359928f43edfe3ddaeb152eb992e61809baa7af167006",
+    "classical/forcing.py": "c34f0d94666250b234b037ba8c8c5638da28644f4f036ca06a74c019f6586621",
+    "classical/two_phase_physics.py": "6c26acc5e4cc0b8a63cfeba51e56be6e24f1866bac067026f5c34762ba42f098",
+    "classical/matrix_two_phase_lbm.py": "202951d1665e3415d03ef28b9648d8c1a9a63ebe1079bd302c50e5a04f2e75fa",
+    "quantum/carleman_lbm.py": "0c0def491f1cb00380768d662aff75d7f148b74677c7982949b40e7c4282eeb5",
+    "quantum/block_encoding.py": "925f2199fc9d0cf417387ad797e3a689f0094c4a6ebac725decd09a4abd275b4",
+    "quantum/qsvt_solver.py": "4256b3570187c7478b0b2002533783d8d35e8fbd61c3bb4ac5619b866aea0e68",
+    "quantum/dam_break_qlbm_sim.py": "f92bc8209750258447c8134f003d368147a3c91e0cc5340128e678607f837e3e",
+    "phase10_final_status.json": "ad83828ef898e9f3e9ce128369a8ecde124cd651c67762bd338f9a4386dbe04b",
+    "PHASE10_FINAL_HARDWARE_REPORT.md": "4872d3747fbe9718b067d9104cc2c17c5fb393c22b9f66652dfc028e9cda894c",
+    "PHASE10_QUANTUM_CIRCUIT_INVENTORY.csv": "bd6527d8bba2fe76d3d7220b230fec1ca3fb02224ec009ad2c1b9df6b6de48f6",
+    "PHASE10_IDEAL_RESULTS.csv": "a3a7e122c11ff1da259cacf62d47333486eb997db56d65079d88a89fab88bd6c",
+    "PHASE10_NOISY_RESULTS.csv": "1b45de559a7effba707c7a4adad473b861b724b8238995f832f32a03075c6357",
+    "PHASE10_TRANSPILATION_RESULTS.csv": "2133755ab0c60f7613d449d0cec48466d6b5eb69db5e0ef0de10b038ef8bfe0c",
+    "PHASE10_HARDWARE_RESULTS.csv": "70245a953acb13a1922791982d82f112f452bc0844bfffac9895546551473802",
+    "PHASE10_HARDWARE_CLAIM_MATRIX.csv": "67538a295ebd91f37b57e662d7d5291bd27289260dfece265141fc6ffaa90d74"
+  }
+}

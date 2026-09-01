@@ -1,0 +1,10 @@
+{
+  "target_hardware_platform": "IBM Quantum (Eagle r3 127Q Heavy-Hex)",
+  "target_backend": "ibm_brisbane",
+  "local_transpiler_backend": "GenericBackendV2 (127Q)",
+  "authentication_status": "NOT_CONFIGURED (Dry-Run Safety Interlock Active)",
+  "dry_run_interlock": true,
+  "circuits_transpiled": 4,
+  "circuits_dry_run_executed": 4,
+  "zero_unauthorized_credits_consumed": true
+}

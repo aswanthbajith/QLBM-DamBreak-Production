@@ -1,0 +1,9 @@
+Level,Circuit,Qubits,Gates,2Q_Gates,Depth,Status,Rationale
+1,Single-Qubit Phase Rotation,1,1,0,1,GREEN,Trivial single-qubit gate; runs on any NISQ QPU with fidelity > 99.9%
+2,2-Qubit Block Encoding,2,18,2,12,GREEN,2 CNOTs; runs cleanly on IBM Eagle/Heron with fidelity > 98%
+3,2-Qubit QSVT Inversion (d=3),2,39,6,31,GREEN,6 CNOTs; runs cleanly on IBM Eagle/Heron with fidelity > 95%
+4,2-Qubit QSVT Inversion (d=5),2,58,10,45,GREEN,10 CNOTs; executable within NISQ coherence time
+5,4-Qubit Block Encoding (8x8),4,196,62,114,YELLOW,62 CNOTs; suffers from ~10-20% NISQ noise degradation
+6,4-Qubit QSVT Inversion (d=3),4,672,214,385,RED,214 CNOTs; exceeds typical NISQ two-qubit error thresholds
+7,13-Qubit Dam Break (4x2 Mesh),13,5000000,2500000,1500000,BLACK,Requires Fault-Tolerant Quantum Error Correction (QEC)
+8,25-Qubit Production (300x100),25,400000000,200000000,100000000,BLACK,Requires 65k-100k physical qubits with active surface codes

@@ -1,0 +1,4 @@
+grid,logical_qubits,physical_qubits,ancillas,circuit_depth,1q_gates,2q_gates,cx_cz_count,measurement_operations,state_preparation_depth
+4x4,9,127,0,5,0,0,0,9,1
+8x4,10,127,0,5,0,0,0,10,1
+8x8,11,127,0,5,0,0,0,11,1

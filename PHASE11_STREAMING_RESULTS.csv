@@ -1,0 +1,4 @@
+grid,nodes,total_qubits,direction_qubits,coord_qubits,orig_depth,transpiled_depth,cx_count,unitarity_verified,scaling_class
+2x2,4,6,4,2,2,2,4,True,O(log N)
+4x2,8,7,4,3,2,2,4,True,O(log N)
+4x4,16,8,4,4,1,1,4,True,O(log N)

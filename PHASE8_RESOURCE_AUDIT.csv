@@ -1,0 +1,8 @@
+grid,nodes,carleman_dim,log2_dim,system_qubits,ancilla_qubits,total_logical_qubits,sparse_nnz,sparse_storage_mb,dense_storage_gb,circuit_depth,qsvt_oracle_calls,phase_rotations,est_two_qubit_cx_gates,classification
+1x1,1,342,8.42,9,1,10,4212,0.1,0.0,30,8,15,144,MEASURED
+4x2,8,2736,11.42,12,1,13,33696,0.79,0.11,30,8,15,192,MEASURED
+8x4,32,10944,13.42,14,1,15,134784,3.17,1.78,30,8,15,224,MEASURED
+16x8,128,43776,15.42,16,1,17,539136,12.67,28.56,30,8,15,256,SIMULATED
+32x16,512,175104,17.42,18,1,19,2156544,50.7,456.89,30,8,15,288,SIMULATED
+64x32,2048,700416,19.42,20,1,21,8626176,202.78,7310.25,30,8,15,320,SIMULATED
+300x100,30000,10260000,23.29,24,1,25,126360000,2970.43,1568609.5,30,8,15,384,ANALYTICAL

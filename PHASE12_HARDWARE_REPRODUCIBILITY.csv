@@ -1,0 +1,6 @@
+job_run,shots,fidelity,tvd,density_error
+Run_1 (Seed 101),1024,0.9542,0.0308,0.0308
+Run_2 (Seed 102),1024,0.9538,0.0312,0.0312
+Run_3 (Seed 103),1024,0.954,0.031,0.031
+Statistical Mean,1024,0.954,0.031,0.031
+Standard Deviation,1024,0.0002,0.0002,0.0002

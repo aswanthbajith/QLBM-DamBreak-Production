@@ -1,0 +1,37 @@
+{
+  "phase": 8,
+  "status": "FINALIZED",
+  "verdict": "CONDITIONAL PASS",
+  "timestamp": "2026-08-19T17:00:00Z",
+  "tests_total": 52,
+  "tests_passed": 52,
+  "reproducibility": "PASS",
+  "reproducibility_command": "./run_phase8_validation.sh",
+  "classical_validation": "VERIFIED (D2Q9 Navier-Stokes + Allen-Cahn, Martin & Moyce dam break, mass drift < 0.43%, O(N) scaling)",
+  "carleman_validation": "VERIFIED (Local quadratic lifting D_C=342N, error saturates at ~1.05%, manifold defect < 0.14)",
+  "block_encoding_validation": "VERIFIED (Canonical CS/Halmos dilation, unitarity error < 4e-15, grid-invariant alpha=11.4739)",
+  "qsvt_validation": "VERIFIED (Odd Chebyshev inversion, residual 5.03e-11 at d=15, kappa < 1.5 for dt <= 0.035)",
+  "quantum_execution": "HYBRID EMULATION / QUANTUM STATEVECTOR SIMULATION (Evaluated via classical CPU SVD functional calculus; circuit synthesis validated)",
+  "quantum_advantage": "THEORETICAL ONLY (Restricted to global scalar integrals via QAE; full-field tomography disproven)",
+  "qae_readiness": "READY FOR CIRCUIT DESIGN",
+  "hardware_readiness": "FUTURE FAULT-TOLERANT TARGET (Not executed on physical QPU)",
+  "publication_readiness": "READY WITH LIMITATIONS",
+  "production_grid": {
+    "mesh": "300x100",
+    "nodes": 30000,
+    "carleman_dimension": 10260000,
+    "logical_qubits": 25,
+    "sparse_ram_mb": 2970.43,
+    "dense_ram_gb": 1568609.5
+  },
+  "major_limitations": [
+    "Quantum surrogate model is strictly restricted to constant-density / moderate-density quadratic dynamics (p=2)",
+    "Full-field spatial velocity tomography offers no quantum speedup due to Holevo measurement lower bounds",
+    "Multi-step dynamical evolution is evaluated through classical SVD emulation rather than physical quantum hardware"
+  ],
+  "open_problems": [
+    "Fault-tolerant block encoding oracle synthesis for sparse local collision and streaming operators",
+    "Adaptive non-static reciprocal density lifting for high-density-ratio multiphase flows",
+    "Physical quantum hardware execution of fault-tolerant QAE observable extraction"
+  ]
+}

@@ -1,0 +1,61 @@
+file,entity_type,name,line_range,purpose,qubits,clbits,is_executable,is_simulated,is_emulated,is_hardware_ready,classification
+baseline/classical_validated/matrix_two_phase_lbm.py,Class,MatrixTwoPhaseLBM2D,18-210,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+baseline/classical_validated/matrix_two_phase_lbm.py,Function,__init__,19-58,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+baseline/classical_validated/verify_matrix_equivalence.py,Function,verify_equivalence,15-146,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+classical/baseline_v0_simplified/matrix_two_phase_lbm.py,Class,MatrixTwoPhaseLBM2D,18-210,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+classical/baseline_v0_simplified/matrix_two_phase_lbm.py,Function,__init__,19-58,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+classical/baseline_v0_simplified/verify_matrix_equivalence.py,Function,verify_equivalence,15-146,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+classical/verify_matrix_equivalence.py,Function,verify_equivalence,15-134,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/block_encoding.py,Class,QuantumBlockEncoding,17-107,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,True,True,SIMULATED_CIRCUIT
+quantum/block_encoding.py,Function,build_A_C_block_encoding,109-129,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/block_encoding.py,Function,__init__,18-65,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,True,False,CLASSICAL_EMULATION
+quantum/block_encoding.py,Function,_build_qiskit_circuit,68-78,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,False,True,SIMULATED_CIRCUIT
+quantum/carleman_lbm.py,Class,CarlemanTwoPhaseLBM,20-327,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/carleman_lbm.py,Function,__init__,21-79,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/compare_three_solvers.py,Function,run_three_solver_comparison,26-170,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/dam_break_qlbm.py,Class,DamBreakQLBM,21-154,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/dam_break_qlbm.py,Function,__init__,22-90,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/dam_break_qlbm_sim.py,Class,QLBMDamBreakSimulation,28-229,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+quantum/dam_break_qlbm_sim.py,Function,run_end_to_end,134-229,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+quantum/qsvt_solver.py,Class,QSVTSolver,16-181,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,True,True,SIMULATED_CIRCUIT
+quantum/qsvt_solver.py,Function,__init__,17-61,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,True,False,CLASSICAL_EMULATION
+quantum/qsvt_solver.py,Function,_build_qsvt_circuit,109-137,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,False,True,SIMULATED_CIRCUIT
+quantum/run_end_to_end_validation.py,Function,run_all_validations,18-256,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/run_quantum_pipeline.py,Function,run_quantum_pipeline,22-240,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum/verify_block_encoding.py,Function,run_block_encoding_validation,14-75,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+quantum_hardware/01_block_encoding_demo.py,Function,build_2q_block_encoding,11-32,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,True,True,SIMULATED_CIRCUIT
+quantum_hardware/02_qsvt_demo.py,Function,build_2q_qsvt,10-35,Block Encoding / QSVT / Simulation / Test,N/A,0,True,True,True,True,SIMULATED_CIRCUIT
+quantum_hardware/03_measurement_demo.py,Function,build_measured_circuit,10-17,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,SIMULATED_CIRCUIT
+quantum_hardware/04_small_qlbm_state.py,Function,build_small_qlbm_state,9-20,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,True,False,False,SIMULATED_CIRCUIT
+quantum_hardware/05_qae_scalar_demo.py,Function,build_qae_demo,9-21,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,True,False,False,SIMULATED_CIRCUIT
+scripts/generate_final_research_benchmarks.py,Function,run_benchmarks,29-162,Block Encoding / QSVT / Simulation / Test,Variable (2-25),Variable,True,False,True,False,CLASSICAL_EMULATION
+scripts/run_carleman_study.py,Function,run_carleman_study,27-165,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_block_encoding.py,Class,TestBlockEncoding,17-43,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_block_encoding.py,Function,setUp,18-21,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_block_encoding.py,Function,test_03_qiskit_circuit_operator,38-43,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_dam_break_observables.py,Class,TestDamBreakObservables,15-34,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+tests/test_dam_break_observables.py,Function,setUp,16-17,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_phase6_benchmarks.py,Class,TestPhase6Benchmarks,18-77,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,True,False,CLASSICAL_EMULATION
+tests/test_phase6_benchmarks.py,Function,test_03_qsvt_degree_accuracy,58-67,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_phase6_noise_and_budget.py,Class,TestPhase6NoiseAndBudget,15-48,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+tests/test_phase6_noise_and_budget.py,Function,test_01_noise_robustness_threshold,16-30,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_phase6_noise_and_budget.py,Function,test_02_error_budget_monotonicity,32-48,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+tests/test_qsvt.py,Class,TestQSVT,15-35,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_qsvt.py,Function,test_01_polynomial_boundedness,23-29,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_qsvt.py,Function,test_02_circuit_structure,31-35,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_qsvt_condition_spectrum.py,Class,TestQSVTConditionSpectrum,20-49,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,True,False,CLASSICAL_EMULATION
+tests/test_qsvt_condition_spectrum.py,Function,test_01_spectrum_bounds_and_inversion,22-49,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,True,False,CLASSICAL_EMULATION
+tests/test_quantum_block_encoding_independent.py,Class,TestQuantumBlockEncodingIndependent,17-108,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_block_encoding_independent.py,Function,test_02_independent_dilation_unitarity,38-45,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_block_encoding_independent.py,Function,test_03_exact_block_extraction,47-54,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_block_encoding_independent.py,Function,test_04_padding_subspace_isolation,56-68,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_block_encoding_independent.py,Function,test_05_random_state_action,70-87,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_block_encoding_independent.py,Function,test_06_physical_lifted_dam_break_state_action,89-108,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_resources.py,Class,TestQuantumResources,15-30,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_resources.py,Function,test_01_logarithmic_qubit_scaling,16-23,Block Encoding / QSVT / Simulation / Test,Variable (2-25),0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_resources.py,Function,test_02_circuit_depth_scaling,25-30,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_solver.py,Class,TestQuantumSolver,15-34,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_solver.py,Function,test_01_high_fidelity_solve,24-28,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_quantum_solver.py,Function,test_02_residual_bound,30-34,Block Encoding / QSVT / Simulation / Test,N/A,0,True,False,False,False,ANALYTICAL_BLUEPRINT
+tests/test_shot_noise_statistics.py,Class,TestShotNoiseStatistics,18-48,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,ANALYTICAL_BLUEPRINT
+tests/test_shot_noise_statistics.py,Function,test_01_sql_scaling_and_r_squared,19-48,Block Encoding / QSVT / Simulation / Test,N/A,Variable,True,True,False,False,ANALYTICAL_BLUEPRINT

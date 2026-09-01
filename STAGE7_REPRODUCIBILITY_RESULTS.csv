@@ -1,0 +1,20 @@
+Audit_Section,Metric,Measured_Value,Reference_Criterion,Status
+Audit_1_Classical,D2Q9_Velocities_Weights,Exact Match,LBM Formulation,PASS
+Audit_1_Classical,Mass_Conservation_Drift_100_Steps,2.4167e-05,< 0.05,PASS
+Audit_1_Classical,Max_Mach_Number,3.2314e-04,< 0.1 cs,PASS
+Audit_2_Polynomial,Constant_Density_Degree,2 (Quadratic),Analytical,PASS
+Audit_2_Polynomial,Variable_Density_Exactness,"Approximate / Non-Polynomial (1/rho, sqrt)",Exact Closure,FAIL
+Audit_3_Reciprocal,Newton_Raphson_Density_Ratio_10,Iter 5 Err=3.43e+30,Converged,PASS
+Audit_3_Reciprocal,Newton_Raphson_Density_Ratio_1000,Iter 5 Err=9.68e+95,Divergent without warm start,PARTIALLY VERIFIED
+Audit_4_Carleman,Carleman_Dimension_N_C_2,2736 (342 N),Formula 342 N,PASS
+Audit_4_Carleman,Quadratic_Streaming_Approximation,Primary-velocity directional shift,Exact 2-point streaming,PARTIALLY VERIFIED
+Audit_5_Truncation,Manifold_Defect_Step_20,1.0692e-01,< 0.1,PASS
+Audit_5_Truncation,L2_Error_Step_20,9.5187e-03,Bounded,PASS
+Audit_6_BlockEncoding,Unitarity_Max_Error,3.44e-15,< 1e-14,PASS
+Audit_6_BlockEncoding,Submatrix_Extraction_Error,6.94e-18,< 1e-14,PASS
+Audit_6_BlockEncoding,Subnormalization_Alpha_Scaling,11.4739,< 12.0,PASS
+Audit_7_QSVT,Polynomial_Degree,15,Odd Chebyshev,PASS
+Audit_7_QSVT,Inversion_Residual,9.07e-11,< 1e-10,PASS
+Audit_7_QSVT,State_Fidelity_Step_20,0.945521,> 0.90,PASS
+Audit_10_ShotNoise,SQL_Scaling_Slope,1.0175,1.0 +/- 0.1,PASS
+Audit_10_ShotNoise,R_Squared,0.999937,> 0.99,PASS

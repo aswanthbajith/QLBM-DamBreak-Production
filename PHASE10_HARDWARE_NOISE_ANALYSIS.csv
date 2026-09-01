@@ -1,0 +1,9 @@
+circuit,qubits,depth,cx_count,readout_error,depol_rate,fidelity
+01_block_encoding_demo,2,12,2,0.012,0.001,0.9982
+01_block_encoding_demo,2,12,2,0.012,0.01,0.9875
+01_block_encoding_demo,2,12,2,0.012,0.05,0.949
+02_qsvt_demo_deg3,2,15,2,0.012,0.01,0.9621
+02_qsvt_demo_deg5,2,45,10,0.012,0.01,0.915
+02_qsvt_demo_deg7,2,75,18,0.012,0.01,0.852
+Level4_Block_Enc_4Q,4,114,62,0.012,0.01,0.721
+Level6_DamBreak_13Q,13,1500000,2500000,0.012,0.01,0.0

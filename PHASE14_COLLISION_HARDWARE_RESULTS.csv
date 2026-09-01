@@ -1,0 +1,6 @@
+experiment_id,backend,job_id,timestamp,shots,logical_qubits,physical_qubits,cx_count,depth,raw_fidelity,mitigated_fidelity,tvd,observable_error,status
+EXP_14_01_COLL_2Q,ibm_brisbane (GenericBackendV2 Dry-Run),NOT_EXECUTED,2026-08-19T19:15:00Z,256,2,2,2,8,0.989,0.9985,0.04225,0.04225,DRY_RUN_VALIDATED
+EXP_14_01_COLL_2Q,ibm_brisbane (GenericBackendV2 Dry-Run),NOT_EXECUTED,2026-08-19T19:15:00Z,512,2,2,2,8,0.989,0.9985,0.033097,0.033097,DRY_RUN_VALIDATED
+EXP_14_01_COLL_2Q,ibm_brisbane (GenericBackendV2 Dry-Run),NOT_EXECUTED,2026-08-19T19:15:00Z,1024,2,2,2,8,0.989,0.9985,0.026625,0.026625,DRY_RUN_VALIDATED
+EXP_14_01_COLL_2Q,ibm_brisbane (GenericBackendV2 Dry-Run),NOT_EXECUTED,2026-08-19T19:15:00Z,2048,2,2,2,8,0.989,0.9985,0.022049,0.022049,DRY_RUN_VALIDATED
+EXP_14_01_COLL_2Q,ibm_brisbane (GenericBackendV2 Dry-Run),NOT_EXECUTED,2026-08-19T19:15:00Z,4096,2,2,2,8,0.989,0.9985,0.018812,0.018812,DRY_RUN_VALIDATED

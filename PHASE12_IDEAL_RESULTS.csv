@@ -1,0 +1,5 @@
+experiment,qubits,state_fidelity,tvd,density_error,mass_conservation_error,status
+Structured_Streaming_2x2 (6Q),6,1.0,0.0,0.0,0.0,IDEAL_EXACT
+Structured_Collision_2Q,2,1.0,0.0,0.0,0.0,IDEAL_EXACT
+Structured_QSVT_d3 (3Q),3,0.999999,0.00085,0.00096,0.0,IDEAL_EXACT
+E2E_Structured_QLBM_2x2 (6Q),6,0.99985,0.0012,0.014071,0.0,IDEAL_EXACT

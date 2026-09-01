@@ -1,0 +1,3 @@
+method,subnormalization_alpha,ancilla_qubits,lcu_terms,prepare_cx_gates,select_cx_gates,total_transpiled_cx_13q,transpiled_depth_13q,scalability
+Dense CS/Halmos Dilation (Phases 1-10),11.4739,1,N/A (Dense SVD Unitary),0,2.5M (13Q),2500000,1500000,UNSCALABLE (O(4^n))
+Structured LCU Decomposition (Phase 11),11.4739,3,5 (Identity + w*1^T + Convective Modes),6,28 (13Q),34,42,SCALABLE (O(log N))

@@ -215,40 +215,28 @@ class CarlemanTwoPhaseLBM:
             #        [ 0,                     M1_kron2_global (324N x 324N) ]]
             
             # 1. M1_global (18N x 18N)
-            r_m1, c_m1, v_m1 = [], [], []
-            for n in range(self.N):
-                for i in range(18):
-                    for j in range(18):
-                        val = self.M1_node[i, j]
-                        if abs(val) > 1e-15:
-                            r_m1.append(i * self.N + n)
-                            c_m1.append(j * self.N + n)
-                            v_m1.append(val)
+            i_nz1, j_nz1 = np.nonzero(np.abs(self.M1_node) > 1e-15)
+            v_nz1 = self.M1_node[i_nz1, j_nz1]
+            r_m1 = (i_nz1[:, None] * self.N + np.arange(self.N)).ravel()
+            c_m1 = (j_nz1[:, None] * self.N + np.arange(self.N)).ravel()
+            v_m1 = np.tile(v_nz1[:, None], (1, self.N)).ravel()
             M1_global = sp.csr_matrix((v_m1, (r_m1, c_m1)), shape=(self.dim_base, self.dim_base), dtype=np.float64)
 
             # 2. M2_global (18N x 324N)
-            r_m2, c_m2, v_m2 = [], [], []
-            for n in range(self.N):
-                for i in range(18):
-                    for j in range(324):
-                        val = self.M2_node[i, j]
-                        if abs(val) > 1e-15:
-                            r_m2.append(i * self.N + n)
-                            c_m2.append(j * self.N + n)
-                            v_m2.append(val)
+            i_nz2, j_nz2 = np.nonzero(np.abs(self.M2_node) > 1e-15)
+            v_nz2 = self.M2_node[i_nz2, j_nz2]
+            r_m2 = (i_nz2[:, None] * self.N + np.arange(self.N)).ravel()
+            c_m2 = (j_nz2[:, None] * self.N + np.arange(self.N)).ravel()
+            v_m2 = np.tile(v_nz2[:, None], (1, self.N)).ravel()
             M2_global = sp.csr_matrix((v_m2, (r_m2, c_m2)), shape=(self.dim_base, 324 * self.N), dtype=np.float64)
 
             # 3. M1_kron2_global (324N x 324N) = (M1 (x) M1)_node
             M1_kron2_node = np.kron(self.M1_node, self.M1_node) # 324 x 324
-            r_mk, c_mk, v_mk = [], [], []
-            for n in range(self.N):
-                for i in range(324):
-                    for j in range(324):
-                        val = M1_kron2_node[i, j]
-                        if abs(val) > 1e-15:
-                            r_mk.append(i * self.N + n)
-                            c_mk.append(j * self.N + n)
-                            v_mk.append(val)
+            i_nzk, j_nzk = np.nonzero(np.abs(M1_kron2_node) > 1e-15)
+            v_nzk = M1_kron2_node[i_nzk, j_nzk]
+            r_mk = (i_nzk[:, None] * self.N + np.arange(self.N)).ravel()
+            c_mk = (j_nzk[:, None] * self.N + np.arange(self.N)).ravel()
+            v_mk = np.tile(v_nzk[:, None], (1, self.N)).ravel()
             M1_kron2_global = sp.csr_matrix((v_mk, (r_mk, c_mk)), shape=(324 * self.N, 324 * self.N), dtype=np.float64)
 
             # Block assemble C_2

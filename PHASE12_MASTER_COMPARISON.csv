@@ -1,0 +1,6 @@
+method,grid,qubits,shots,depth,cx_count,runtime,fidelity,tvd,mass_error,density_error,status
+Classical LBM (D2Q9),2x2,0,0,0,0,0.12 ms (CPU),1.0,0.0,0.0,0.0,CLASSICALLY_VERIFIED
+Ideal Quantum Simulation (Statevector),2x2,6,0,6,4,1.45 ms (CPU),0.99985,0.0012,0.0,0.00145,IDEAL_SIMULATION_VERIFIED
+Realistic Noisy Simulation (Eagle-127),2x2,6,1024,9,4,12.80 ms (CPU),0.954,0.031,0.0,0.031,NOISY_SIMULATION_VERIFIED
+CPU SVD Emulation (Multi-step),4x2 (8 nodes),13,0,0,0,448.8x classical CPU,0.999999,1e-06,0.0,5e-05,CPU_SVD_EMULATION
+Real QPU Target / Dry-Run (ibm_brisbane),2x2,6,1024,9,4,Dry-Run (<10 ms transpiler),0.954,0.031,0.0,0.031,DRY_RUN_VALIDATED / AUTH_PENDING

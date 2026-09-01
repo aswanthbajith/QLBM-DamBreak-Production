@@ -1,0 +1,6 @@
+experiment_id,file_path,file_type,data_source,immutable
+EXP_15_01_COLL_2Q,phase15_hardware_data/raw/exp01_coll_counts.json,JSON_COUNTS,SIMULATED_EAGLE_MODEL,True
+EXP_15_02_STREAM_6Q,phase15_hardware_data/raw/exp02_stream_counts.json,JSON_COUNTS,SIMULATED_EAGLE_MODEL,True
+EXP_15_03_QSVT_3Q,phase15_hardware_data/raw/exp03_qsvt_counts.json,JSON_COUNTS,SIMULATED_EAGLE_MODEL,True
+EXP_15_04_E2E_2X2,phase15_hardware_data/raw/exp04_e2e_counts.json,JSON_COUNTS,SIMULATED_EAGLE_MODEL,True
+EXP_15_05_LCU_4X2,phase15_hardware_data/raw/exp05_lcu4x2_counts.json,JSON_COUNTS,SIMULATED_EAGLE_MODEL,True

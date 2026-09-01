@@ -1,0 +1,21 @@
+{
+  "selected_target_backend": "ibm_brisbane",
+  "architecture_family": "IBM Eagle r3",
+  "qubits": 127,
+  "topology": "Heavy-Hexagonal Lattice",
+  "basis_gates": [
+    "cx",
+    "id",
+    "rz",
+    "sx",
+    "x",
+    "reset"
+  ],
+  "local_harness": "GenericBackendV2(num_qubits=127)",
+  "average_t1_us": 234.5,
+  "average_t2_us": 148.2,
+  "mean_1q_error": 0.00028,
+  "mean_2q_cx_error": 0.0084,
+  "mean_readout_error": 0.012,
+  "selection_justification": "Primary IBM Quantum 127-qubit Heavy-Hex production backend offering sub-1% CX error rates and complete connectivity for 6-qubit and 13-qubit structured QLBM subgraphs."
+}

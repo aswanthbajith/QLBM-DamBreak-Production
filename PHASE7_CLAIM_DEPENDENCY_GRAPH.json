@@ -1,0 +1,248 @@
+{
+  "nodes": [
+    {
+      "id": "PHY-01",
+      "layer": "Layer 1: Physical",
+      "claim": "Incompressible Navier-Stokes + Conservative Allen-Cahn dam break",
+      "status": "VERIFIED",
+      "prereq": []
+    },
+    {
+      "id": "PHY-02",
+      "layer": "Layer 1: Physical",
+      "claim": "Martin & Moyce (1952) experimental wave-front validation",
+      "status": "VERIFIED",
+      "prereq": [
+        "PHY-01"
+      ]
+    },
+    {
+      "id": "MAT-01",
+      "layer": "Layer 2: Mathematical",
+      "claim": "Constant-density quadratic surrogate model (p=2)",
+      "status": "VERIFIED",
+      "prereq": [
+        "PHY-01"
+      ]
+    },
+    {
+      "id": "MAT-02",
+      "layer": "Layer 2: Mathematical",
+      "claim": "Local quadratic Carleman lifting dimension D_C = 342N",
+      "status": "VERIFIED",
+      "prereq": [
+        "MAT-01"
+      ]
+    },
+    {
+      "id": "MAT-03",
+      "layer": "Layer 2: Mathematical",
+      "claim": "Exact variable-density cubic closure (p=3)",
+      "status": "DISPROVEN",
+      "prereq": [
+        "PHY-01"
+      ]
+    },
+    {
+      "id": "MAT-04",
+      "layer": "Layer 2: Mathematical",
+      "claim": "Static Newton-Raphson reciprocal density lifting xi=1/rho",
+      "status": "DISPROVEN",
+      "prereq": [
+        "MAT-03"
+      ]
+    },
+    {
+      "id": "NUM-01",
+      "layer": "Layer 3: Numerical",
+      "claim": "Bounded Carleman multi-step error (~1.05% at t=200)",
+      "status": "EMPIRICALLY_MEASURED",
+      "prereq": [
+        "MAT-02"
+      ]
+    },
+    {
+      "id": "NUM-02",
+      "layer": "Layer 3: Numerical",
+      "claim": "Linear O(N) classical time scaling",
+      "status": "EMPIRICALLY_MEASURED",
+      "prereq": [
+        "PHY-01"
+      ]
+    },
+    {
+      "id": "QAL-01",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Canonical CS/Halmos unitary block encoding dilation",
+      "status": "VERIFIED",
+      "prereq": [
+        "MAT-02"
+      ]
+    },
+    {
+      "id": "QAL-02",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Grid-invariant subnormalization alpha = 11.4739",
+      "status": "VERIFIED",
+      "prereq": [
+        "QAL-01"
+      ]
+    },
+    {
+      "id": "QAL-03",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "QSVT Chebyshev matrix inversion convergence (residual 5.03e-11 at d=15)",
+      "status": "VERIFIED",
+      "prereq": [
+        "QAL-01",
+        "QAL-02"
+      ]
+    },
+    {
+      "id": "QAL-04",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Condition number kappa < 1.5 for dt <= 0.035",
+      "status": "VERIFIED",
+      "prereq": [
+        "MAT-02"
+      ]
+    },
+    {
+      "id": "QAL-05",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Qiskit QuantumCircuit synthesis with Depth = 2d",
+      "status": "VERIFIED",
+      "prereq": [
+        "QAL-03"
+      ]
+    },
+    {
+      "id": "QAL-06",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Hybrid classical SVD multi-step emulation",
+      "status": "HYBRID_EMULATED",
+      "prereq": [
+        "QAL-03",
+        "NUM-01"
+      ]
+    },
+    {
+      "id": "QAL-07",
+      "layer": "Layer 3: Quantum Algorithmic",
+      "claim": "Depolarizing noise robustness up to lambda ~ 0.05",
+      "status": "STATEVECTOR_SIMULATED",
+      "prereq": [
+        "QAL-03"
+      ]
+    },
+    {
+      "id": "CMP-01",
+      "layer": "Layer 4: Complexity",
+      "claim": "Logarithmic qubit register scaling n_tot = ceil(log2(342N)) + 1",
+      "status": "ANALYTICAL",
+      "prereq": [
+        "MAT-02"
+      ]
+    },
+    {
+      "id": "CMP-02",
+      "layer": "Layer 4: Complexity",
+      "claim": "Production 300x100 mesh 25-qubit extrapolation",
+      "status": "ANALYTICAL",
+      "prereq": [
+        "CMP-01"
+      ]
+    },
+    {
+      "id": "CMP-03",
+      "layer": "Layer 4: Complexity",
+      "claim": "Quadratic quantum speedup for global scalar observables via QAE",
+      "status": "THEORETICAL",
+      "prereq": [
+        "QAL-03"
+      ]
+    },
+    {
+      "id": "CMP-04",
+      "layer": "Layer 4: Complexity",
+      "claim": "Exponential quantum speedup for dense velocity field reconstruction",
+      "status": "DISPROVEN",
+      "prereq": []
+    },
+    {
+      "id": "CMP-05",
+      "layer": "Layer 4: Complexity",
+      "claim": "Physical fault-tolerant quantum hardware execution",
+      "status": "NOT_DEMONSTRATED",
+      "prereq": [
+        "QAL-05"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "PHY-01",
+      "to": "PHY-02"
+    },
+    {
+      "from": "PHY-01",
+      "to": "MAT-01"
+    },
+    {
+      "from": "PHY-01",
+      "to": "NUM-02"
+    },
+    {
+      "from": "MAT-01",
+      "to": "MAT-02"
+    },
+    {
+      "from": "MAT-02",
+      "to": "NUM-01"
+    },
+    {
+      "from": "MAT-02",
+      "to": "QAL-01"
+    },
+    {
+      "from": "MAT-02",
+      "to": "QAL-04"
+    },
+    {
+      "from": "MAT-02",
+      "to": "CMP-01"
+    },
+    {
+      "from": "QAL-01",
+      "to": "QAL-02"
+    },
+    {
+      "from": "QAL-01",
+      "to": "QAL-03"
+    },
+    {
+      "from": "QAL-02",
+      "to": "QAL-03"
+    },
+    {
+      "from": "QAL-03",
+      "to": "QAL-05"
+    },
+    {
+      "from": "QAL-03",
+      "to": "QAL-06"
+    },
+    {
+      "from": "QAL-03",
+      "to": "QAL-07"
+    },
+    {
+      "from": "QAL-03",
+      "to": "CMP-03"
+    },
+    {
+      "from": "CMP-01",
+      "to": "CMP-02"
+    }
+  ]
+}

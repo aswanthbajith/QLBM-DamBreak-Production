@@ -1,0 +1,6 @@
+parameter,value,units,error_contribution_pct
+T1 Relaxation Time (mean),234.5,microseconds,8.1
+T2 Dephasing Time (mean),148.2,microseconds,5.4
+Single-Qubit Gate Error (p_1Q),0.00028,error_rate,1.6
+Two-Qubit CX Gate Error (p_CX),0.0084,error_rate,59.7
+Readout Assignment Error (p_readout),0.012,error_rate,30.6

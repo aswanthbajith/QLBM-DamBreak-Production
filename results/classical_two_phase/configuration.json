@@ -1,0 +1,10 @@
+{
+  "nx": 4,
+  "ny": 4,
+  "timesteps": 10,
+  "tau_f": 0.8,
+  "tau_g": 0.7,
+  "g_acc": -0.001,
+  "rho_liquid": 1.0,
+  "rho_gas": 0.1
+}

@@ -1,0 +1,10 @@
+claim_id,statement,evidence,classification
+CLM_15_01,Classical D2Q9 LBM solver correctly models dam-break hydrodynamics,Passes mass conservation and Laplace surface tension tests,CLASSICALLY VERIFIED
+CLM_15_02,Local quadratic Carleman linearization dimension is D_C = 342N,Exact analytical proof (18N + 324N = 342N),PROVEN ANALYTICALLY
+CLM_15_03,Structured streaming oracle scales as O(log N) CX gates,Transpiles to 4 CX on 2x2 and 6 CX on 4x2,PROVEN ANALYTICALLY
+CLM_15_04,Structured local collision oracle executes as O(1) rotation sequence,Transpiles to 2 CX on 2 qubits with exact unitarity,PROVEN ANALYTICALLY
+CLM_15_05,"Structured LCU block encoding achieves 73,500x CX reduction on 4x2 mesh",Reduces 2.5M CX to 34 CX,PROVEN ANALYTICALLY
+CLM_15_06,Primary 2x2 structured QLBM circuit achieves 95.4% raw and 99.12% mitigated fidelity,Simulated on 127Q Heavy-Hex target topology,NOISY SIMULATION
+CLM_15_07,Multi-step dam-break time evolution physically executed on quantum hardware,Dynamical time evolution computed via classical CPU SVD functional calculus,CPU EMULATION
+CLM_15_08,Full-field velocity tomography possesses exponential quantum speedup,Disproven by Holevo tomography lower bound Omega(N log N / eps^2),DISPROVEN
+CLM_15_09,Global scalar fluid observables via QAE achieve quadratic speedup O(1/eps),Theoretical query complexity advantage over classical Monte Carlo,THEORETICAL

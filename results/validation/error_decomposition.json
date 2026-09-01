@@ -1,0 +1,57 @@
+{
+  "problem": "Two-Phase Dam-Break 4x4, t=1",
+  "reference_shots": 4096,
+  "algorithmic_error": {
+    "density_rel_l2": 0.290183739037061,
+    "phase_rel_l2": 0.9426011974282148
+  },
+  "sampling_error_at_4096": {
+    "density_rel_l2": 0.046538756096000396
+  },
+  "hardware_noise_error": {
+    "aer_noisy_rel_l2": 0.08148364346518255,
+    "fake_ibm_rel_l2": 0.07509097389814054
+  },
+  "total_errors_by_backend": {
+    "aer_ideal_sampled": 0.2928330550055383,
+    "aer_noisy_sampled": 0.30891158545099356,
+    "fake_ibm_sampled": 0.30900087590576186
+  },
+  "sql_convergence": {
+    "r_squared": 0.9914433851472579,
+    "slope": 3.542538237190709,
+    "intercept": -0.008225254256751607,
+    "data_points": [
+      {
+        "shots": 256,
+        "inv_sqrt_shots": 0.0625,
+        "density_sampling_error": 0.21855007380822702,
+        "phase_sampling_error": 0.2012111201193977
+      },
+      {
+        "shots": 1024,
+        "inv_sqrt_shots": 0.03125,
+        "density_sampling_error": 0.09399783114868558,
+        "phase_sampling_error": 0.10799373459266215
+      },
+      {
+        "shots": 4096,
+        "inv_sqrt_shots": 0.015625,
+        "density_sampling_error": 0.038539941950679155,
+        "phase_sampling_error": 0.051356334146773444
+      },
+      {
+        "shots": 16384,
+        "inv_sqrt_shots": 0.0078125,
+        "density_sampling_error": 0.02408003490634107,
+        "phase_sampling_error": 0.026247560524542655
+      },
+      {
+        "shots": 65536,
+        "inv_sqrt_shots": 0.00390625,
+        "density_sampling_error": 0.012685086562121606,
+        "phase_sampling_error": 0.011847343330406861
+      }
+    ]
+  }
+}

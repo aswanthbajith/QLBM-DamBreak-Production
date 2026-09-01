@@ -1,0 +1,2 @@
+mesh,qubits,cx_count,depth,ideal_density_error,noisy_density_error,mitigated_density_error,fidelity_raw,fidelity_mitigated,mass_error
+2x2 (4 nodes),6,4,9,0.00145,0.031,0.0062,0.954,0.9912,0.0

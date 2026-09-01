@@ -1,0 +1,7 @@
+experiment_id,name,logical_qubits,transpiled_qubits,cx_count,transpiled_depth,total_gates,nisq_feasibility
+EXP_13_01_BE_2Q,2-Qubit Block Encoding,2,127,2,12,18,FEASIBLE
+EXP_13_02_COLL_2Q,2-Qubit Structured Collision,2,127,2,8,8,FEASIBLE
+EXP_13_03_STREAM_6Q,6-Qubit 2x2 Structured Streaming,6,127,4,3,4,FEASIBLE
+EXP_13_04_QSVT_d3,3-Qubit Structured QSVT (d=3),3,127,4,15,16,FEASIBLE
+EXP_13_05_E2E_2X2_6Q,6-Qubit Primary 2x2 Structured QLBM,6,127,4,9,14,PRIMARY_HARDWARE_TARGET
+EXP_13_06_LCU_4X2_13Q,13-Qubit 4x2 Structured QLBM Single-Step,13,127,34,42,146,SINGLE_STEP_ACCESSIBLE

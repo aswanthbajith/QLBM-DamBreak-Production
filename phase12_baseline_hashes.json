@@ -1,0 +1,29 @@
+{
+  "git_commit": "bf710dc27d200083ac092a7c367cba841616d2b9",
+  "operating_system": "Linux-7.0.0-29-generic-x86_64-with-glibc2.43",
+  "python_version": "3.14.4",
+  "qiskit_version": "2.5.2",
+  "numpy_version": "2.5.2",
+  "scipy_version": "1.18.0",
+  "phase11_tests_passed": "56/56",
+  "file_hashes": {
+    "classical/two_phase_lbm.py": "6bce1aac8167f481de60a8430ace12f2f5cd15fe347df6c3a0a0e4e99fda2378",
+    "classical/phase_field.py": "870e3047670f582129a359928f43edfe3ddaeb152eb992e61809baa7af167006",
+    "classical/forcing.py": "c34f0d94666250b234b037ba8c8c5638da28644f4f036ca06a74c019f6586621",
+    "classical/two_phase_physics.py": "6c26acc5e4cc0b8a63cfeba51e56be6e24f1866bac067026f5c34762ba42f098",
+    "classical/matrix_two_phase_lbm.py": "202951d1665e3415d03ef28b9648d8c1a9a63ebe1079bd302c50e5a04f2e75fa",
+    "quantum/carleman_lbm.py": "0c0def491f1cb00380768d662aff75d7f148b74677c7982949b40e7c4282eeb5",
+    "quantum/block_encoding.py": "925f2199fc9d0cf417387ad797e3a689f0094c4a6ebac725decd09a4abd275b4",
+    "quantum/qsvt_solver.py": "4256b3570187c7478b0b2002533783d8d35e8fbd61c3bb4ac5619b866aea0e68",
+    "quantum/dam_break_qlbm_sim.py": "f92bc8209750258447c8134f003d368147a3c91e0cc5340128e678607f837e3e",
+    "PHASE11_STREAMING_ORACLE.py": "33526a05e1d4c21c3cd75003cb1f2aaa3512a87a71cd2ecd4796966ea5f94a24",
+    "PHASE11_STRUCTURED_QSVT.py": "0daf1a3bce70ebc5fa65051f0f46fd1ebfb1877a5f9657d85502ef8231065def",
+    "phase11_final_status.json": "9a1463c5663c19b2e8f9121847b0c0cfd22c0459bd07e50ca3f8a34814b20d28",
+    "PHASE11_FINAL_SCIENTIFIC_REPORT.md": "6b3983623cee0a44d34d735d2cbc4ae70c1ee826e6d749038dc9569b14e1f39a",
+    "PHASE11_COMPLETE_QUANTUM_INVENTORY.csv": "e3db0017771fe1fd6405224d95dea4073be1876414dc14c7c4765c28c9ee7473",
+    "PHASE11_IDEAL_VALIDATION.csv": "d028473c583ad02b7855f6323af7c6bec88376cd72eb0966aaf51968a492a363",
+    "PHASE11_NOISY_VALIDATION.csv": "16615f681c3adc5e9f43e8708c37434a14cb3b0b12c2acc10c00174d444422ff",
+    "PHASE11_HARDWARE_RESULTS.csv": "9b480e04625981cf8a118d48af65665a152d613888d762ac850d00720fa7d74d",
+    "PHASE11_FINAL_CLAIM_MATRIX.csv": "69775022e8b72b2b37e5d8a4b49016b053a69522ed8567661838941bcb18105f"
+  }
+}

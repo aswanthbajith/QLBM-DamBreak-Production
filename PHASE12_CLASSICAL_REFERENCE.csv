@@ -1,0 +1,4 @@
+grid,nx,ny,nodes,initial_mass,step1_mass,step1_kinetic_energy,mean_density,max_velocity_u,max_velocity_v
+2x2,2,2,4,2.2,2.2,0.0,0.55,0.0,0.0
+4x2,4,2,8,4.4,4.4,0.00859414,0.55,0.125002,0.0
+8x4,8,4,32,17.6,17.6,0.03345013,0.55,0.151243,0.0002

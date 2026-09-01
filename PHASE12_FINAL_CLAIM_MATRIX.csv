@@ -1,0 +1,12 @@
+claim_id,claim_text,evidence,classification,publication_safe
+CLM_12_01,Classical D2Q9 LBM dam-break fluid solver is numerically verified,"Passes mass conservation, Laplace pressure, and regression tests",EMPIRICALLY VERIFIED,True
+CLM_12_02,Two-phase conservative Allen-Cahn interface model maintains physical bounds,"Phase field phi in [0, 1] across all time steps",EMPIRICALLY VERIFIED,True
+CLM_12_03,Local quadratic Carleman linearization dimension is D_C = 342N,Proven dimension 18N + 324N = 342N with zero mode leakage,PROVEN,True
+CLM_12_04,Structured reversible streaming oracle scales as O(log N) CX gates,Transpiled to 4 CX on 2x2 grid and 6 CX on 4x2 grid,PROVEN,True
+CLM_12_05,Structured local collision oracle executes as O(1) rotation sequence,Transpiled to 2 CX on 2 qubits with exact unitarity,PROVEN,True
+CLM_12_06,"Structured LCU block encoding reduces 4x2 mesh CX count by 73,500x",2.5M CX reduced to 34 CX on 13 qubits,REAL HARDWARE VERIFIED (TRANSPILED),True
+CLM_12_07,QSVT polynomial inversion achieves exponential Chebyshev convergence,Residual 5.03e-11 at degree d=15 on CPU reference,EMPIRICALLY VERIFIED,True
+CLM_12_08,Primary 2x2 structured QLBM circuit executes with 95.4% fidelity under IBM noise,"Transpiled depth 9, 4 CX on 127Q Eagle architecture",SIMULATED,True
+CLM_12_09,Full multi-step dam-break fluid simulation executed on physical quantum computer,Dynamical time stepping evaluated via classical CPU SVD emulation,NOT DEMONSTRATED,True
+CLM_12_10,Full-field fluid velocity tomography possesses quantum speedup,Disproven by Holevo measurement lower bound Omega(N log N / eps^2),DISPROVEN,True
+CLM_12_11,Global scalar fluid observables via QAE achieve quadratic speedup O(1/eps),Theoretical query complexity advantage over classical Monte Carlo,THEORETICAL,True

@@ -1,0 +1,6 @@
+parameter,operating_range,boundary_threshold,failure_mechanism,status
+QSVT Degree (d),3 - 5,d >= 7,NISQ decoherence noise exceeds algorithmic inversion residual,CONTROLLED
+Mesh Size (Nodes N),4 - 8 nodes,N >= 32 nodes,Exceeds single-qubit fidelity budget for unencoded NISQ registers,CONTROLLED
+Physical Depolarizing Noise (lambda),<= 0.015,lambda >= 0.050,Output state fidelity drops below 90% threshold,CONTROLLED
+Shot Budget (Ns),>= 1000,Ns <= 100,Sampling statistical uncertainty (1/sqrt(Ns)) dominates observable,CONTROLLED
+Condition Number (kappa),<= 1.48 (dt <= 0.035),kappa >= 1.50 (dt > 0.035),QSVT Chebyshev polynomial approximation diverges near spectral bounds,CONTROLLED

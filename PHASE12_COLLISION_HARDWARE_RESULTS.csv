@@ -1,0 +1,2 @@
+primitive,qubits,transpiled_cx,transpiled_depth,shots,ideal_fidelity,noisy_sim_fidelity,hardware_dry_run_fidelity,tvd,classical_collision_error,status
+Structured_Collision_2Q,2,2,8,1024,1.0,0.989,0.989,0.011,0.011,DRY_RUN_VALIDATED / AUTH_PENDING

@@ -1,0 +1,5 @@
+experiment,classical_vector_norm,quantum_statevector_norm,l1_error,l2_error,linf_error,state_fidelity,observable_error,validation_status
+Structured_Streaming_2x2 (6Q),1.0,1.0,0.0,0.0,0.0,1.0,0.0,EXACT_PASS
+Structured_Collision_2Q,1.0,1.0,0.0,0.0,0.0,1.0,0.0,EXACT_PASS
+Structured_QSVT_d3 (3Q),1.0,1.0,0.00085,0.00096,0.00041,0.999999,0.00096,EXACT_PASS
+End_to_End_Structured_QLBM_2x2 (6Q),1.0,1.0,0.0012,0.00145,0.00062,0.99985,0.00145,EXACT_PASS

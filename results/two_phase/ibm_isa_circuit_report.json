@@ -1,0 +1,21 @@
+{
+  "mesh": "4x4",
+  "timesteps": 1,
+  "backend": "generic_backend_127q",
+  "logical_qubits": 9,
+  "physical_qubits": 127,
+  "original_depth": 5,
+  "isa_depth": 78265,
+  "two_qubit_gates": 21663,
+  "measurement_operations": 9,
+  "transpilation_time_seconds": 0.9438447952270508,
+  "isa_gate_breakdown": {
+    "rz": 68801,
+    "sx": 39368,
+    "cx": 21663,
+    "reset": 9,
+    "measure": 9,
+    "x": 1,
+    "barrier": 1
+  }
+}

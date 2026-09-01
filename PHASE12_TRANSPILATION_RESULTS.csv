@@ -1,0 +1,6 @@
+circuit_name,logical_qubits,physical_qubits,orig_depth,transpiled_depth,orig_cx,transpiled_cx,sx_count,rz_count,x_count,total_gates,layout_strategy,routing_swap_overhead
+QC_03_Streaming_2x2,6,127,2,2,4,4,0,0,0,4,Contiguous Heavy-Hex Nearest Neighbor,0
+QC_04_Collision_2Q,2,127,4,4,2,2,0,2,0,4,Contiguous Heavy-Hex Nearest Neighbor,0
+QC_05_QSVT_d3,3,127,3,7,3,2,0,6,3,11,Contiguous Heavy-Hex Nearest Neighbor,0
+QC_06_E2E_QLBM_2x2,6,127,5,8,4,4,3,5,0,12,Contiguous Heavy-Hex Nearest Neighbor,0
+QC_07_LCU_QLBM_4x2,13,127,32,42,28,34,48,56,8,146,Contiguous Heavy-Hex Linear Subgraph,2

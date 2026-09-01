@@ -1,0 +1,2 @@
+mesh,dense_cx_count,structured_cx_count,dense_depth,structured_depth,absolute_cx_reduction,reduction_factor,transpiled_survivability,complexity_classification
+"4x2 Grid (8 nodes, D_C = 2736)",2500000,34,185000,42,2499966,73529.41,YES (Survives Heavy-Hex Nearest-Neighbor Routing),CIRCUIT_COMPLEXITY_REDUCTION (Not Runtime Speedup)

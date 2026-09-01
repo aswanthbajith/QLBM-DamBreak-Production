@@ -1,0 +1,7 @@
+circuit_id,source_file,function_class,purpose,logical_qubits,ancilla_qubits,CX_count,depth,gate_count,parameter_count,measurement_registers,simulator_supported,noise_model_supported,hardware_supported,hardware_status
+QC_15_01_BE_DENSE,quantum/block_encoding.py,BlockEncodingCSDilation,Dense CS/Halmos unitary block encoding baseline,8,0,2150,1840,4820,0,None,True,True,True,NOT_EXECUTED
+QC_15_02_COLL_2Q,PHASE11_STRUCTURED_QSVT.py,build_structured_collision_oracle,Level 1: 2-Qubit structured local collision oracle,2,0,2,8,8,1,c[2],True,True,True,DRY_RUN_VALIDATED
+QC_15_03_STREAM_6Q,PHASE11_STREAMING_ORACLE.py,build_d2q9_streaming_circuit,Level 2: 6-Qubit 2x2 structured streaming permutation,6,0,4,3,4,0,c[6],True,True,True,DRY_RUN_VALIDATED
+QC_15_04_QSVT_3Q_d3,PHASE11_STRUCTURED_QSVT.py,build_structured_qsvt_circuit,Level 3: 3-Qubit structured QSVT inversion (d=3),3,1,4,15,16,3,c[3],True,True,True,DRY_RUN_VALIDATED
+QC_15_05_E2E_2X2_6Q,scripts/run_phase12_batch2.py,Primary_2x2_Structured_QLBM,Level 4: 6-Qubit complete 2x2 structured QLBM single-step,6,0,4,9,14,2,c[6],True,True,True,DRY_RUN_VALIDATED
+QC_15_06_LCU_4X2_13Q,PHASE11_STRUCTURED_QSVT.py,build_13q_4x2_lcu_oracle,"Level 5: 13-Qubit 4x2 structured QLBM single-step (73,500x CX reduction)",13,6,34,42,146,4,c[13],True,True,True,COMPILED_ONLY

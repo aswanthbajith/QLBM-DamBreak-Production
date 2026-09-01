@@ -1,0 +1,5 @@
+circuit_name,logical_qubits,physical_qubits,orig_depth,transpiled_depth,orig_gate_count,transpiled_gate_count,cx_count,rz_count,sx_count,x_count,swap_count,measure_count,layout,routing_overhead_swaps,mathematical_equivalence
+01_block_encoding_demo,2,127,1,13,1,19,2,9,8,0,0,0,"Direct heavy-hex nearest-neighbor (Q0, Q1, Q2)",0,EXACT_VALIDATED
+02_qsvt_demo_deg3,2,127,6,15,6,26,2,14,10,0,0,0,"Direct heavy-hex nearest-neighbor (Q0, Q1, Q2)",0,EXACT_VALIDATED
+03_measurement_demo,2,127,5,7,6,8,2,3,1,0,0,2,"Direct heavy-hex nearest-neighbor (Q0, Q1, Q2)",0,EXACT_VALIDATED
+05_qae_scalar_demo,3,127,8,12,10,18,4,9,4,0,0,1,"Direct heavy-hex nearest-neighbor (Q0, Q1, Q2)",0,EXACT_VALIDATED

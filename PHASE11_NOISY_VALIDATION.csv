@@ -1,0 +1,5 @@
+experiment,shots,depol_rate,tvd,fidelity,obs_error
+Structured_Streaming_2x2 (6Q),1000,0.012,0.0185,0.982,0.0185
+Structured_Collision_2Q,1000,0.012,0.011,0.989,0.011
+Structured_QSVT_d3 (3Q),1000,0.012,0.0192,0.9785,0.0192
+End_to_End_Structured_QLBM_2x2 (6Q),1000,0.012,0.031,0.954,0.031

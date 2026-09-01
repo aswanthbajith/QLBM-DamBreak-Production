@@ -1,0 +1,7 @@
+job_id,backend,circuit_name,qubits,shots,transpiled_depth,cx_count,timestamp,status
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_01_BE_2Q,2,1024,12,2,2026-08-19T19:10:00Z,DRY_RUN_VALIDATED
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_02_COLL_2Q,2,1024,8,2,2026-08-19T19:10:00Z,DRY_RUN_VALIDATED
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_03_STREAM_6Q,6,1024,3,4,2026-08-19T19:10:00Z,DRY_RUN_VALIDATED
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_04_QSVT_d3,3,1024,15,4,2026-08-19T19:10:00Z,DRY_RUN_VALIDATED
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_05_E2E_2X2_6Q,6,1024,9,4,2026-08-19T19:10:00Z,DRY_RUN_VALIDATED
+NOT_EXECUTED (DRY_RUN=True),ibm_brisbane (Dry-Run on GenericBackendV2),EXP_13_06_LCU_4X2_13Q,13,1024,42,34,2026-08-19T19:10:00Z,COMPILED_ONLY

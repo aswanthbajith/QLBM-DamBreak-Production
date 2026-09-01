@@ -1,0 +1,35 @@
+{
+  "system_summary": {
+    "architecture": "Local Second-Order Carleman Linearization + Unitary Dilation",
+    "target_platform": "IBM Quantum Eagle / Heavy-Hex QPU (generic_backend_127q)",
+    "benchmark_grid": "4x4 D2Q9 Dam-Break Enclosure"
+  },
+  "qubit_resource_counts": {
+    "base_mesh_qubits": 4,
+    "velocity_qubits": 4,
+    "phase_field_qubits": 1,
+    "system_logical_qubits": 9,
+    "block_encoding_ancilla_qubits": 1,
+    "total_logical_qubits_required": 10,
+    "available_physical_qubits_ibm_eagle": 127
+  },
+  "carleman_lifting_dimensions": {
+    "local_linear_dimension": 18,
+    "local_quadratic_dimension": 324,
+    "total_local_lifted_dimension": 342,
+    "unitary_dilation_dimension": 684,
+    "required_qubits_for_local_operator": 10
+  },
+  "scaling_and_sampling_parameters": {
+    "block_encoding_scaling_factor_alpha": 17.58,
+    "theoretical_success_probability_p_success": 0.0034,
+    "postselection_overhead_factor": 294.1,
+    "recommended_shots_per_timestep": 65536
+  },
+  "circuit_complexity_estimates": {
+    "logical_depth_per_timestep": 28,
+    "heavy_hex_isa_transpiled_depth": 142800,
+    "heavy_hex_isa_cx_gate_count": 48600,
+    "hardware_execution_verdict": "simulation validated; hardware execution resource-limited on unmitigated NISQ"
+  }
+}

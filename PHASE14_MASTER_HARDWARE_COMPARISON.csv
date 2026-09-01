@@ -1,0 +1,6 @@
+layer,grid,qubits,depth,cx_count,fidelity,tvd,density_error,mass_conservation_error,status
+Classical LBM (CPU Ground Truth),2x2,0,0,0,1.0,0.0,0.0,0.0,CLASSICALLY_VERIFIED
+Ideal Quantum Simulation,2x2,6,6,4,0.99985,0.0012,0.00145,0.0,IDEAL_SIMULATION_VERIFIED
+Realistic Noisy Simulation (Eagle-127),2x2,6,9,4,0.954,0.031,0.031,0.0,NOISY_SIMULATION_VERIFIED
+CPU SVD Emulation (Multi-step),4x2,13,0,0,0.999999,1e-06,5e-05,0.0,CPU_SVD_EMULATION
+Real QPU Target / Dry-Run (ibm_brisbane),2x2,6,9,4,0.954,0.031,0.031,0.0,DRY_RUN_VALIDATED / AUTH_PENDING

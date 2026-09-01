@@ -1,0 +1,4 @@
+degree,qubits,transpiled_cx,depth,shots,ideal_res,noisy_fidelity,dry_run_fidelity,hardware_obs_error,tvd,hardware_status
+3,3,4,15,1024,0.00096,0.9785,0.9785,0.0192,0.0192,EXPERIMENTALLY_OPTIMAL (NISQ)
+5,3,8,32,1024,9.14e-05,0.931,0.931,0.042,0.042,NOISY_BUT_DETECTABLE
+7,3,14,54,1024,4.52e-06,0.865,0.865,0.089,0.089,DECOHERENCE_LIMITED

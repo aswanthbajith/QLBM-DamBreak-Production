@@ -1,0 +1,5 @@
+backend_name,operational_status,qubit_count,pending_jobs,simulator_or_hardware,basis_gates,coupling_map,target_architecture,mean_2q_cx_error,mean_readout_error,selection_status
+ibm_brisbane,ONLINE (Target),127,VARIABLE,HARDWARE,"cx, id, rz, sx, x, reset",Heavy-Hexagonal Lattice,IBM Eagle r3,0.0084,0.012,PRIMARY_TARGET
+ibm_kyoto,ONLINE (Candidate),127,VARIABLE,HARDWARE,"cx, id, rz, sx, x, reset",Heavy-Hexagonal Lattice,IBM Eagle r3,0.0091,0.0145,BACKUP_CANDIDATE
+ibm_sherbrooke,ONLINE (Candidate),127,VARIABLE,HARDWARE,"cx, id, rz, sx, x, reset",Heavy-Hexagonal Lattice,IBM Eagle r3,0.0088,0.013,BACKUP_CANDIDATE
+GenericBackendV2(num_qubits=127),LOCAL_ONLINE,127,0,LOCAL_DRY_RUN_HARNESS,"cx, id, rz, sx, x, reset",Heavy-Hexagonal Lattice,IBM Eagle r3 Topology,0.0084,0.012,LOCAL_DRY_RUN_HARNESS

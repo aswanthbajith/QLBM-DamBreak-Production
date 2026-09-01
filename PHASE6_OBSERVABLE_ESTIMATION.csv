@@ -1,0 +1,6 @@
+observable,mathematical_definition,quantum_state_subspace,measurement_operator,classical_mc_complexity,quantum_qae_complexity,quantum_speedup,demonstration_status,classification
+Total Liquid Mass (M),int_Omega phi(x) dx,"Phase-field distributions sum_q |h_q(x,y)>",P_phi = sum_x |phi_x><phi_x|,O(1 / eps^2),O(1 / eps),QUADRATIC (QAE),SIMULATED_FINITE_SHOTS,THEORETICAL_ADVANTAGE
+Total Kinetic Energy (E_k),0.5 int_Omega rho |u|^2 dx,Quadratic lifted register |Psi (x) Psi>,P_Ek = sum_x |u_x^2><u_x^2|,O(1 / eps^2),O(1 / eps),QUADRATIC (QAE),SIMULATED_FINITE_SHOTS,THEORETICAL_ADVANTAGE
+Impact Wall Pressure (p_wall),"c_s^2 sum_q g_q(x_wall, y)",Local boundary register |g(x_wall)>,P_wall = |x_wall><x_wall| (x) I,O(1 / eps^2),O(1 / eps),QUADRATIC (QAE),SIMULATED_FINITE_SHOTS,THEORETICAL_ADVANTAGE
+Surge Front Indicator (x*),"max { x | phi(x, y_floor) > 0.5 } / H","Floor 1D boundary register |phi(x, 0)>",Threshold search over N_x basis states,O(N_x / eps^2),O(sqrt(N_x) / eps),POLYNOMIAL / GROVER-QAE,MEASURED_EXACT_PROJECTOR,THEORETICAL_ADVANTAGE
+"Full Spatial Velocity Field u(x,y)","1/rho sum_q g_q(x,y) c_q",Complete N-node hydrodynamic state |g>,Full Quantum State Tomography,O(N),Omega(N log N / eps^2),NO ADVANTAGE (READOUT BOTTLENECK),CLASSICALLY_BOUNDED,DISPROVEN_SPEEDUP

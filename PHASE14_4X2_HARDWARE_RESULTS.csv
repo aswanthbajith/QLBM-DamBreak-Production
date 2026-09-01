@@ -1,0 +1,2 @@
+experiment_id,mesh,logical_qubits,physical_qubits,dense_cx,structured_cx,cx_reduction_factor,depth,raw_fidelity,mitigated_fidelity,tvd,relative_density_error,status
+EXP_14_05_LCU_4X2,4x2 (8 nodes),13,13,2500000,34,73529.41,42,0.76,0.945,0.125,0.125,COMPILED_AND_SIMULATED_ONLY
