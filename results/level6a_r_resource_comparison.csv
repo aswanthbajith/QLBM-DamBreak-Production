@@ -1,0 +1,7 @@
+mesh_name,nodes_N,qubits_Arch_D_Hybrid,qubits_Arch_B_GlobalTensor,qubits_Arch_E_QSVT,gates_per_step_Arch_D,classical_memory_MB_Arch_D,classical_memory_MB_Arch_B
+4x4,16,10,18,20,5270,0.0022,0.63
+8x8,64,12,22,22,20630,0.0088,10.12
+16x16,256,14,26,24,82070,0.0352,162.0
+32x16,512,15,28,25,163990,0.0703,648.0
+64x32,2048,17,32,27,655510,0.2812,10368.0
+128x64,8192,19,36,29,2621590,1.125,165888.0

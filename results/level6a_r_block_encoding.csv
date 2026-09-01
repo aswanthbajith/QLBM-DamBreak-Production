@@ -1,0 +1,6 @@
+K_timesteps,unprojected_dilation_error,projected_reset_error,naive_success_probability
+1,0.0,0.0,1.6021e-02
+2,10.598731,0.0,2.5668e-04
+3,76.716141,1e-16,4.1124e-06
+4,623.508144,0.0,6.5886e-08
+5,4900.017347,1e-16,1.0556e-09

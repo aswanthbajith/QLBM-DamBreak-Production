@@ -1,0 +1,18 @@
+criterion,Arch_A_NaiveLift,Arch_B_GlobalTensor,Arch_C_MidCircuitReset,Arch_D_HybridK1,Arch_E_GlobalQSVT,evaluation_rationale
+01. Mathematical Correctness,1,4,4,5,5,A has tensor streaming error; D & E are mathematically exact; C requires mid-circuit reset
+02. Physical Dam-Break Fidelity,2,3,3,5,2,D preserves exact Level-4 classical benchmark; E cannot handle dynamic CSF; A diverges
+03. Carleman Invariant Manifold Preserved,1,5,4,5,3,D re-lifts exactly per step; B stores all cross-products; A fails at K=1
+04. Quantum Coherence Horizon,4,4,3,2,5,E is all-at-once coherent; D is K=1 coherent; A loses physical coherence
+05. Measurement & Readout Burden,5,4,3,2,4,D requires tomography per step; E reads final state; C requires mid-circuit resets
+06. State Preparation Burden,5,1,3,2,5,B requires O(N^2) state prep; E prepares once; D prepares per step
+07. Qubit Count Efficiency,4,1,4,5,3,B requires 35 qubits (O(N^2)); D requires 18 qubits; E requires 29 qubits
+08. Gate Count & Circuit Depth,4,1,3,5,1,E requires > 10^7 gates; D has shallow depth O(log N); B requires non-local gates
+09. Dilation Success Probability,1,2,3,5,3,D is deterministic classically normalized; A has p ~ 10^-8 at K=4; C has alpha_C^-2K
+10. Exact Bounce-Back Boundary,2,3,4,5,3,D applies exact physical half-way bounce back; A has tensor boundary reflection drift
+11. CSF Surface Tension Compatibility,1,1,2,5,1,D computes exact non-local CSF stencil; E and B cannot update dynamic sigma*kappa*grad(alpha)
+12. Multi-Grid Spatial Scalability,2,1,4,5,4,B fails due to O(N^2) space; D scales seamlessly to 128x64; E requires huge condition numbers
+13. NISQ / Early FTQC Feasibility,2,1,3,5,1,D runs today on emulators / small QPUs; E strictly requires mature FTQC with surface codes
+14. Thesis & Literature Novelty,3,4,4,5,4,D is the first validated coupled Two-Phase QLBM benchmarked against Martin & Moyce
+15. Validation & Debuggability,2,2,3,5,2,D is step-by-step verifiable against Level-4 reference; E is black-box spacetime
+16. Non-Divergent Trajectory,1,3,3,5,2,D has 0.023% error and strictly stable mass; A diverges by 40% at K=2
+TOTAL SCORE (out of 80),40,40,53,71,48,Arch D achieves highest scientific score and physical feasibility.
