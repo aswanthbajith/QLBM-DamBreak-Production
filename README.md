@@ -1,123 +1,125 @@
-# Hybrid Quantum-Classical Lattice Boltzmann Two-Phase Dam-Break Solver (Production)
+# Quantum Lattice Boltzmann Method for Two-Phase Dam-Break Hydrodynamics
 
-A clean, standalone implementation of the **Hybrid Quantum-Classical Lattice Boltzmann Method (Hybrid QLBM)** for two-phase fluid hydrodynamics using **Local Second-Order Carleman Linearization, 10-Qubit Power-of-Two Unitary Dilation / Block Encoding, and Reversible Closed-Domain Wall-Aware Streaming**.
-
----
-
-## 1. What is this?
-
-This software simulates a 2D two-phase liquid–gas dam-break problem on a D2Q9 lattice using a **hybrid quantum-classical algorithm**. The fluid consists of a dense liquid column collapsing under gravity inside an enclosed rectangular box bounded by solid walls.
+A rigorous research implementation and evaluation framework for **Quantum Lattice Boltzmann Methods (QLBM)** applied to two-phase free-surface flows (dam-break hydrodynamic collapse).
 
 ---
 
-## 2. Why Carleman Linearization?
+## 1. Research Overview & Problem Formulation
 
-Standard classical Lattice Boltzmann BGK collision relaxes non-equilibrium modes dissipatively toward a nonlinear equilibrium distribution:
-$$f_i^* = f_i - \frac{1}{\tau_f} (f_i - f_i^{\text{eq}}(\rho, \mathbf{u}))$$
+This project investigates the formulation, reversibility, and quantum channel properties of the Lattice Boltzmann Method (LBM) for multiphase fluid dynamics. The physical problem studied is the 2D liquid–gas dam-break benchmark inside an enclosed rectangular cavity bounded by solid no-slip walls.
 
-Closed unitary quantum gates cannot represent physical contractive modes ($\lambda = 1 - \omega < 1$) without dilation.
-
-**Local Second-Order Carleman Linearization** embeds the local nonlinear D2Q9 equations into a 342-dimensional lifted linear space $\mathbf{Y}_2 = [\Psi; \Psi^{\otimes 2}]^T$ where $\Psi = [f_0..f_8, g_0..g_8]^T \in \mathbb{R}^{18}$. The step-evaluation operator $A_{\text{eval}} = [M_1, M_2] \in \mathbb{R}^{18 \times 342}$ is padded to $512 \times 512$ ($2^9$), normalized ($\bar{A} = \widetilde{A} / \alpha$), and embedded into a machine-precision $1024 \times 1024$ ($2^{10}$) unitary matrix $U_{\text{10Q}}$ via **Sz.-Nagy Unitary Dilation**. Projective measurement of a single ancilla qubit implements the contractive collision step.
-
----
-
-## 3. Algorithmic Workflow (Hybrid Architecture)
-
-```
-Initial Two-Phase Distributions [f(t), g(t)]
-            ↓
-Independent Distribution-Selector Encoding (s=0 -> f, s=1 -> g)
-            ↓
-Local Polynomial Lifting to Y_2 [342 dimensions per node]
-            ↓
-10-Qubit Sz.-Nagy Unitary Dilation U [1024x1024 unitary operator]
-            ↓
-Quantum State Evolution on |0>_anc ⊗ |Y_512>
-            ↓
-Ancilla Postselection & Scaling Tracking (alpha ≈ 58.75, P_succ ≈ 0.0021)
-            ↓
-Physical Positivity Guard (Classical numerical admissibility)
-            ↓
-Gravitational Body Forcing (Buoyancy)
-            ↓
-Reversible Closed-Domain Wall-Aware Streaming (Permutation Operator S)
-- Interior nodes: (x, y, i) -> (x + cx, y + cy, i)
-- Wall-hitting nodes: (x, y, i) -> (x, y, opposite(i))
-            ↓
-Decoded Observable Fields [rho(t+1), u(t+1), phi(t+1)]
-            ↓
-Re-encode Next Timestep (t + 1)
-```
-
-* **Multi-Step Nature**: This solver is **hybrid quantum-classical**: at each timestep, local populations are decoded/measured and re-lifted to configure the local state for timestep $t+1$.
+The hydrodynamic system is modeled using the D2Q9 lattice:
+- **Hydrodynamic Field ($f_i$)**: Governs total fluid mass and momentum conservation under gravity body forcing.
+- **Phase-Field Interface Capturing ($g_i$)**: Governs the conservative liquid volume fraction $\alpha \in [0, 1]$ and phase-dependent fluid properties.
 
 ---
 
-## 4. Installation
+## 2. Core Architecture & Scientific Progression
 
+The repository documents the rigorous scientific progression of quantum fluid formulations:
+
+1. **Classical Level-4 Reference Solver (`classical/level4_two_phase.py`)**:
+   - Canonical D2Q9 two-phase solver with phase-dependent density $\rho(\alpha)$, viscosity $\nu(\alpha)$, Continuum Surface Force (CSF) $\mathbf{F}_s = \sigma \kappa \nabla \alpha$, and Guo body forcing.
+   - Provides ground-truth hydrodynamic trajectories.
+
+2. **Direct Spatial and Population Quantum Encoding (`quantum/`)**:
+   - Direct Hilbert space factorization: $\mathcal{H} = \mathcal{H}_x \otimes \mathcal{H}_y \otimes \mathcal{H}_{\text{vel}} \otimes \mathcal{H}_{\text{phase}}$.
+   - Avoids exponentially growing Carleman polynomial liftings.
+
+3. **Exact Unitary Streaming & Bounce-Back Boundaries**:
+   - **Streaming ($S$)**: Exact coordinate wire permutation operator satisfying $S^\dagger S = I$ with $0.0000$ numerical unitarity error.
+   - **Boundary Involution ($B$)**: Exact velocity register bit-inversion on solid walls satisfying $B^2 = I$.
+
+4. **CPTP Quantum Collision Channel (Phase F20)**:
+   - Formulates the dissipative, non-injective BGK collision relaxation as a Completely Positive Trace-Preserving (CPTP) quantum channel via Stinespring environmental dilation:
+     $$U |x\rangle_S |0\rangle_E = |F(x)\rangle_S |x\rangle_E$$
+   - Kraus representation: $K_\mu = |F(\mu)\rangle \langle \mu|$, with exact trace preservation $\|\sum_\mu K_\mu^\dagger K_\mu - I_S\|_2 = 0.0000$.
+   - Validated on computational-basis statistical distributions matching classical LBM multi-step time evolution.
+
+---
+
+## 3. Quick Start & Reproducibility
+
+### Environment Setup
 ```bash
-# 1. Create a clean virtual environment
+# 1. Clone repository and checkout release branch
+git clone https://github.com/aswanthbajith/QLBM-DamBreak-Production.git
+cd QLBM-DamBreak-Production
+git checkout professor/final-research-code
+
+# 2. Create and activate a clean virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
-# 2. Install runtime dependencies
+# 3. Install validated dependencies
 pip install -r requirements.txt
 ```
 
----
-
-## 5. Execution
-
-### Default Run (4x4 Mesh, 10 Timesteps, Order-2 Carleman)
+### Running Automated Test Suite
 ```bash
-python run.py
+# Run all 212 automated unit, regression, and physics tests
+pytest -q
 ```
 
-### 1-Timestep Execution
+### Minimal Reproducible CLI Runs
 ```bash
-python run.py --nx 4 --ny 4 --timesteps 1
-```
+# Run canonical classical reference solver (ground truth)
+python run.py --mode classical --nx 4 --ny 4 --timesteps 2 --no-plots
 
-### 5-Timestep Execution
-```bash
-python run.py --nx 4 --ny 4 --timesteps 5
-```
+# Run direct quantum statevector solver
+python run.py --mode quantum --nx 4 --ny 4 --timesteps 2 --no-plots
 
-### 10-Timestep Execution
-```bash
-python run.py --nx 4 --ny 4 --timesteps 10
-```
-
-### Aer Simulation & IBM Heavy-Hex Transpilation Preflight
-```bash
-# Run with Qiskit Aer simulation
-python run.py --backend aer
-
-# Run with IBM Quantum 127Q Heavy-Hex compilation preflight
-python run.py --backend fake_ibm
+# Run F20 CPTP channel equivalence master audit
+python scripts/run_phase_f20_channel_equivalence.py
 ```
 
 ---
 
-## 6. Output Files
+## 4. Current Scientific Status & Boundaries
 
-Each execution populates the `results/` folder:
-* `results/classical/classical_fields.npz`: Complete classical reference ground truth history ($\rho, \phi, \mathbf{u}$).
-* `results/quantum/quantum_fields.npz`: Quantum Carleman simulation history ($\rho, \phi, \mathbf{u}$).
-* `results/comparison/comparison.json`: Detailed quantitative error and conservation metrics at every timestep.
-* `results/plots/dam_break_comparison.png`: Side-by-side plots of error convergence and final phase field contours.
+| Component / Claim | Scientific Status | Evidence & Notes |
+|---|---|---|
+| **Classical Two-Phase LBM** | **VALIDATED** | Exact Level-4 D2Q9 dam-break benchmark |
+| **Direct Quantum Encoding** | **VALIDATED** | Statevector preparation at $t=0$ |
+| **Quantum Spatial Streaming** | **VALIDATED** | Exact closed unitary coordinate permutation ($S^\dagger S = I$) |
+| **Quantum Boundary Operation** | **VALIDATED** | Exact closed unitary bounce-back involution ($B^2 = I$) |
+| **Quantum BGK Collision** | **VALIDATED (CPTP Channel)** | Open-system Stinespring dilation ($J(\mathcal{E}) \succeq 0$) |
+| **Fully Coherent Nonlinear BGK** | **NOT ESTABLISHED** | Dissipative nature requires environmental entropy discard |
+| **Quantum CSF Surface Tension** | **EXPERIMENTAL / FUTURE** | Baseline F20 evaluated at $\sigma = 0$ |
+| **Real IBM QPU Execution** | **NOT ESTABLISHED** | Transpilation analysis only; real QPU execution interlocked |
+| **Quantum Speedup** | **NOT ESTABLISHED** | No asymptotic or empirical speedup claimed |
 
 ---
 
-## 7. Validation Status
+## 5. Repository Structure
 
-### Validated Scientifically:
-* **Single-Step Accuracy ($t=1$)**: $0.000\%$ relative density error ($5.55 \times 10^{-17}$ at collision).
-* **Multi-Step Stability ($t=10$)**: **$1.42\%$** relative density error against classical reference across the enclosed dam break.
-* **Mass Conservation**: Mass error strictly bounded under $1.22\%$ over 10 steps.
-* **Unitary Dilation Precision**: $\|U_{\text{10Q}}^\dagger U_{\text{10Q}} - I\| < 10^{-13}$ on $1024 \times 1024$ Hilbert space.
-* **Transpilation to IBM Heavy-Hex**: Transpilation successfully verified on 127-qubit architecture (`generic_backend_127q`).
+```
+QLBM-DamBreak-Production/
+├── classical/          # Validated Level-1 to Level-4 classical LBM solvers
+├── quantum/            # Direct encoding, streaming, boundary, and F20 CPTP channel modules
+├── tests/              # 212 comprehensive automated test suites
+├── scripts/            # Milestone execution runners and audit scripts
+├── docs/               # Detailed mathematical derivations, audits, and reproducibility guides
+│   ├── ARCHITECTURE.md
+│   ├── CODE_STATUS.md
+│   ├── RESEARCH_STATUS.md
+│   ├── REPRODUCIBILITY.md
+│   ├── REFERENCES.md
+│   └── FINAL_VALIDATION_MATRIX.md
+├── hardware/           # IBM Heavy-Hex FakeSherbrooke preflight & transpilation
+├── config/             # Register layout and physical simulation parameters
+├── run.py              # Main CLI entry point
+├── requirements.txt    # Minimal reproducible dependencies
+└── README.md           # Master documentation overview
+```
 
-### NOT Validated on Physical Hardware:
-* **Real IBM Quantum hardware execution: NOT PERFORMED.**
-* Physical cloud submission is safely protected by an environment dual-lock interlock (`QLBM_ENABLE_REAL_QPU=1` and `QLBM_CONFIRM_REAL_QPU=YES`). Real execution on unmitigated NISQ devices is currently depth-limited by two-qubit gate error rates.
+---
+
+## 6. Hardware Safety Interlocks
+
+To ensure safety, physical execution on remote quantum devices is disabled by default:
+```bash
+export QLBM_ENABLE_REAL_QPU=0
+export QLBM_CONFIRM_REAL_QPU=NO
+```
+All quantum simulations run via local statevector and Qiskit Aer emulators.

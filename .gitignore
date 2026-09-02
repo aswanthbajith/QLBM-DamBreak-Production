@@ -1,13 +1,34 @@
+# Virtual Environments
 .venv/
 venv/
+env/
+
+# Python Bytecode & Caches
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Testing & Coverage
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .coverage
+htmlcov/
 
+# Build & Packaging
+dist/
+build/
+*.egg-info/
+
+# Notebooks & IDEs
+.ipynb_checkpoints/
 .vscode/
 .idea/
 
+# Logs & Temporary Files
 *.log
 .DS_Store
+tmp/
+temp/

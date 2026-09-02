@@ -1,0 +1,26 @@
+================================================================================
+QLBM RESEARCH REPOSITORY INVENTORY (BEFORE CLEANUP)
+================================================================================
+
+Branch: professor/final-research-code (created from F20 commit 7e6d5a7)
+Base Commit: 7e6d5a7 ("QLBM Phase F20: Exact Quantum Channel Equivalence of BGK Collision")
+Level-6B Frozen Baseline SHA-256: 2a306f5a413945adc1acd10f3f63340c3d3617e4ef1c94981a92e8ebad8742c8
+Original Immutable Archive: /home/aswa/Research/QLBM-DamBreak (Branch: master, Untouched)
+
+Python Version: Python 3.14.4
+Pytest Suite Status: 212 / 212 tests passing (100%) in 411.78s
+
+Tracked File Count: 595 files
+Untracked File Count: 0 files (working tree clean)
+
+Primary Directory Breakdown:
+- classical/ : Ground-truth Level-1 through Level-4 classical LBM solvers
+- quantum/   : Direct spatial/population encoding, streaming, boundary, and F17-F20 reversible/CPTP modules
+- tests/     : 212 comprehensive unit, regression, physics, and autonomy test suites
+- scripts/   : Milestone execution runners (F17, F18, F19, F20)
+- docs/      : Detailed mathematical derivations, forensic audits, and research reports
+- hardware/  : IBM Heavy-Hex FakeSherbrooke preflight and transpilation utilities
+- config/    : Simulation and register configuration constants
+- results/   : Validation benchmarks and diagnostic outputs
+
+================================================================================
