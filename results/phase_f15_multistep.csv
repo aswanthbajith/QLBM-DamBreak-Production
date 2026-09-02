@@ -1,0 +1,11 @@
+grid,timesteps,state_preparations,classical_extractions,intermediate_re_encodings,f_error_Linf,g_error_Linf,rho_error_Linf,execution_mode,verdict
+2x2,1,1,1,0,1.5004e-04,1.0714e-04,8.3077e-08,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+2x2,2,1,1,0,6.6669e-05,4.2328e-05,1.4813e-07,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+2x2,4,1,1,0,5.0852e-05,4.1780e-05,1.0406e-07,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+2x2,8,1,1,0,5.0207e-05,5.1183e-05,1.9376e-08,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+2x2,16,1,1,0,3.0175e-05,3.7687e-05,2.7124e-08,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+4x4,1,1,1,0,3.1683e-04,2.2619e-04,4.3764e-04,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+4x4,2,1,1,0,3.6984e-02,3.0541e-02,9.6926e-02,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+4x4,4,1,1,0,9.2038e-02,5.7041e-02,1.9830e-01,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+4x4,8,1,1,0,3.4814e-02,3.0873e-02,5.9348e-02,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)
+4x4,16,1,1,0,1.2476e-02,9.8461e-03,2.4765e-02,Autonomous Carleman (Zero Intermediate Reads),PASSED (Autonomous)

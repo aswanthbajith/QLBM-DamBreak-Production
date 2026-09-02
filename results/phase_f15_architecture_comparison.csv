@@ -1,0 +1,5 @@
+architecture,carleman_order,lifted_dim,coherence_status,multi_step_accuracy,gate_depth_per_node,verdict
+Arch A: Direct Coherent Fixed-Point,N/A,18,Hybrid Parameter Bus,< 7.3e-4,"32,400 (Q4.12)",Proven (Hybrid Bus)
+Arch B: Second-Order Carleman (K=2),K=2,342,Fully Autonomous (Fixed Matrix A_C),1.4e-1 (Bounded Low-Mach),1024 (Sz.-Nagy Unitary),Proven (Autonomous)
+Arch C: Third-Order Carleman (K=3),K=3,6174,Fully Autonomous (Fixed Matrix A_C3),2.1e-2 (Higher-Order),8192 (Sz.-Nagy Unitary),Feasible (High Qubit Overhead)
+Arch D: QSVT / LCU Polynomial,N/A,18,Autonomous Block-Encoding,< 1.0e-3,"> 1,000,000 (Fault-Tolerant)",Fault-Tolerant Target

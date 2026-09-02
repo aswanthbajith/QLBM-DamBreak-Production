@@ -1,0 +1,8 @@
+error_source,error_magnitude,nature,status
+1. Initial Amplitude Encoding,< 1e-16,Exact Unitary Preparation,Controlled
+2. Carleman K=2 Truncation,1.4e-01,O(u^2) Low-Mach Truncation,Bounded
+3. Tensor Manifold Defect,1.8e-01,||Y2 - z (x) z|| Truncation,Bounded
+4. Sz.-Nagy Unitary Dilation,< 1e-12,10-qubit Block Embedding,Exact
+5. Arithmetic Streaming Permutation,< 1e-14,Exact Coordinate Permutation,Exact
+6. Boundary Mask Involution,< 1e-15,Exact Direction Swaps,Exact
+7. Multi-Step Accumulated Drift (T=16),1.5e-01,Carleman Multi-Step Dispersion,Stable

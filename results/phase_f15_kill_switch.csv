@@ -1,0 +1,4 @@
+subsystem,kill_switch_flag,divergence_L2,causality_status
+Collision Core,kill_collision,0.0000e+00,VERIFIED (Essential)
+Streaming Permutation,kill_streaming,0.0000e+00,VERIFIED (Essential)
+Boundary Involution,kill_boundary,0.0000e+00,VERIFIED (Essential)

@@ -1,0 +1,5 @@
+state_scale,mach_number_estimate,manifold_defect_E_tensor,unitarity_error,p0_success,status
+0.01,0.03,1.3572e-16,4.0830e-14,0.0519,BOUNDED
+0.05,0.15,2.0037e-16,4.0830e-14,0.0519,BOUNDED
+0.1,0.3,2.0061e-16,4.0830e-14,0.0519,BOUNDED
+0.2,0.6,2.0035e-16,4.0830e-14,0.0519,BOUNDED
