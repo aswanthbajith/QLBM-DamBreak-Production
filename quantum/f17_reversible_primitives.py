@@ -55,19 +55,16 @@ class ReversibleFixedPointArithmetic:
 
     def multiply(self, a: int, b: int) -> int:
         """Fixed-point multiplication: (a, b, 0) -> (a, b, (a * b) // scale)."""
-        return (a * b) >> self.frac_bits
+        return (int(a) * int(b)) >> self.frac_bits
 
     def divide(self, num: int, den: int) -> int:
         """Fixed-point division: (num, den, 0) -> (num, den, (num * scale) // den)."""
         if den == 0:
             return 0
-        return (num << self.frac_bits) // den
+        return (int(num) << self.frac_bits) // int(den)
 
-    def linear_interpolate(self, f: int, f_eq: int, omega: int) -> int:
-        """
-        Reversible relaxation step:
-        f* = f + omega * (f_eq - f)
-        """
-        diff = f_eq - f
-        delta = (diff * omega) >> self.frac_bits
-        return f + delta
+    def linear_interpolate(self, current: int, target: int, omega: int) -> int:
+        """Reversible relaxation: current + omega * (target - current)."""
+        diff = int(target) - int(current)
+        delta = (int(diff) * int(omega)) >> self.frac_bits
+        return int(current) + delta
