@@ -1,0 +1,12 @@
+operation,mode1_classification,mode2_classification,domain,autonomous
+"State Preparation (|Psi> = 1/N sum f|i,0> + g|i,1>)",Classical Statevector Loading / Quantum Basis State,Classical Statevector Loading / Quantum Basis State,Hybrid Setup / Quantum State,No
+"Moment Extraction (rho, alpha)",Classical Reference Feed / Feedback,Coherent Fixed-Point Arithmetic Emulator (Q4.12),Mode 1: Classical | Mode 2: Arithmetic Emulator,Mode 1: No | Mode 2: Emulated
+Kinematic Velocity Extraction (u = j / rho),Classical Reference Feed / Feedback,Coherent Fixed-Point Division Emulator (Q4.12),Mode 1: Classical | Mode 2: Arithmetic Emulator,Mode 1: No | Mode 2: Emulated
+"Parameterized Matrix Synthesis C(alpha, u)",Classical Matrix Builder (Continuous Angles),Classical Matrix Builder (Continuous Angles),Classical Preprocessing,No
+Sz.-Nagy Unitary Dilation U_C in U(64),6-Qubit Unitary Operator (Exact Matrix / Dilation),6-Qubit Unitary Operator (Exact Matrix / Dilation),Quantum Unitary Core,Yes (Unitary Block-Encoding)
+Local Collision Execution (U_C @ z_pad),6-Qubit Quantum Collision Dilation Execution,6-Qubit Quantum Collision Dilation Execution,Quantum Unitary Core,Yes (Unitary Core)
+Oblivious Amplitude Amplification (OAA),Quantum Reflection & Grover Operator (m=1),Quantum Reflection & Grover Operator (m=1),Quantum Amplification Subroutine,Yes
+Reversible Arithmetic Streaming (S_arith),7-Qubit Quantum Ripple-Carry Modular Permutation,7-Qubit Quantum Ripple-Carry Modular Permutation,Quantum Unitary Core,Yes (Gate-Level Reversible)
+Bounce-Back Boundary Involution (B),7-Qubit Quantum Unitary Involution (B^2 = I),7-Qubit Quantum Unitary Involution (B^2 = I),Quantum Unitary Core,Yes (Gate-Level Reversible)
+Ancilla Reset / Intermediate Projection,Projective Measurement / Defect Reset,Projective Measurement / Defect Reset,Quantum Projective Subspace,Yes (Projective Reset)
+Continuous Population Decoding,Classical Amplitude Extraction / Diagnostic,Classical Amplitude Extraction / Diagnostic,Classical Diagnostic / Readout,No

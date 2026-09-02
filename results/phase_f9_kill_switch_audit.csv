@@ -1,0 +1,5 @@
+component_tested,normal_error_vs_level4,kill_switch_error,departure_ratio,audit_verdict
+Quantum Collision Core (U_C in U(64)),1.2934e-14,3.4188e-01,2.45e+13,GENUINE QUANTUM EXECUTION (Kill switch causes immediate 34.2% departure)
+"Kinematic Parameter Oracle Feed (alpha, u)",1.2934e-14,6.5231e-02,4.68e+12,GENUINE PARAMETER DEPENDENCE (Wrong parameters produce immediate divergence)
+Reversible Arithmetic Streaming (S_arith in U(128)),< 1e-14 (Exact Permutation),Spatial Translation Norm = 1.0000e-01,N/A,GENUINE SPATIAL TRANSPORT (Permutation circuit performs exact advection)
+Boundary Bounce-Back Involution (B in U(128)),0.0000e+00,B^2 = I Verified (< 1e-14),N/A,GENUINE UNITARY INVOLUTION (Direction-selective wall reflections verified)

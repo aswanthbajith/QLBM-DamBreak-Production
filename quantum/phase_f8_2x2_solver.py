@@ -43,6 +43,10 @@ from quantum.arithmetic_streaming import (
     build_direct_streaming_circuit,
     build_direct_boundary_circuit,
 )
+from quantum.transparency_audit import (
+    TransparencyEvent,
+    get_transparency_logger,
+)
 
 
 class PhaseF8TwoPhaseQLBM2x2:
@@ -118,6 +122,8 @@ class PhaseF8TwoPhaseQLBM2x2:
 
     def encode_state(self) -> np.ndarray:
         """Encodes physical f, g into normalized 128-dimensional quantum statevector."""
+        logger = get_transparency_logger()
+        logger.log(TransparencyEvent.STATE_PREPARATION)
         self.norm_N = float(np.sqrt(np.sum(self.f**2) + np.sum(self.g**2)))
         psi = np.zeros(self.hilbert_dim, dtype=np.complex128)
 
@@ -133,6 +139,8 @@ class PhaseF8TwoPhaseQLBM2x2:
 
     def decode_state(self, psi_vec: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
         """Decodes 128-dimensional statevector back to continuous physical fields f and g."""
+        logger = get_transparency_logger()
+        logger.log(TransparencyEvent.CLASSICAL_DECODE)
         psi = self.psi if psi_vec is None else psi_vec
         f = np.zeros((9, self.ny, self.nx), dtype=np.float64)
         g = np.zeros((9, self.ny, self.nx), dtype=np.float64)
@@ -149,6 +157,8 @@ class PhaseF8TwoPhaseQLBM2x2:
 
     def compute_diagnostics(self) -> Dict[str, Any]:
         """Evaluates macroscopic fields and conservation metrics."""
+        logger = get_transparency_logger()
+        logger.log(TransparencyEvent.DIAGNOSTIC_EVALUATION)
         rho = np.sum(self.f, axis=0)
         alpha = np.sum(self.g, axis=0)
         jx = np.sum(self.f * C_X[:, None, None], axis=0)
@@ -181,6 +191,7 @@ class PhaseF8TwoPhaseQLBM2x2:
         """
         Mode 1: Parameter-Fed Quantum Collision + Arithmetic Streaming + Boundary Involution.
         """
+        logger = get_transparency_logger()
         f_coll = np.zeros_like(self.f)
         g_coll = np.zeros_like(self.g)
         diag_step = []
@@ -189,7 +200,12 @@ class PhaseF8TwoPhaseQLBM2x2:
         for x in range(self.nx):
             for y in range(self.ny):
                 z_node = np.concatenate([self.f[:, y, x], self.g[:, y, x]])
-                alpha_val = alpha_feed[y, x] if alpha_feed is not None else float(np.sum(self.g[:, y, x]))
+                if alpha_feed is not None:
+                    alpha_val = alpha_feed[y, x]
+                    logger.log(TransparencyEvent.CLASSICAL_PARAMETER_GENERATION, {"source": "external_feed"})
+                else:
+                    alpha_val = float(np.sum(self.g[:, y, x]))
+                    logger.log(TransparencyEvent.CLASSICAL_PARAMETER_GENERATION, {"source": "classical_moment_sum"})
 
                 if u_feed is not None:
                     u_val = u_feed[:, y, x]
@@ -199,6 +215,7 @@ class PhaseF8TwoPhaseQLBM2x2:
                     uy_n = float(np.sum(self.f[:, y, x] * C_Y)) / (rho_n + 1e-15)
                     u_val = np.array([ux_n, uy_n], dtype=np.float64)
 
+                logger.log(TransparencyEvent.QUANTUM_COLLISION_EXECUTION, {"node": (x, y), "alpha": alpha_val})
                 z_post, metrics = self.collision_oracle.execute_collision(
                     z=z_node,
                     alpha=alpha_val,
@@ -212,12 +229,15 @@ class PhaseF8TwoPhaseQLBM2x2:
         # 2. Encode post-collision populations into statevector
         self.f = f_coll
         self.g = g_coll
+        logger.log(TransparencyEvent.CLASSICAL_REENCODE)
         self.psi = self.encode_state()
 
         # 3. Apply Reversible Quantum Arithmetic Streaming (S_arith)
+        logger.log(TransparencyEvent.QUANTUM_STREAMING_EXECUTION)
         self.psi = self.U_stream @ self.psi
 
         # 4. Apply Physical Bounce-Back Boundary Involution (B)
+        logger.log(TransparencyEvent.QUANTUM_BOUNDARY_EXECUTION)
         self.psi = self.U_bnd @ self.psi
 
         # 5. Decode updated populations
@@ -238,6 +258,7 @@ class PhaseF8TwoPhaseQLBM2x2:
         """
         Mode 2: State-Derived Parameter Quantum Collision (Coherent-Arithmetic Emulator).
         """
+        logger = get_transparency_logger()
         moment_oracle = CoherentFixedPointMomentOracle(total_bits=word_length, frac_bits=frac_bits)
         f_coll = np.zeros_like(self.f)
         g_coll = np.zeros_like(self.g)
@@ -247,10 +268,12 @@ class PhaseF8TwoPhaseQLBM2x2:
             for y in range(self.ny):
                 z_node = np.concatenate([self.f[:, y, x], self.g[:, y, x]])
                 # Derive moments coherently via fixed-point arithmetic
+                logger.log(TransparencyEvent.COHERENT_MOMENT_EMULATION, {"word_length": word_length, "node": (x, y)})
                 m = moment_oracle.evaluate_moments(z_node)
                 u_derived = np.array([m["u_x"], m["u_y"]], dtype=np.float64)
                 alpha_derived = m["alpha"]
 
+                logger.log(TransparencyEvent.QUANTUM_COLLISION_EXECUTION, {"node": (x, y), "alpha": alpha_derived})
                 z_post, metrics = self.collision_oracle.execute_collision(
                     z=z_node,
                     alpha=alpha_derived,
@@ -263,8 +286,11 @@ class PhaseF8TwoPhaseQLBM2x2:
 
         self.f = f_coll
         self.g = g_coll
+        logger.log(TransparencyEvent.CLASSICAL_REENCODE)
         self.psi = self.encode_state()
+        logger.log(TransparencyEvent.QUANTUM_STREAMING_EXECUTION)
         self.psi = self.U_stream @ self.psi
+        logger.log(TransparencyEvent.QUANTUM_BOUNDARY_EXECUTION)
         self.psi = self.U_bnd @ self.psi
         self.f, self.g = self.decode_state()
 
