@@ -1,0 +1,8 @@
+grid_name,nx,ny,nodes,n_x_qubits,n_y_qubits,n_velocity_qubits,n_phase_qubits,total_data_logical_qubits,hilbert_dimension,algorithmic_ancillas_streaming,complete_logical_qubits
+2x2 Minimal,2,2,4,1,1,4,1,7,128,0,7
+4x4 Prototype,4,4,16,2,2,4,1,9,512,0,9
+8x4 Intermediate,8,4,32,3,2,4,1,10,1024,0,10
+16x8 Mesh,16,8,128,4,3,4,1,12,4096,0,12
+32x16 Refined,32,16,512,5,4,4,1,14,16384,0,14
+64x32 Benchmark,64,32,2048,6,5,4,1,16,65536,0,16
+128x64 Target Dam-Break,128,64,8192,7,6,4,1,18,262144,0,18

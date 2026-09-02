@@ -1,0 +1,10 @@
+operation,implementation,is_quantum,is_classical,role,scientific_status
+State Preparation & Normalization,encode_state(),Quantum Statevector Initializer,Classical Amplitude Loading,"Loads physical f_i, g_i into unified |Psi>",Hybrid Initialization (Amplitudes proportional to populations)
+Spatial Streaming,apply_quantum_streaming() / S_matrix,YES (Strictly Unitary Permutation S†S=I),NO,Modular coordinate shift |(x+c_ix) mod Nx>,Genuinely Quantum Unitary Permutation
+Bounce-Back Wall Boundary,apply_quantum_boundary() / B_matrix,"YES (Unitary Involution B^2=I, B†B=I)",NO,Reflects velocities i -> opp(i) at walls,Genuinely Quantum Unitary Involution
+Macroscopic Density & Phase,"decode_state() -> rho = sum(f), alpha = sum(g)",Observable Contraction,Classical Moment Sum,"Extracts rho(x,y) and alpha(x,y)",Classical Decoding / Measurement
+Shifted Velocity Calculation,ux = (sum c_ix f_i + 0.5 Fx) / rho,NO,Classical Arithmetic,Momentum division by local density,Classical Numerical Operation
+Brackbill CSF Surface Tension,compute_surface_tension_force(),NO,Classical Finite Difference,Calculates F_s = sigma * kappa * grad(alpha),Classical Hybrid Feedback
+Gravitational Buoyancy Forcing,compute_total_force() -> (rho - rho_G) * g_acc,NO,Classical Parameter Evaluation,Hydrostatic body force,Classical Forcing Input
+"Equilibrium Populations f_eq, g_eq","compute_equilibrium(rho, u)",NO,Classical BGK Quadratic Maxwellian,Nonlinear local target state,Classical Numerical Evaluation
+Hydrodynamic & Phase Collision,execute_collision_step(),NO (Simulated via classical update + re-encoding),Classical BGK Relaxation with Guo Source,Relaxes populations toward equilibrium,Classical Numerical Update in Hybrid Loop
