@@ -1,0 +1,2 @@
+grid_dimension,data_logical_qubits,dilation_ancillas,total_logical_qubits,hilbert_dimension,circuit_depth,total_gates,two_qubit_gates,transpilation_time_sec,target_hardware,hardware_interlock
+2x2,7,1,8,256,604,882,214,0.02,IBM FakeSherbrooke (127Q Heavy-Hex),QLBM_ENABLE_REAL_QPU=0 (Simulation Only)
