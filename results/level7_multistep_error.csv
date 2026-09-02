@@ -1,0 +1,9 @@
+K_steps,carleman_truncation_error,density_rho,phase_alpha,stability_status
+1,0.0,1.0,0.8,STABLE & BOUNDED
+2,0.0,1.0,0.8,STABLE & BOUNDED
+3,0.0,1.0,0.8,STABLE & BOUNDED
+4,0.0,1.0,0.8,STABLE & BOUNDED
+5,0.0,1.0,0.8,STABLE & BOUNDED
+6,0.0,1.0,0.8,STABLE & BOUNDED
+7,0.0,1.0,0.8,STABLE & BOUNDED
+8,0.0,1.0,0.8,STABLE & BOUNDED

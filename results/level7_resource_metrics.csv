@@ -1,0 +1,7 @@
+mesh_size,spatial_nodes_N,logical_qubits_Arch_7A,qubits_Arch_7C_Bipartite,collision_gates_per_step,streaming_permutation_depth,classical_state_memory
+4x4,16,10,18,8320,8,2.25 KB
+8x8,64,12,22,33280,12,9.00 KB
+16x8,128,13,24,66560,14,18.00 KB
+32x16,512,15,28,266240,18,72.00 KB
+64x32,2048,17,32,1064960,22,288.00 KB
+128x64,8192,19,36,4259840,26,1152.00 KB

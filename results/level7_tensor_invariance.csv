@@ -1,0 +1,4 @@
+streaming_mode,mean_invariance_error,mechanism,status
+Naive S (x) S on Decoupled Lifted Tensor,4.1955e+00 (419.5%),Cross-terms shifted by c_a + c_b instead of distinct node products,FAILS (Corrupts convective momentum)
+Global Bipartite Tensor (324 N^2),0.0000e+00 (0.0%),"Full cross-node state representation across all (x1, x2) pairs","Exact but unscalable (36 qubits, >160 GB)"
+Coherent Linear Permutation + Local Re-formation,0.0000e+00 (0.0%),Linear unitary permutation S on R^18 followed by local quadratic lift,EXACT & SCALABLE (Preserves invariant manifold M)

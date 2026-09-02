@@ -1,0 +1,16 @@
+criterion,Arch_7A_ProjectedReset_Block,Arch_7B_SpacetimeQSVT,Arch_7C_GlobalTensor_N2
+01. Mathematical Correctness,9,8,8
+02. Invariant Manifold Preservation,9,6,9
+03. Block-Encoding Validity (No Leakage),9,9,8
+04. Quantum Coherence Horizon (K > 1),7,9,8
+05. Two-Phase CSF Compatibility,8,3,2
+06. Boundary Condition Compatibility,9,7,7
+07. Qubit Count Efficiency,9,6,2
+08. Circuit Depth & Gate Scalability,8,3,2
+09. Success Probability (p_succ),7,6,4
+10. Classical Overhead & Memory,9,6,2
+11. Implementation Feasibility,9,4,3
+12. Literature Novelty,9,8,7
+13. Thesis & Scientific Defensibility,9,7,6
+TOTAL SCORE (out of 130),111,82,68
+PERCENTAGE SCORE,85.4%,63.1%,52.3%

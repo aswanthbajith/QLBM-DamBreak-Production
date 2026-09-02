@@ -1,0 +1,7 @@
+K_steps,unprojected_dilation_error,projected_reset_error,p_success_unamplified,oaa_success_target,status
+1,5.5752e-17,5.5752e-17,1.0558e-02,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset
+2,2.0987e+01,9.5365e-17,1.1148e-04,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset
+3,1.2665e+02,1.7653e-16,1.1770e-06,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset
+4,1.5583e+03,1.0891e-16,1.2427e-08,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset
+6,1.3877e+05,1.4528e-16,1.3853e-12,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset
+8,1.2919e+07,2.2253e-16,1.5442e-16,~1.0000 (with O(alpha_C) reflections),Exact via Projective Reset

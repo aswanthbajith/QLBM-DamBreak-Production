@@ -1,0 +1,8 @@
+K_steps,p_success_unamplified,p_success_with_OAA,grover_queries_per_step,total_OAA_oracle_calls,feasibility_assessment
+1,1.0558e-02,0.9990 (99.0% per step),8,8,NISQ Tractable (K=1)
+2,1.1148e-04,0.9980 (99.0% per step),8,16,Early FTQC (OAA Required)
+3,1.1770e-06,0.9970 (99.0% per step),8,24,Early FTQC (OAA Required)
+4,1.2427e-08,0.9960 (99.0% per step),8,32,Early FTQC (OAA Required)
+5,1.3120e-10,0.9950 (99.0% per step),8,40,Fault-Tolerant Only
+8,1.5442e-16,0.9920 (99.0% per step),8,64,Fault-Tolerant Only
+10,1.7214e-20,0.9900 (99.0% per step),8,80,Fault-Tolerant Only
