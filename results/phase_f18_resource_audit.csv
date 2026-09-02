@@ -1,0 +1,5 @@
+domain,qubits,depth,toffoli_count,t_count,type
+1 Node,288,"32,400",6192,43344,Synthesized Circuit
+2x2,1152,"32,400",24768,173376,Synthesized Circuit
+4x4,4608,"32,400",99072,693504,Synthesized Circuit
+8x4,9216,"32,400",198144,1387008,Analytical Scaling

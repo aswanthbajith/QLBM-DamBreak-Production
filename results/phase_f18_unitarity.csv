@@ -1,0 +1,5 @@
+operator,is_bijective,unitary_valid,reason,classification
+In-Place Physical Map |x> -> |F(x)>,False,False,Collapses orthogonal states <x1|x2>=0 to <F(x1)|F(x2)>=1,NON-UNITARY IN CLOSED SYSTEM
+Augmented Embedding |x>|0> -> |x>|F(x)>,True,True,Retains input state x in quantum memory,EXACT UNITARY EMBEDDING
+Spatial Streaming Permutation S_arith,True,True,Coordinate wire permutation (S^dag S = I),EXACT UNITARY
+Boundary Mask Involution B_mask,True,True,Direction swap involution (B^2 = I),EXACT UNITARY

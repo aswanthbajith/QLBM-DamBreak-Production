@@ -1,0 +1,11 @@
+physical_component,implemented,quantum_execution,status
+D2Q9 Hydrodynamic Populations f_i,True,Reversible Q4.12,INCLUDED
+D2Q9 Phase-Field Populations g_i,True,Reversible Q4.12,INCLUDED
+Density Moment rho = sum f_i,True,Reversible In-Place Adder,INCLUDED
+Phase Fraction alpha = sum g_i,True,Reversible In-Place Adder,INCLUDED
+Shifted Velocity u = j/rho,True,Reversible Q4.12 Divider,INCLUDED
+Gravity Body Forcing,True,Reversible Multiplier,INCLUDED
+Spatial Streaming Permutation,True,Unitary Permutation S_arith,INCLUDED
+Solid Boundary Bounce-Back,True,Unitary Involution B_mask,INCLUDED
+CSF Surface Tension (sigma),False,Reduced to sigma=0,OMITTED IN PROTOTYPE
+State-Dependent Viscosity tau(alpha),False,Fixed tau reference,OMITTED IN PROTOTYPE

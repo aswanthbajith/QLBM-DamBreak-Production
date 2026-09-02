@@ -1,0 +1,11 @@
+grid,timesteps,state_preparations,classical_extractions,intermediate_re_encodings,execution_type,verdict
+2x2,1,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+2x2,2,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+2x2,4,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+2x2,8,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+2x2,16,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+4x4,1,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+4x4,2,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+4x4,4,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+4x4,8,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS
+4x4,16,1,1,0,Route D Reversible Registers,STABLE & AUTONOMOUS

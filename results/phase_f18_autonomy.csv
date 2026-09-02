@@ -1,0 +1,7 @@
+kernel,mechanism,classical_reads,status
+State Preparation,Basis state encoding at t=0,0,PERMITTED (1 Init)
+Reversible Adders/Dividers,Fixed-point register arithmetic,0,AUTONOMOUS QUANTUM
+Work Register Uncomputation,Mirror reverse arithmetic to |0>,0,AUTONOMOUS QUANTUM
+Streaming Permutation,Spatial wire swap S_arith,0,AUTONOMOUS QUANTUM
+Boundary Bounce-Back,Solid mask register swap B_mask,0,AUTONOMOUS QUANTUM
+Final Readout,Computational basis measurement at step T,1,PERMITTED (1 Readout at T)
