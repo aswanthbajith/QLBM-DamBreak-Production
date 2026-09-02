@@ -52,16 +52,34 @@ class F21ReversibleCSFPipeline:
         F_sx_out = np.copy(F_sx)
         F_sy_out = np.copy(F_sy)
 
-        # 3. Mirror Uncomputation Pass (restores intermediate work registers to 0)
-        # Uncompute curvature, normals, and gradients
-        uncomputed_kappa = kappa - kappa
-        uncomputed_normals = nx_vec - nx_vec
-        uncomputed_grads = grad_x - grad_x
+        # 3. Mirror Uncomputation Pass (restores intermediate work registers back to |0>)
+        # Step A: Recompute force to subtract from internal register
+        F_sx_recomputed, F_sy_recomputed = self.force_module.compute_surface_forces(kappa, grad_x, grad_y, mask)
+        uncomputed_force_x = F_sx - F_sx_recomputed
+        uncomputed_force_y = F_sy - F_sy_recomputed
+
+        # Step B: Recompute curvature and subtract
+        kappa_recomputed = self.curv_module.compute_curvature_stencils(nx_vec, ny_vec)
+        uncomputed_kappa = kappa - kappa_recomputed
+
+        # Step C: Recompute normals and subtract
+        _, nx_rec, ny_rec, _ = self.norm_module.compute_unit_normals(grad_x, grad_y)
+        uncomputed_nx = nx_vec - nx_rec
+        uncomputed_ny = ny_vec - ny_rec
+
+        # Step D: Recompute gradients and subtract
+        gx_rec, gy_rec = self.grad_module.compute_gradient_stencils(alpha_reg)
+        uncomputed_gx = grad_x - gx_rec
+        uncomputed_gy = grad_y - gy_rec
 
         garbage_residual = float(
-            np.sum(np.abs(uncomputed_kappa))
-            + np.sum(np.abs(uncomputed_normals))
-            + np.sum(np.abs(uncomputed_grads))
+            np.sum(np.abs(uncomputed_force_x))
+            + np.sum(np.abs(uncomputed_force_y))
+            + np.sum(np.abs(uncomputed_kappa))
+            + np.sum(np.abs(uncomputed_nx))
+            + np.sum(np.abs(uncomputed_ny))
+            + np.sum(np.abs(uncomputed_gx))
+            + np.sum(np.abs(uncomputed_gy))
         )
 
         meta = {

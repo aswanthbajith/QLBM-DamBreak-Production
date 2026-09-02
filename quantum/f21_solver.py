@@ -116,9 +116,10 @@ class PhaseF21ReversibleCSFSolver:
             for x in range(nx):
                 f_in = [int(self.f_reg[i, y, x]) for i in range(9)]
                 g_in = [int(self.g_reg[i, y, x]) for i in range(9)]
+                f_ext_node = (int(F_sx[y, x]), int(F_sy[y, x]))
 
                 # Add CSF force to momentum evaluation in BGK
-                f_out, g_out, meta = self.bgk_engine.evaluate_bgk_map(f_in, g_in)
+                f_out, g_out, meta = self.bgk_engine.evaluate_bgk_map(f_in, g_in, F_ext=f_ext_node)
 
                 for i in range(9):
                     f_coll[i, y, x] = f_out[i]

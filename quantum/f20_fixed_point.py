@@ -33,16 +33,17 @@ class F20FixedPointBGKEngine:
         self,
         f_in: List[int],
         g_in: List[int],
+        F_ext: Tuple[int, int] = (0, 0),
     ) -> Tuple[List[int], List[int], Dict[str, Any]]:
         """
-        Evaluates exact finite-register BGK map F(x).
+        Evaluates exact finite-register BGK map F(x) with optional external force.
         """
         rho_work = sum(f_in)
         alpha_work = sum(g_in)
 
-        jx_work = sum(f_in[i] * C_X[i] for i in range(9))
+        jx_work = sum(f_in[i] * C_X[i] for i in range(9)) + F_ext[0] // 2
         jy_work = sum(f_in[i] * C_Y[i] for i in range(9))
-        jy_work += self.arith.multiply(rho_work, self.g_acc_fixed) // 2
+        jy_work += (self.arith.multiply(rho_work, self.g_acc_fixed) + F_ext[1]) // 2
 
         ux_work = self.arith.divide(jx_work, max(rho_work, 1))
         uy_work = self.arith.divide(jy_work, max(rho_work, 1))
