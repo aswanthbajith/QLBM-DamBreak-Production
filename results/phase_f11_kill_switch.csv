@@ -1,0 +1,8 @@
+subsystem,kill_switch_flag,divergence_magnitude_L2,physical_impact,causality_verified
+Collision Core,kill_collision,9.3747e-01,Substantial Departure,True
+Streaming Permutation,kill_streaming,9.3264e-01,Substantial Departure,True
+Boundary Involution,kill_boundary,3.1859e-01,Substantial Departure,True
+Phase Coupling,kill_phase_coupling,2.1770e-04,Substantial Departure,True
+Buoyancy Gravity,kill_gravity,2.2483e-04,Substantial Departure,True
+Surface Tension (CSF),kill_csf,1.2757e-04,Substantial Departure,True
+State Normalization,kill_normalization,0.0000e+00,Normalization Controlled,True

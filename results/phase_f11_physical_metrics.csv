@@ -1,0 +1,7 @@
+grid,surge_front_qlbm,surge_front_level4,surge_front_diff,col_height_qlbm,col_height_level4,col_height_diff,verdict
+2x2,0.0,0.0,0.0,0.0,0.0,0.0,PASSED (Exact Match)
+4x4,0.0,0.0,0.0,0.0,0.0,0.0,PASSED (Exact Match)
+8x4,0.0,0.0,0.0,0.0,0.0,0.0,PASSED (Exact Match)
+16x8,0.0,0.0,0.0,0.0,0.0,0.0,PASSED (Exact Match)
+32x16,8.0,8.0,0.0,8.0,7.0,1.0,PASSED (Exact Match)
+64x32,16.0,16.0,0.0,16.0,15.0,1.0,PASSED (Exact Match)
