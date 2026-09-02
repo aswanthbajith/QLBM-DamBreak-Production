@@ -1,0 +1,5 @@
+order_K,lifted_dim,qubits_per_node,retained_terms,discarded_terms,manifold_closure,truncation_error_L2,multi_step_drift,feasibility
+1,18,5,Linear M1 z,"Quadratic M2(z(x)z), Cubic, Quartic",Trivial (18 dim),2.40e-01,Stable but inaccurate (linear only),PROVEN (Linear BGK only)
+2,342,9,M1 z + M2(z(x)z) + (M1(x)M1) z(x)z,"Cubic cross-terms O(z^3), Quartic O(z^4)",Non-closing (Defect grows without relifting),1.40e-01,Severe drift without classical relifting,DISPROVED as autonomous (Requires relifting)
+3,6174,13,M1 z + M2 z2 + M3 z3 + Kronecker products,"Degree 4, 5, 6 terms",Non-closing (Incomplete degree 4-6),2.10e-02,Drift accumulates over T>8,"IMPRACTICAL (6174 dim / node, non-closing)"
+4,111150,17,Degree 1 to 4 tensor powers,"Degree 5, 6, 7, 8 terms",Non-closing (Infinite hierarchy required),3.50e-03,Drift accumulates over T>16,"UNFEASIBLE (>110k dim / node, non-closing)"

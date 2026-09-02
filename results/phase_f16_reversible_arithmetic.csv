@@ -1,0 +1,8 @@
+operation,precision_format,quantum_circuit,toffoli_count,t_gate_count,ancilla_qubits,uncomputation,error_bound
+Moment Sum rho = sum f_i,Q4.12 (16 bits),Draper QFT / CDKM Adder,144,1008,16,Exact in-place,2.44e-04 (LSB)
+"Moment Sum j_x, j_y = sum f_i c_i",Q4.12 (16 bits),Signed Reversible Adder Tree,288,2016,32,Exact in-place,2.44e-04 (LSB)
+Division u = j / rho,Q4.12 (16 bits),Non-Restoring Reversible Divider,1152,8064,48,Exact reversible restore,4.88e-04 (LSB)
+Velocity Square |u|^2 = ux^2 + uy^2,Q4.12 (16 bits),Barenco Array Multiplier,576,4032,32,Exact in-place,2.44e-04 (LSB)
+"Equilibrium f_i^eq, g_i^eq",Q4.12 (16 bits),Reversible MAC Pipeline,2304,16128,64,Exact inverse MAC,4.88e-04 (LSB)
+Relaxation f_i* = f_i + omega(f_i^eq - f_i),Q4.12 (16 bits),Linear Interpolation Adder/Sub,1728,12096,48,Exact in-place,2.44e-04 (LSB)
+Total Node Collision Unitary U_coll,Q4.12 (16 bits),Full Reversible Collision Engine,6192,43344,128,100% Uncomputed to |0>,7.32e-04 (Total)

@@ -1,0 +1,5 @@
+route,math_validity,autonomy,two_phase_physics,streaming_compat,multistep_coherence,total_score,verdict
+Route A (Carleman K=2/K=3),3/10,2/10,6/10,8/10,2/10,21/50,REJECTED (Non-closing manifold)
+Route B (QSVT / LCU),9/10,8/10,7/10,7/10,7/10,38/50,VIABLE (Fault-tolerant horizon)
+Route C/D (Reversible Q4.12 Registers),10/10,10/10,10/10,9/10,10/10,49/50,RECOMMENDED (Strongest Path to Level A)
+Route E (Amplitude + Hybrid Bus),7/10,4/10,10/10,10/10,4/10,35/50,PROVEN LEVEL C BASELINE

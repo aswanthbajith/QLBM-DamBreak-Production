@@ -1,0 +1,6 @@
+route,manifold_type,closure_status,drift_at_T16,autonomous_possible,verdict
+Route A (Carleman K=2),Y = [z; z(x)z],OPEN (Non-closing),1.8e-01,False,REJECTED for Level A
+Route A (Carleman K=3),Y = [z; z2; z3],OPEN (Non-closing),2.1e-02,False,REJECTED for Level A
+Route B (QSVT / LCU),Block-Encoded Polynomial,CLOSED (via OAA),< 1e-4,True,FEASIBLE (Fault-Tolerant)
+Route C/D (Reversible Q4.12),"Discrete Register State |f,g>",CLOSED (Exact Unitary),< 7.3e-4 (Finite Bits),True,RECOMMENDED (Strongest Path)
+Route E (Amplitude Encoding),Continuous Hilbert Amplitudes,OPEN (Nonlinear Obstruction),N/A (Hybrid Bus Required),False,REJECTED for Autonomous Collision

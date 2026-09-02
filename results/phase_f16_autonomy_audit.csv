@@ -1,0 +1,9 @@
+subsystem,direct_amplitude,reversible_register,classical_reads,hybrid_status
+1. Initial State Injection,Unitary Init,Reversible Basis State Prep,0,AUTONOMOUS
+2. Collision Core (Moments & u),Requires Hybrid Bus in Python,Reversible Adders & Dividers,0,AUTONOMOUS in Route D
+3. Collision Core (Equilibrium),Requires Hybrid Matrix A_C,Reversible Fixed-Point MAC,0,AUTONOMOUS in Route D
+4. Spatial Streaming,Permutation Matrix S_arith,Reversible Register Wire Swap,0,AUTONOMOUS
+5. Boundary Bounce-Back,Involution Matrix B_mask,Reversible Register Swap,0,AUTONOMOUS
+6. CSF Surface Tension,Requires Shifted Hybrid Stencils,Reversible Neighbor Shift Registers,0,AUTONOMOUS in Route D
+7. Multi-Step Persistence,Fails (Dilation leakage),Succeeds (Unitary U^T),0,AUTONOMOUS in Route D
+8. Final Measurement Readout,Measurement at step T,Basis Measurement at step T,1,AUTONOMOUS (Readout at T only)

@@ -1,0 +1,5 @@
+expansion_type,degree_d,valid_mach_range,max_approx_error,block_encoding_alpha,p0_success_prob,oaa_repeats,gate_depth_per_step,status
+1st-Order Taylor 1/rho ~ 2 - rho,1,Ma <= 0.05,3.50e-02,3.20,0.0976,5,"45,000",Feasible (Low accuracy)
+2nd-Order Chebyshev Reciprocal,2,Ma <= 0.12,4.20e-03,5.80,0.0297,9,"180,000",Feasible (High OAA overhead)
+4th-Order Chebyshev Reciprocal,4,Ma <= 0.20,1.10e-04,12.40,0.0065,19,"850,000",Fault-Tolerant Only
+Exact Rational QSVT Matrix Inversion,kappa log(1/eps),Ma <= 0.30,< 1.00e-06,28.50,0.0012,45,"> 3,500,000",Fault-Tolerant Target

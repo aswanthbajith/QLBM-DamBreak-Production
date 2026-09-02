@@ -1,0 +1,5 @@
+architecture,qubits_per_node,total_qubits_4x4,circuit_depth_step,toffoli_count_step,t_gate_count_step,oaa_required,autonomy_verdict
+Route A: Carleman K=2 (Amplitude),9,144,"1,024",N/A (Unitary Matrix),"85,000",Yes (Leakage failure),Non-Autonomous (Requires Relifting)
+Route B: QSVT / LCU Polynomial,12,192,"180,000","12,500","750,000",Yes (9 OAA cycles),Autonomous (Fault-Tolerant Only)
+Route C/D: Reversible Q4.12 Registers,288,4608,"32,400","6,192 / node","43,344 / node",No (100% Deterministic Unitary),FULLY AUTONOMOUS (LEVEL A VIABLE)
+Route E: Direct Amplitude (Hybrid Bus),1,9,"16,101",0,"18,400",No (Hybrid Control),Level C Hybrid (Current Baseline)

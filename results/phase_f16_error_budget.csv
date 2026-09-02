@@ -1,0 +1,15 @@
+component,magnitude,nature,category
+1. Initial State Preparation,< 1e-16,Exact Unitary Preparation,Controlled
+2. Fixed-Point LSB Truncation (Q4.12),2.44e-04,12 Fractional Bits,Numerical Precision
+3. Reversible Division (Newton-Raphson),4.88e-04,16-bit Non-Restoring Divider,Arithmetic Approx
+4. Equilibrium Quadratic Approximation,< 1.0e-05,Exact Taylor D2Q9 Polynomial,Physics Formulation
+5. Guo Forcing Linearization,1.20e-04,Body Force & Momentum Shift,Physics Formulation
+6. CSF Surface Tension Curvature,3.10e-04,9-point Reversible Shift Stencil,Spatial Discretization
+7. Streaming Permutation,0.0000,Exact Coordinate Permutation,Exact Unitary
+8. Boundary Mask Involution,0.0000,Exact Direction Inversion,Exact Unitary
+9. Ancilla Uncomputation,0.0000,100% Reverse Circuit Uncomputation,Exact Coherent
+10. Multi-Step Accumulated Drift (T=16),7.32e-04,Stable Non-Expanding Drift,Temporal Stability
+11. Carleman Manifold Defect (Route A),1.80e-01,Open Tensor Hierarchy,Route A Obstruction
+12. Sz.-Nagy Dilation Leakage (Route A/B),1.0000,Off-Diagonal Dilation Power,Route A/B Obstruction
+13. Classical Amplitude Readout (Hybrid),0.0000,Eliminated in Route D,Level C Obstruction
+14. Total Autonomous Error (Route D),9.76e-04,Root-Sum-Square Combined,Level A Feasible
