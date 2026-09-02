@@ -1,0 +1,9 @@
+register_type,qubits,scaling,description
+Data: Spatial X-Coordinate |x>,7,ceil(log2(128)),Indexes 128 lattice columns
+Data: Spatial Y-Coordinate |y>,6,ceil(log2(64)),Indexes 64 lattice rows
+Data: Discrete Velocity & Species |a>,5,ceil(log2(18)) = 5,Indexes 9 f_i + 9 g_i populations (2^5=32 >= 18)
+Data: Dilation Block-Encoding Ancilla |anc_D>,1,1 qubit (dim=2),Sz.-Nagy unitary dilation ancilla
+SUBTOTAL: DATA-REGISTER LOGICAL QUBITS,19,7 + 6 + 5 + 1,Primary statevector representation
+Algorithmic: OAA Phase / Reflection Ancilla,1,1 qubit,Controls Grover reflection operators in OAA
+Algorithmic: Reversible Adder Carry / Work Qubit,1,1 qubit,Ripple-carry work qubit for streaming coordinate addition
+TOTAL: COMPLETE ALGORITHM LOGICAL QUBITS,21,19 + 2,Total logical qubits for autonomous execution

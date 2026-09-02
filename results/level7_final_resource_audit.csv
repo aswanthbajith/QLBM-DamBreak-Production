@@ -1,0 +1,11 @@
+parameter,value,classification
+Target Lattice Grid,"128 x 64 (8,192 Nodes)",Domain Specification
+Data Logical Qubits,19 Qubits,Verified
+Complete Algorithm Logical Qubits (incl OAA/Carry),21 Qubits,Verified
+Local Collision 10Q Unitary Depth (Opt 3),"3,763,998",Simulated Transpilation
+Local Collision 10Q 2-Qubit ECR Gates,"831,053",Simulated Transpilation
+"Total Collision Gates per Step (8,192 Nodes)","4,259,840",Algorithmic Estimate
+"OAA Amplified Step Depth (m=6, 13 Unitaries)","48,932,174",Algorithmic Estimate
+NISQ Hardware Viability,NOT NISQ-VIABLE (Depth > 3.7M exceeds coherence limits),Scientific Reality
+Target Execution Architecture,Fault-Tolerant Quantum Computing (FTQC) with Logical Qubits,Target Architecture
+Real-QPU Safety Interlock Status,ACTIVE (QLBM_ENABLE_REAL_QPU=0),Safety Guarantee

@@ -1,0 +1,12 @@
+p_initial,alpha,theta_rad,iterations_m,angle_rad,U_queries,Udagger_queries,reflection_queries,total_unitary_queries,total_operations,success_probability,percentage,assumptions
+0.010558,9.7321,0.102935,0,0.102935,1,0,0,1,1,0.010558,1.056%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,1,0.308804,2,1,2,3,5,0.092367,9.237%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,2,0.514674,3,2,4,5,9,0.242311,24.231%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,3,0.720543,4,3,6,7,13,0.435326,43.533%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,4,0.926412,5,4,8,9,17,0.639152,63.915%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,5,1.132282,6,5,10,11,21,0.819719,81.972%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,6,1.338151,7,6,12,13,25,0.946846,94.685%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,7,1.544021,8,7,14,15,29,0.999283,99.928%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,8,1.749890,9,8,16,17,33,0.968267,96.827%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,9,1.955759,10,9,18,19,37,0.858981,85.898%,Standard OAA with exact Grover reflections
+0.010558,9.7321,0.102935,10,2.161629,11,10,20,21,41,0.689693,68.969%,Standard OAA with exact Grover reflections

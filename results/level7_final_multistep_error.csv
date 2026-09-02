@@ -1,0 +1,7 @@
+K_steps,unprojected_dilation_leakage,projected_reset_error,raw_p_success,status
+1,5.5752e-17,5.5752e-17,1.0558e-02,Exact via Projective Reset
+2,2.0987e+01,9.5365e-17,1.1148e-04,Exact via Projective Reset
+4,1.5583e+03,1.0891e-16,1.2427e-08,Exact via Projective Reset
+8,1.2919e+07,2.2253e-16,1.5442e-16,Exact via Projective Reset
+16,1.0325e+15,4.7970e-16,2.3847e-32,Exact via Projective Reset
+32,6.6857e+30,1.0479e-15,5.6866e-64,Exact via Projective Reset

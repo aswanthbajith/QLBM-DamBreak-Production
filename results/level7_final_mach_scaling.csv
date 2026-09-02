@@ -1,0 +1,7 @@
+Mach_number,Carleman_truncation_error,scaling_classification
+0.005,9.107177e-07,Empirical Low-Mach O(Ma^2)
+0.01,3.642707e-06,Empirical Low-Mach O(Ma^2)
+0.02,1.457266e-05,Empirical Low-Mach O(Ma^2)
+0.04,5.835552e-05,Empirical Low-Mach O(Ma^2)
+0.08,2.347426e-04,Empirical Low-Mach O(Ma^2)
+0.1,3.684376e-04,Empirical Low-Mach O(Ma^2)

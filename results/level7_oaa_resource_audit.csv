@@ -1,0 +1,3 @@
+scheme,p_succ_step,unitaries_per_step,circuit_depth,ecr_2q_gates,hardware_classification
+Unamplified Projective Reset (K=1),1.06%,1,3763998,831053,FTQC Logical Only (Depth > 3.7M)
+OAA Amplified Step (m=7 iters),99.93%,15,56460670,12466075,FTQC Logical Only (Depth > 48M)
