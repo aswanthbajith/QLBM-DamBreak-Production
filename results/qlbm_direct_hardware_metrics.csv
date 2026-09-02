@@ -1,0 +1,2 @@
+configuration,logical_qubits,physical_qubits,transpiled_depth,two_qubit_gates,total_gates,transpile_time_sec,target_backend,feasibility_assessment
+Direct Spatial/Population QLBM 2x2,7,127,10099,2700,16420,0.141,IBM FakeSherbrooke (127Q Heavy-Hex),Early FTQC executable circuit

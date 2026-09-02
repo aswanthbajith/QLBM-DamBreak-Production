@@ -1,0 +1,9 @@
+grid,timestep,logical_qubits,hilbert_dim,max_f_error,max_g_error,max_rho_error,max_alpha_error,mass_drift_vs_ref,status
+2x2,1,7,128,1.6653e-15,1.4433e-15,1.8874e-15,1.4433e-15,3.3307e-15,PASSED (Machine Precision)
+2x2,2,7,128,1.0825e-15,7.7716e-16,2.7200e-15,1.9984e-15,5.5511e-15,PASSED (Machine Precision)
+2x2,4,7,128,2.2204e-15,1.6098e-15,3.9968e-15,2.9976e-15,9.9920e-15,PASSED (Machine Precision)
+2x2,8,7,128,3.1919e-15,2.3592e-15,7.4940e-15,5.1625e-15,1.9207e-14,PASSED (Machine Precision)
+2x2,10,7,128,3.7470e-15,2.7200e-15,8.2712e-15,6.1062e-15,2.4092e-14,PASSED (Machine Precision)
+4x4,1,9,512,6.6613e-16,5.5511e-16,1.2212e-15,8.8818e-16,4.8850e-15,PASSED (Machine Precision)
+4x4,5,9,512,1.2212e-15,7.7716e-16,2.5535e-15,1.8319e-15,2.3093e-14,PASSED (Machine Precision)
+4x4,10,9,512,2.0539e-15,1.4988e-15,4.4409e-15,3.3307e-15,4.7073e-14,PASSED (Machine Precision)
