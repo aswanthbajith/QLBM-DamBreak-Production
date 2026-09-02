@@ -1,0 +1,6 @@
+timestep,physical_registers_bits,compute_output_growth,environment_growth,mode_retaining_memory,garbage_uncomputed
+1,288,576 bits (O(T)),288 bits (O(T)),576 bits (Constant O(1)),100% Uncomputed (|0>)
+2,288,864 bits (O(T)),576 bits (O(T)),576 bits (Constant O(1)),100% Uncomputed (|0>)
+4,288,1440 bits (O(T)),1152 bits (O(T)),576 bits (Constant O(1)),100% Uncomputed (|0>)
+8,288,2592 bits (O(T)),2304 bits (O(T)),576 bits (Constant O(1)),100% Uncomputed (|0>)
+16,288,4896 bits (O(T)),4608 bits (O(T)),576 bits (Constant O(1)),100% Uncomputed (|0>)

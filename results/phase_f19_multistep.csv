@@ -1,0 +1,11 @@
+grid,timesteps,state_preparations,intermediate_reads,intermediate_re_encodings,final_readouts,execution_mode,status
+2x2,1,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+2x2,2,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+2x2,4,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+2x2,8,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+2x2,16,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+4x4,1,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+4x4,2,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+4x4,4,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+4x4,8,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS
+4x4,16,1,0,0,1,Reversible Embedding (Arch A/C),AUTONOMOUS

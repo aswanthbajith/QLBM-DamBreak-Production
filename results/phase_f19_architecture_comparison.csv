@@ -1,0 +1,5 @@
+architecture,mathematical_type,unitarity,information_loss,memory_scaling,verdict
+Arch A: Compute-Output |x>|0> -> |x>|F(x)>,Augmented Unitary Bijection,EXACT (Joint Space),ZERO (x preserved in reg 1),O(T * N_pop),VIABLE (Exact Unitary)
+Arch B: Environment |x>|0>_E -> |F(x)>|e(x)>_E,Stinespring Quantum Channel,EXACT (Global Unitary),Dissipated into Environment E,O(T * N_env),VIABLE (Physical Dissipation)
+Arch C: Mode-Retaining |f> -> |f_eq>|f_neq>,Equilibrium / Non-Equilibrium Split,EXACT (Bijective Split),ZERO (f_neq preserved),O(N_pop) constant,RECOMMENDED (Recyclable)
+Closed In-Place |x> -> |F(x)> (F17 assumption),Direct Non-Injective Map,NON-UNITARY,Irreversible Erasure,N/A,REJECTED (Non-Unitary)

@@ -1,0 +1,2 @@
+superposition_state,physical_output_overlap,global_inner_product,mode_reconstruction_error,global_unitarity,reduced_state_nature
+|psi> = a|x1> + b|x2> (x1 != x2),F(x1) == F(x2) (Identical),<U psi1 | U psi2> = 0.0000 (Orthogonal),0,EXACT (Inner products preserved),Mixed density matrix after tracing out E

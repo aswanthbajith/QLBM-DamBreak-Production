@@ -1,0 +1,6 @@
+subsystem,mechanism,classical_reads,status
+State Preparation,Basis state preparation at t=0,0,PERMITTED (1 Init)
+Augmented Collision Unitary,Reversible compute-output / mode retention,0,AUTONOMOUS QUANTUM
+Streaming Permutation,Reversible wire permutation S_arith,0,AUTONOMOUS QUANTUM
+Boundary Involution,Solid mask register swap B_mask,0,AUTONOMOUS QUANTUM
+Final Readout,Computational basis measurement at step T,1,PERMITTED (1 Readout at T)

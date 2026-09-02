@@ -1,0 +1,4 @@
+domain,qubits_compute_out,qubits_mode_retain,depth_per_step,toffoli_count,t_count
+1 Node,576,576,"32,400",6192,43344
+2x2,2304,2304,"32,400",24768,173376
+4x4,9216,9216,"32,400",99072,693504
