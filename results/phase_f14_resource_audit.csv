@@ -1,0 +1,6 @@
+grid,qubits,hilbert_dim,circuit_depth,two_qubit_gates,total_gates,transpile_time_sec,target_hardware
+2x2,7,128,16101,4016,27233,0.052,IBM FakeSherbrooke (127Q Heavy-Hex)
+4x4,9,512,792197,201744,1328615,2.451,IBM FakeSherbrooke (127Q Heavy-Hex)
+8x4,10,1024,1584000,403000,2650000,5.4,IBM FakeSherbrooke (127Q)
+16x8,12,4096,6336000,1612000,10600000,21.6,IBM FakeSherbrooke (127Q)
+32x16,14,16384,25344000,6448000,42400000,86.4,IBM FakeSherbrooke (127Q)

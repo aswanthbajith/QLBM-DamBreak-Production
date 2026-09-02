@@ -1,0 +1,4 @@
+operator,matrix_size,unitarity_error_L2,is_unitary,involution
+Streaming Permutation S_arith,128x128,0.0000e+00,True,False
+Boundary Mask Involution B_mask,128x128,0.0000e+00,True,True
+Sz.-Nagy Collision Dilation U_C,36x36,1.5230e-17,True,False

@@ -1,0 +1,8 @@
+component,function,timestep,statevector_read,measurement,classical_feedback,classical_state_dependency,reversible,unitary,block_encoded,ancilla_uncomputed,verdict
+1. Initial State Preparation,_init_quantum_state,t=0 only,False,False,False,False,True,True,False,True,PASS
+2. Intermediate Population Reading,decode_final_fields,t >= 1,False,False,False,False,True,True,False,True,PASS (0 reads)
+3. Intermediate Re-Encoding,_init_quantum_state,t >= 1,False,False,False,False,True,True,False,True,PASS (0 preps)
+4. Arithmetic Streaming,S_arith,t >= 1,False,False,False,False,True,True,False,True,PASS (Exact Permutation)
+5. Boundary Mask Involution,B_mask,t >= 1,False,False,False,False,True,True,False,True,PASS (B^2=I)
+6. Nonlinear BGK Collision,U_collision,t >= 1,False,False,True,True,False,False,True,False,PARTIAL (Requires Hybrid Moment/Param Bus)
+7. Final Field Readout,decode_final_fields,t=T only,True,True,False,False,False,False,False,True,PASS (Termination Readout)
