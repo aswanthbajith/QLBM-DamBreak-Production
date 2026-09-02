@@ -1,0 +1,10 @@
+pipeline_stage,quantum_realized,hybrid_control,classical_postprocessing,implementation_type
+1. Direct Amplitude State Preparation,True,False,False,Unitary Injection
+2. Quantum Moment Extraction,True,True,False,Observable Expectation / Probe
+3. Reversible Fixed-Point Parameter Oracle,True,True,False,Fixed-Point Arithmetic (Q4.12)
+4. Quantum Continuum Surface Force,True,True,False,Spatial Stencil Shifts
+5. Parameterized Collision Dilation,True,False,False,Sz.-Nagy Unitary U(64)
+6. Quantum Arithmetic Streaming,True,False,False,Reversible Adders
+7. Quantum Boundary Mask Involution,True,False,False,Controlled Swaps (B^2=I)
+8. Multi-Step Coherent Statevector Evolution,True,False,False,Zero Intermediate Decode
+9. Final Measurement / Field Readout,False,True,True,Readout at Step T only

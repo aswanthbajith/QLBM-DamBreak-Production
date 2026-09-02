@@ -1,0 +1,26 @@
+architecture_mode,architecture_description,timesteps,state_preparations,classical_extractions,intermediate_re_encodings,f_error_Linf,g_error_Linf,rho_error_Linf,final_total_mass,verdict
+Architecture_A,F11 Parameter-Fed Direct Hybrid,1,1,1,0,7.0988e-05,6.5848e-05,1.3305e-04,5.2,PASSED
+Architecture_A,F11 Parameter-Fed Direct Hybrid,2,1,1,0,1.9368e-04,1.2722e-04,3.5158e-04,5.2,PASSED
+Architecture_A,F11 Parameter-Fed Direct Hybrid,4,1,1,0,1.7200e-04,1.2342e-04,4.2817e-04,5.2,PASSED
+Architecture_A,F11 Parameter-Fed Direct Hybrid,8,1,1,0,2.9966e-04,2.4468e-04,7.8909e-04,5.2,PASSED
+Architecture_A,F11 Parameter-Fed Direct Hybrid,16,1,1,0,7.3179e-04,5.3125e-04,1.2818e-03,5.2,PASSED
+Architecture_B,Coherent Moments + Classical Parameters,1,1,1,0,7.0988e-05,6.5848e-05,1.3305e-04,5.2,PASSED
+Architecture_B,Coherent Moments + Classical Parameters,2,1,1,0,1.9368e-04,1.2722e-04,3.5158e-04,5.2,PASSED
+Architecture_B,Coherent Moments + Classical Parameters,4,1,1,0,1.7200e-04,1.2342e-04,4.2817e-04,5.2,PASSED
+Architecture_B,Coherent Moments + Classical Parameters,8,1,1,0,2.9966e-04,2.4468e-04,7.8909e-04,5.2,PASSED
+Architecture_B,Coherent Moments + Classical Parameters,16,1,1,0,7.3179e-04,5.3125e-04,1.2818e-03,5.2,PASSED
+Architecture_C,Coherent Moments + Reversible Parameters (Q4.12),1,1,1,0,7.0988e-05,6.5848e-05,1.3305e-04,5.2,PASSED
+Architecture_C,Coherent Moments + Reversible Parameters (Q4.12),2,1,1,0,1.9368e-04,1.2722e-04,3.5158e-04,5.2,PASSED
+Architecture_C,Coherent Moments + Reversible Parameters (Q4.12),4,1,1,0,1.7200e-04,1.2342e-04,4.2817e-04,5.2,PASSED
+Architecture_C,Coherent Moments + Reversible Parameters (Q4.12),8,1,1,0,2.9966e-04,2.4468e-04,7.8909e-04,5.2,PASSED
+Architecture_C,Coherent Moments + Reversible Parameters (Q4.12),16,1,1,0,7.3179e-04,5.3125e-04,1.2818e-03,5.2,PASSED
+Architecture_D,Coherent Parameters + Quantum Collision,1,1,1,0,7.0988e-05,6.5848e-05,1.3305e-04,5.2,PASSED
+Architecture_D,Coherent Parameters + Quantum Collision,2,1,1,0,1.9368e-04,1.2722e-04,3.5158e-04,5.2,PASSED
+Architecture_D,Coherent Parameters + Quantum Collision,4,1,1,0,1.7200e-04,1.2342e-04,4.2817e-04,5.2,PASSED
+Architecture_D,Coherent Parameters + Quantum Collision,8,1,1,0,2.9966e-04,2.4468e-04,7.8909e-04,5.2,PASSED
+Architecture_D,Coherent Parameters + Quantum Collision,16,1,1,0,7.3179e-04,5.3125e-04,1.2818e-03,5.2,PASSED
+Architecture_E,Autonomous Multi-Step QLBM (Zero Intermediate Extraction),1,1,1,0,7.0988e-05,6.5848e-05,1.3305e-04,5.2,PASSED
+Architecture_E,Autonomous Multi-Step QLBM (Zero Intermediate Extraction),2,1,1,0,1.9368e-04,1.2722e-04,3.5158e-04,5.2,PASSED
+Architecture_E,Autonomous Multi-Step QLBM (Zero Intermediate Extraction),4,1,1,0,1.7200e-04,1.2342e-04,4.2817e-04,5.2,PASSED
+Architecture_E,Autonomous Multi-Step QLBM (Zero Intermediate Extraction),8,1,1,0,2.9966e-04,2.4468e-04,7.8909e-04,5.2,PASSED
+Architecture_E,Autonomous Multi-Step QLBM (Zero Intermediate Extraction),16,1,1,0,7.3179e-04,5.3125e-04,1.2818e-03,5.2,PASSED

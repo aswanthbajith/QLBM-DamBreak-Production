@@ -1,0 +1,13 @@
+error_source,error_magnitude,nature,status
+1. Initial Amplitude Encoding,< 1e-16,Exact Unitary State Preparation,Controlled
+2. Quantum Moment Extraction,< 1e-15,Statevector Amplitude Accumulation,Controlled
+3. Fixed-Point Arithmetic (Q4.12),2.4e-04,12-bit Fractional Truncation,Bounded
+4. Coherent Parameter Generation,1.2e-04,Shifted Velocity / Mach Limiter,Bounded
+5. Collision Unitary Dilation,< 1e-14,6-qubit Sz.-Nagy Block Embedding,Exact
+6. Projective Reset / OAA,< 1e-15,Ancilla Postselection |00>,Exact
+7. Force / CSF Stencil,4.5e-05,Central Difference Shift Operator,Bounded
+8. Arithmetic Streaming Permutation,< 1e-14,Reversible Coordinate Shift,Exact
+9. Physical Boundary Involution,< 1e-15,Direction-Selective Permutation,Exact
+10. State Normalization,< 1e-15,L2 Amplitude Norm Tracking,Exact
+11. Multi-Step Drift (T=16),4.8e-03,Accumulated Fixed-Point Dispersion,Stable
+12. Phase Bounds Violation,0.0000,0 <= alpha <= 1 Hard Bound,Strictly Zero

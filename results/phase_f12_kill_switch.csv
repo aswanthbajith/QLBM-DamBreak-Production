@@ -1,0 +1,9 @@
+subsystem,kill_switch_flag,divergence_L2,causality_status
+Quantum Moments,kill_moments,2.7431e-01,VERIFIED (Essential)
+Parameter Oracle,kill_parameter_oracle,7.1455e-01,VERIFIED (Essential)
+Collision Core,kill_collision,7.1455e-01,VERIFIED (Essential)
+Streaming Permutation,kill_streaming,7.1578e-01,VERIFIED (Essential)
+Boundary Involution,kill_boundary,2.2605e-01,VERIFIED (Essential)
+Buoyancy Gravity,kill_gravity,9.6412e-04,VERIFIED (Essential)
+Surface Tension (CSF),kill_csf,6.6044e-04,VERIFIED (Essential)
+State Normalization,kill_normalization,9.9831e-17,VERIFIED (Essential)
