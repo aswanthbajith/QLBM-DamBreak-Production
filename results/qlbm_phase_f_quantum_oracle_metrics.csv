@@ -1,0 +1,6 @@
+physical_case,unitarity_error,proj_block_error,rel_error_vs_level4,alpha_C,p0_base_success,oaa_success_prob,condition_number
+Liquid Node,2.9236e-15,1.9626e-17,1.0481e-16,2.0647,23.46%,99.71%,9.1565
+Gas Node,2.3242e-15,1.1712e-16,9.2848e-16,2.4923,16.10%,89.36%,11.0685
+Interface Node,2.8936e-15,1.3574e-16,2.4120e-16,2.2531,19.70%,96.39%,9.9922
+Stationary Node,3.7587e-15,1.0750e-16,1.2332e-16,2.2531,19.70%,96.39%,9.9922
+Moving Node,2.7579e-15,5.5511e-17,3.2844e-16,2.1311,22.02%,98.89%,9.4659

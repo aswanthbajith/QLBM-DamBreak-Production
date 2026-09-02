@@ -1,0 +1,5 @@
+bit_configuration,total_bits,fractional_bits,rho_relative_error,alpha_relative_error,ux_relative_error,uy_relative_error,description
+8-bit (Q4.4),8,4,1.1905e-02,1.6667e-01,2.1250e+00,1.0000e+00,Low precision baseline
+10-bit (Q4.6),10,6,1.1905e-02,0.0000e+00,6.0937e-01,2.1875e-01,Medium precision candidate
+12-bit (Q4.8),12,8,2.9762e-03,5.2083e-03,2.3437e-02,2.3437e-02,High precision candidate
+16-bit (Q4.12),16,12,4.6503e-05,3.2552e-04,1.0278e-01,8.4473e-02,Production fixed-point
