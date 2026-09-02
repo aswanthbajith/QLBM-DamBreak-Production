@@ -1,0 +1,8 @@
+level,name,verdict,justification
+Level 4,Classical Two-Phase D2Q9 Dam-Break,GREEN,Validated against Martin & Moyce experimental surge-front data within < 7% error.
+Level 5,Quantum Subroutines & Single-Step Formulation,GREEN-WITH-LIMITATIONS,Unitary dilation and quantum subroutines verified; bounded single-step accuracy.
+Level 6A,Coherent Lifted Multi-Step Attempt,RED (Superseded),Discovered K=2 divergence due to spatial tensor de-correlation and dilation leakage.
+Level 6A-S,Scientific Stability & Root-Cause Diagnosis,GREEN (Diagnostic),Conclusively isolated dual failure mechanisms: tensor streaming shift (746%) and dilation defect leakage (2098%).
+Level 6A-R,Mathematical Architecture Resolution,GREEN (Resolution),Formally selected Architecture D (Hybrid K=1 Local Carleman) as the only viable formulation.
+Level 6B,Production Hybrid K=1 Two-Phase QLBM,GREEN (Frozen Baseline),Frozen validated physical baseline; liquid mass drift <= 1.53% across 50 steps; 90/90 tests passing.
+Level 7,Projected Multi-Step Quantum Evolution Prototype,YELLOW (Conditional Prototype),"Mathematically validated projected multi-step prototype with projective resets and OAA, but requires FTQC logical hardware and hybrid CSF."
