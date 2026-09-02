@@ -1,0 +1,5 @@
+domain,qubits,depth_per_step,toffoli_count,t_gate_count,type
+1 Node,288,"32,400",6192,43344,Exact Synthesis
+2x2 (4 Nodes),1152,"32,400 (Parallel)",24768,173376,Exact Synthesis
+4x4 (16 Nodes),4608,"32,400 (Parallel)",99072,693504,Exact Synthesis
+8x4 (32 Nodes),9216,"32,400 (Parallel)",198144,1387008,Analytical Extrapolation

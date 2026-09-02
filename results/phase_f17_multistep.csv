@@ -1,0 +1,11 @@
+grid,timesteps,state_preparations,classical_extractions,intermediate_re_encodings,f_error_Linf,g_error_Linf,rho_error_Linf,execution_mode,verdict
+2x2,1,1,1,0,3.9654e-04,4.0827e-04,2.2461e-03,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+2x2,2,1,1,0,1.9806e-03,9.6666e-04,5.6258e-03,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+2x2,4,1,1,0,4.1566e-03,3.3040e-03,1.0945e-02,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+2x2,8,1,1,0,9.4983e-03,8.4060e-03,2.2539e-02,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+2x2,16,1,1,0,1.9548e-02,1.7051e-02,4.5003e-02,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+4x4,1,1,1,0,4.5239e-04,4.2212e-04,2.1536e-03,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+4x4,2,1,1,0,7.9812e-02,2.7703e-02,2.4140e-01,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+4x4,4,1,1,0,1.9147e-01,9.4550e-02,2.2145e-01,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+4x4,8,1,1,0,6.9266e-02,9.0602e-02,1.4184e-01,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)
+4x4,16,1,1,0,3.4480e-02,2.9974e-02,6.8411e-02,Route D Fully Reversible (0 Intermediate Reads),PASSED (Autonomous)

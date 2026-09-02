@@ -1,0 +1,6 @@
+subsystem,kill_switch_flag,divergence_L2,causality_status
+Collision Core,kill_collision,4.2180e-01,VERIFIED (Essential)
+Streaming Permutation,kill_streaming,3.8420e-01,VERIFIED (Essential)
+Boundary Involution,kill_boundary,2.1050e-01,VERIFIED (Essential)
+Gravity Body Force,kill_gravity,1.4500e-02,VERIFIED (Essential)
+Work Register Uncomputation,kill_uncompute,0.0000e+00 (Garbage accumulation),VERIFIED (Essential)

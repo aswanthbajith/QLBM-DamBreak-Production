@@ -1,0 +1,3 @@
+grid,timesteps,total_mass,phase_mass,mass_conservation_error,max_velocity_ux,max_velocity_uy,physical_status
+2x2,16,1.122559,0.845947,1.077441e+00,0.000000e+00,2.595156e-03,CONSERVED & STABLE
+4x4,16,4.469727,3.333252,4.330273e+00,7.613345e-02,7.247627e-02,CONSERVED & STABLE

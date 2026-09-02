@@ -1,0 +1,4 @@
+format,fractional_bits,lsb_resolution,max_collision_error,status
+Q4.8 (12 bits),8,3.906e-03,4.12e-03,Coarse approximation
+Q4.12 (16 bits),12,2.441e-04,3.18e-04,Sufficient for Dam-Break
+Q4.16 (20 bits),16,1.526e-05,2.10e-05,High-Precision

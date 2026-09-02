@@ -1,0 +1,4 @@
+test_state,rho_output,alpha_output,rho_error,alpha_error,garbage_residual,is_uncomputed,status
+"rho=1.0, alpha=1.0",1.000000,1.000000,0.000000e+00,0.000000e+00,0.000000e+00,True,PASSED
+"rho=0.1, alpha=0.0",0.100098,0.000000,9.765625e-05,0.000000e+00,0.000000e+00,True,PASSED
+"rho=0.55, alpha=0.5",0.550049,0.500488,4.882812e-05,4.882812e-04,0.000000e+00,True,PASSED

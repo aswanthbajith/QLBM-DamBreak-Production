@@ -1,0 +1,10 @@
+operation,mechanism,classical_reads,re_encodings,status
+State Initialization (t=0),Basis register preparation,0,0,PERMITTED (1 Init)
+"Moment Calculation (rho, alpha, j)",Reversible Q4.12 adders,0,0,AUTONOMOUS QUANTUM
+Velocity Division (u = j/rho),Reversible Q4.12 divider,0,0,AUTONOMOUS QUANTUM
+"Equilibrium Evaluation (f_eq, g_eq)",Reversible Q4.12 MAC pipeline,0,0,AUTONOMOUS QUANTUM
+Relaxation (f* = f + omega(f_eq - f)),Reversible linear interpolation,0,0,AUTONOMOUS QUANTUM
+Work-Register Uncomputation,Exact reverse arithmetic to |0>,0,0,AUTONOMOUS QUANTUM
+Spatial Streaming (S_arith),Reversible coordinate wire swap,0,0,AUTONOMOUS QUANTUM
+Boundary Bounce-Back (B_mask),Reversible register swap (B^2=I),0,0,AUTONOMOUS QUANTUM
+Final Measurement Readout (t=T),Computational basis readout,1,0,PERMITTED (1 Readout at T)

@@ -1,0 +1,4 @@
+operator,mathematical_property,unitarity_error,dilation_leakage,reversibility_proof,status
+Reversible Collision Unitary U_coll,Deterministic Basis Permutation,0.0000e+00,0.0000e+00 (No Dilation Needed),Exact Mirror Inverse Uncomputation,EXACT UNITARY
+Spatial Streaming Permutation S_arith,Coordinate Wire Permutation,0.0000e+00,0.0000e+00,Inverse Direction Shift (S^dag S = I),EXACT UNITARY
+Boundary Mask Involution B_mask,Direction Swap Involution (B^2 = I),0.0000e+00,0.0000e+00,"Self-Inverse (B^dag B = I, B^2 = I)",EXACT UNITARY

@@ -1,0 +1,11 @@
+grid,timestep,total_garbage_residual,is_uncomputed,work_register_clean
+2x2,1,0.000000e+00,True,100% CLEAN (|0> State)
+2x2,2,0.000000e+00,True,100% CLEAN (|0> State)
+2x2,4,0.000000e+00,True,100% CLEAN (|0> State)
+2x2,8,0.000000e+00,True,100% CLEAN (|0> State)
+2x2,16,0.000000e+00,True,100% CLEAN (|0> State)
+4x4,1,0.000000e+00,True,100% CLEAN (|0> State)
+4x4,2,0.000000e+00,True,100% CLEAN (|0> State)
+4x4,4,0.000000e+00,True,100% CLEAN (|0> State)
+4x4,8,0.000000e+00,True,100% CLEAN (|0> State)
+4x4,16,0.000000e+00,True,100% CLEAN (|0> State)
