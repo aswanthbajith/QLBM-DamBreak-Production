@@ -1,0 +1,7 @@
+subsystem,kill_switch_flag,divergence_L2,causality_status
+Coherent Moments,kill_coherent_moments,2.7494e-01,VERIFIED (Essential)
+Coherent Velocity,kill_velocity_oracle,2.7477e-01,VERIFIED (Essential)
+Coherent Force,kill_force_oracle,1.2667e-03,VERIFIED (Essential)
+Collision Core,kill_collision,7.1440e-01,VERIFIED (Essential)
+Streaming Permutation,kill_streaming,7.1563e-01,VERIFIED (Essential)
+Boundary Involution,kill_boundary,2.2722e-01,VERIFIED (Essential)

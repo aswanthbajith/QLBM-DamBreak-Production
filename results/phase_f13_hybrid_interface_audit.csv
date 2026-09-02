@@ -1,0 +1,8 @@
+interface_component,f12_status,f13_status,verdict
+1. Population Extraction Loop,Eliminated,Eliminated (0 intermediate reads),VERIFIED
+2. Intermediate State Re-Encoding,Eliminated,Eliminated (0 intermediate preps),VERIFIED
+"3. Moment Extraction (rho, alpha, j)",Hybrid Observable Probe,Coherent Quantum Accumulator,VERIFIED
+4. Shifted Velocity & Limiter,Classical Postprocessing,Coherent Fixed-Point (Q4.12),VERIFIED
+5. Capillary Force (CSF Stencil),Classical NumPy Stencil,Reversible Shift Stencils,VERIFIED
+6. Collision Matrix Construction,Classical Matrix Builder,Coherent Parameter-Fed Dilation,VERIFIED
+7. Final Field Readout,At Termination Step T,At Termination Step T only,VERIFIED

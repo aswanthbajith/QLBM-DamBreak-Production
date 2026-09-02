@@ -1,0 +1,13 @@
+error_source,error_magnitude,nature,status
+1. Direct Amplitude Encoding,< 1e-16,Exact Unitary Preparation,Controlled
+2. Coherent Moment Generation,7.3e-05,Fixed-Point Accumulation,Bounded
+3. Goldschmidt Reciprocal Division,2.4e-04,12-bit Fractional Truncation,Bounded
+4. Reversible Velocity Limiter,1.2e-04,Fixed-Point Norm Comparator,Bounded
+5. Sz.-Nagy Unitary Dilation,< 1e-14,6-qubit Block Embedding,Exact
+6. Projective Reset / OAA,< 1e-15,Ancilla Postselection |00>,Exact
+7. Reversible Coordinate Shift CSF,4.5e-05,Shift Stencil Central Diff,Bounded
+8. Arithmetic Streaming Permutation,< 1e-14,Exact Reversible Shifts,Exact
+9. Boundary Involution Permutation,< 1e-15,Exact Direction Swaps,Exact
+10. State Normalization Tracking,< 1e-15,L2 Norm Scaling,Exact
+11. Multi-Step Accumulated Drift (T=16),6.4e-03,Cumulative Fixed-Point Dispersion,Stable
+12. Phase Bounds Violation,0.0000,0 <= alpha <= 1 Hard Bound,Strictly Zero
