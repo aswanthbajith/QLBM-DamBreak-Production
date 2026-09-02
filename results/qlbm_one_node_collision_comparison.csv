@@ -1,0 +1,6 @@
+physical_case,density_rho,phase_alpha,velocity_ux,velocity_uy,fixed_C_lin_relative_error,fixed_C_lin_percentage,parameterized_U_C_relative_error,parameterized_status
+"Liquid Core Node (alpha=1.0, rho=1.0, u=0.0)",1.0,1.0,0.0,0.0,5.1616e-03,0.52%,9.0631e-17,EXACT (< 1e-14)
+"Gas Phase Node (alpha=0.0, rho=0.1, u=0.0)",0.1,0.0,0.0,0.0,9.3645e-02,9.36%,2.9407e-16,EXACT (< 1e-14)
+"Diffuse Interface Node (alpha=0.5, rho=0.55, u=0.0)",0.55,0.5,0.0,0.0,1.0988e-02,1.10%,3.5504e-16,EXACT (< 1e-14)
+"Moderate Flow Node (alpha=0.8, rho=1.0, u=[0.05, 0.02])",1.0,0.8,0.05,0.02,4.8793e-02,4.88%,2.6036e-16,EXACT (< 1e-14)
+"Surge Front High Flow (alpha=1.0, rho=1.0, u=[0.10, 0.05])",1.0,1.0,0.1,0.05,1.1511e-01,11.51%,2.9674e-16,EXACT (< 1e-14)
