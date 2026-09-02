@@ -1,0 +1,6 @@
+grid_dimension,spatial_qubits_nx,spatial_qubits_ny,total_qubits,hilbert_dimension,unitarity_error,involution_error,eval_time_sec,status
+2x2,1,1,7,128,0.0000e+00,0.0000e+00,0.0165,PASSED (Exact Unitary Involution)
+4x4,2,2,9,512,0.0000e+00,0.0000e+00,0.1633,PASSED (Exact Unitary Involution)
+8x4,3,2,10,1024,0.0000e+00,0.0000e+00,1.1061,PASSED (Exact Unitary Involution)
+16x8,4,3,12,4096,0.0000e+00,0.0000e+00,0.0007,PASSED (Exact Unitary Involution)
+32x16,5,4,14,16384,0.0000e+00,0.0000e+00,0.0006,PASSED (Exact Unitary Involution)

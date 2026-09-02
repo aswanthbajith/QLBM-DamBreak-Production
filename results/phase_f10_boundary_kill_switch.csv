@@ -1,0 +1,6 @@
+test_description,normal_reflection_error,residual_incident_error,cross_talk_sector_error,kill_switch_divergence,verdict
+Isolated Left Wall Bounce-Back,0.0000e+00,0.0000e+00,0.0000e+00,1.0000 (Full Departure if B=I),PASSED
+Isolated Right Wall Bounce-Back,0.0000e+00,0.0000e+00,0.0000e+00,1.0000 (Full Departure if B=I),PASSED
+Isolated Bottom Wall Bounce-Back,0.0000e+00,0.0000e+00,0.0000e+00,1.0000 (Full Departure if B=I),PASSED
+Isolated Top Wall Bounce-Back,0.0000e+00,0.0000e+00,0.0000e+00,1.0000 (Full Departure if B=I),PASSED
+Periodic Coordinate Wrap-Around Prevention,< 1e-12,0.0000,0.0000,Leakage = 6.9355e-31,PASSED (Zero Wrap-Around)
