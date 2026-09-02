@@ -1,0 +1,9 @@
+step_index,operation,code_location,physical_action,execution_type,quantum_legitimacy
+0,State Initialization,f15_autonomous_solver.py:84-113,Initial dam state mapped to |Psi_0>,STATIC PRECOMPUTATION,GENUINE (Unitary Prep)
+1,Amplitudes Unpacked to Python,f15_autonomous_solver.py:129-131,"Loop over (x,y,i) reads psi[idx] * norm_N",CLASSICAL STATE EXTRACTION,HYBRID (Violates Quantum Autonomy)
+2,Classical Carleman Lifting,f15_carleman_collision.py:114,"z2 = np.kron(z, z), Y = [z; z2]",CLASSICAL MANIFOLD RE-LIFTING,HYBRID (Carleman not in QPU register)
+3,NumPy Matrix-Vector Multiply,f15_carleman_collision.py:125,Y_post = A_C @ Y in Python,CLASSICAL COMPUTATION,HYBRID (Simulated classically)
+4,Classical Population Streaming,f15_autonomous_solver.py:140-141,stream(f_coll) via NumPy roll,CLASSICAL COMPUTATION,HYBRID (Simulated classically)
+5,Classical Boundary Bounce-Back,f15_autonomous_solver.py:147-149,NumPy indexing on solid nodes,CLASSICAL COMPUTATION,HYBRID (Simulated classically)
+6,Statevector Re-Normalization & Re-Encoding,f15_autonomous_solver.py:152-163,"norm_N = np.sqrt(sum(f^2+g^2)), psi = f / norm_N",STATE RE-ENCODING,HYBRID (Re-encodes statevector at every step)
+7,Final Measurement Readout,f15_autonomous_solver.py:177-202,Readout of macroscopic fields at step T,FINAL MEASUREMENT,GENUINE (Readout at step T only)

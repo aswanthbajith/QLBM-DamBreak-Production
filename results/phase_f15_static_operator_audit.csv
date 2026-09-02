@@ -1,0 +1,7 @@
+component,dimension,state_independent,computed_at,verdict
+M1 (Linear collision),18x18,True,Initialization only,STATIC
+M2 (Quadratic coupling),18x324,True,Initialization only,STATIC
+A_C (Carleman matrix),342x342,True,Initialization only,STATIC
+U_A (Sz.-Nagy dilation),1024x1024,True,Initialization only,STATIC
+Tensor Lifting Y = [z; z(x)z],342,False,Runtime (every node/step),DYNAMIC CLASSICAL
+State Normalization norm_N,1,False,Runtime (every step),DYNAMIC CLASSICAL

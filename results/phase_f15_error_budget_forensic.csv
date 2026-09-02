@@ -1,0 +1,7 @@
+error_source,error_magnitude,nature,classification
+1. Initial Amplitude Encoding,< 1e-16,Exact Unitary Preparation,Controlled
+2. Low-Mach Expansion (1/rho ~ 2-rho),3.5e-02,Taylor expansion around rho0=1.0,Controlled Approx
+3. Carleman K=2 Truncation (O(u^2)),1.4e-01,Discarded cubic/quartic cross-terms,Controlled Approx
+4. Autonomous Carleman Manifold Drift,1.8e-01 (grows with T),Y2 deviates from z(x)z without relifting,Fundamental Obstruction
+5. Sz.-Nagy Dilation Leakage (P U^K P != A^K),2.4e-01 (at K=16),Off-diagonal block accumulation,Fundamental Obstruction
+6. Classical State Re-Lifting in Python,0.0000,Hidden classical reset bypasses drift,Hybrid Artifact
