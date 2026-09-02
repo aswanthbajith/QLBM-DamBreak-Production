@@ -1,0 +1,13 @@
+audit_topic,verified_status,finding
+alpha_C Normalization Reconciliation,RESOLVED,alpha_C=7.9004 for tau_f=0.80 (nu=0.10); alpha_C=9.7321 for tau_f=0.65 (nu=0.05). Exactly accounts for dynamic relaxation scaling.
+Block-Encoding Matrix Precision,VERIFIED,||P (alpha U) P^T - C2|| < 1e-12; ||U^dag U - I|| < 1e-15 in double precision.
+Spatial Tensor Invariance,VERIFIED,Naive S(x)S has 419.5% manifold error; linear permutation streaming + local re-lifting achieves 0.000000 error (machine epsilon).
+Dilation Leakage vs Projected Composition,VERIFIED,Unprojected dilation leaks 2098% at K=2; projective reset reproduces C2^K exactly (< 1.1e-15 up to K=32).
+OAA First-Principles Derivation,RECALCULATED,m=7 iterations achieves 99.93% per-block success requiring 8 U_C + 7 U_C^dag + 14 reflections = 29 total circuit operations.
+Cumulative Success Scaling,QUALIFIED,Per-block OAA success is 99.93%; cumulative success for K=32 blocks is (0.9993)^32 = 97.74%.
+Logical Qubit Allocation,DISTINGUISHED,19 data logical qubits (13 spatial + 5 species + 1 dilation ancilla); 21 complete algorithmic logical qubits (incl OAA/Carry).
+Hardware Transpilation & NISQ Classification,RECLASSIFIED,Depth > 3.76M and ECR > 831k per block is NOT NISQ-viable; classified strictly as Fault-Tolerant FTQC.
+Mach Scaling Law,EMPIRICALLY OBSERVED,"E = 0.0370 * Ma^2.003 (R^2 = 1.00000); verified consistent with O(Ma^2) over Ma in [0.005, 0.100]."
+Grid Refinement Trend,EMPIRICALLY OBSERVED,Monotonic refinement trend from 31.72% (16x8) to 5.97% (256x128) at T=10 with observed rate p ~ 0.54.
+Mass Drift,BOUNDED,"Liquid mass drift strictly bounded at <= 1.528% across 50 steps, matching Level 4 classical discretization drift."
+CSF Surface Tension,HYBRID CLASSIFIED,Brackbill CSF curvature is evaluated classically and coupled as hybrid feedback every K steps.

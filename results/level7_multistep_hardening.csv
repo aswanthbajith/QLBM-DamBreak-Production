@@ -1,0 +1,7 @@
+K_timesteps,unprojected_dilation_leakage,projected_reset_error,raw_cumulative_success_prob,oaa_cumulative_success_prob,block_composition_status,hardware_tractability
+1,6.5783e-17,6.5783e-17,1.0558e-02,0.999283 (99.93%),EXACT via Projective Reset,Tractable with OAA
+2,2.0987e+01,1.4464e-16,1.1148e-04,0.998567 (99.86%),EXACT via Projective Reset,Tractable with OAA
+4,1.5583e+03,2.0652e-16,1.2427e-08,0.997135 (99.71%),EXACT via Projective Reset,Tractable with OAA
+8,1.2919e+07,4.5125e-16,1.5442e-16,0.994278 (99.43%),EXACT via Projective Reset,Tractable with OAA
+16,1.0325e+15,8.7734e-16,2.3847e-32,0.988589 (98.86%),EXACT via Projective Reset,FTQC Deep Circuit Only
+32,6.6856e+30,1.7101e-15,5.6866e-64,0.977309 (97.73%),EXACT via Projective Reset,FTQC Deep Circuit Only

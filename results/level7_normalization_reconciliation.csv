@@ -1,0 +1,5 @@
+parameter_case,tau_f,tau_g,matrix_dim,spectral_norm_C2,alpha_C,dilation_dim,unitarity_error,projected_block_error,p_success_step,reconciliation_note
+Level 5 / Level 6A Default (nu=0.10),0.8,0.7,342x342,7.822209,7.900431,1024x1024 (10Q),7.2753e-13,7.2794e-16,0.016021 (1.602%),alpha_C scales inversely with tau_f (directly with omega_f = 1/tau_f)
+Level 6B / Level 7 Physical (nu=0.05),0.65,0.7,342x342,9.635717,9.732074,1024x1024 (10Q),2.8714e-13,2.0557e-15,0.010558 (1.056%),alpha_C scales inversely with tau_f (directly with omega_f = 1/tau_f)
+"Inviscid Limit (nu=0.0167, tau_f=0.55)",0.55,0.7,342x342,11.4177,11.531877,1024x1024 (10Q),1.2493e-13,2.1086e-15,0.007520 (0.752%),alpha_C scales inversely with tau_f (directly with omega_f = 1/tau_f)
+"High Viscosity (nu=0.167, tau_f=1.00)",1.0,0.7,342x342,6.272311,6.335034,1024x1024 (10Q),3.6767e-12,2.2272e-16,0.024917 (2.492%),alpha_C scales inversely with tau_f (directly with omega_f = 1/tau_f)
