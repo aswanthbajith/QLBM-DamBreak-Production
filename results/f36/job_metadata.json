@@ -1,0 +1,10 @@
+{
+  "mode": "DRY_RUN",
+  "backend_target": "fake_sherbrooke",
+  "logical_qubits": 16,
+  "physical_qubits": 127,
+  "transpiled_depth": 19,
+  "native_2q_gates": 16,
+  "status": "DRY_RUN_SUCCESS \u2014 Circuit transpiled and validated",
+  "is_submitted": false
+}
