@@ -1,123 +1,112 @@
-# Hybrid Quantum-Classical Lattice Boltzmann Two-Phase Dam-Break Solver (Production)
+# Quantum Two-Phase Dam-Break Lattice Boltzmann Method (QLBM)
 
-A clean, standalone implementation of the **Hybrid Quantum-Classical Lattice Boltzmann Method (Hybrid QLBM)** for two-phase fluid hydrodynamics using **Local Second-Order Carleman Linearization, 10-Qubit Power-of-Two Unitary Dilation / Block Encoding, and Reversible Closed-Domain Wall-Aware Streaming**.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Qiskit 2.5.2](https://img.shields.io/badge/Qiskit-2.5.2-purple.svg)](https://qiskit.org/)
+[![Pytest 336 Passing](https://img.shields.io/badge/Tests-336%20Passing-brightgreen.svg)]()
+[![Classification LEVEL B](https://img.shields.io/badge/Scientific%20Status-LEVEL%20B-orange.svg)]()
+[![Level-6B Verified](https://img.shields.io/badge/Level--6B%20SHA--256-Verified-blue.svg)]()
 
----
-
-## 1. What is this?
-
-This software simulates a 2D two-phase liquid–gas dam-break problem on a D2Q9 lattice using a **hybrid quantum-classical algorithm**. The fluid consists of a dense liquid column collapsing under gravity inside an enclosed rectangular box bounded by solid walls.
-
----
-
-## 2. Why Carleman Linearization?
-
-Standard classical Lattice Boltzmann BGK collision relaxes non-equilibrium modes dissipatively toward a nonlinear equilibrium distribution:
-$$f_i^* = f_i - \frac{1}{\tau_f} (f_i - f_i^{\text{eq}}(\rho, \mathbf{u}))$$
-
-Closed unitary quantum gates cannot represent physical contractive modes ($\lambda = 1 - \omega < 1$) without dilation.
-
-**Local Second-Order Carleman Linearization** embeds the local nonlinear D2Q9 equations into a 342-dimensional lifted linear space $\mathbf{Y}_2 = [\Psi; \Psi^{\otimes 2}]^T$ where $\Psi = [f_0..f_8, g_0..g_8]^T \in \mathbb{R}^{18}$. The step-evaluation operator $A_{\text{eval}} = [M_1, M_2] \in \mathbb{R}^{18 \times 342}$ is padded to $512 \times 512$ ($2^9$), normalized ($\bar{A} = \widetilde{A} / \alpha$), and embedded into a machine-precision $1024 \times 1024$ ($2^{10}$) unitary matrix $U_{\text{10Q}}$ via **Sz.-Nagy Unitary Dilation**. Projective measurement of a single ancilla qubit implements the contractive collision step.
+A comprehensive research ecosystem for the **Quantum Two-Phase Dam-Break Lattice Boltzmann Method (QLBM)** on discrete D2Q9 lattices with conservative phase fields ($f, g$) and Continuum Surface Force (CSF) surface tension.
 
 ---
 
-## 3. Algorithmic Workflow (Hybrid Architecture)
+## 1. Scientific Classification & Invariants
 
-```
-Initial Two-Phase Distributions [f(t), g(t)]
-            ↓
-Independent Distribution-Selector Encoding (s=0 -> f, s=1 -> g)
-            ↓
-Local Polynomial Lifting to Y_2 [342 dimensions per node]
-            ↓
-10-Qubit Sz.-Nagy Unitary Dilation U [1024x1024 unitary operator]
-            ↓
-Quantum State Evolution on |0>_anc ⊗ |Y_512>
-            ↓
-Ancilla Postselection & Scaling Tracking (alpha ≈ 58.75, P_succ ≈ 0.0021)
-            ↓
-Physical Positivity Guard (Classical numerical admissibility)
-            ↓
-Gravitational Body Forcing (Buoyancy)
-            ↓
-Reversible Closed-Domain Wall-Aware Streaming (Permutation Operator S)
-- Interior nodes: (x, y, i) -> (x + cx, y + cy, i)
-- Wall-hitting nodes: (x, y, i) -> (x, y, opposite(i))
-            ↓
-Decoded Observable Fields [rho(t+1), u(t+1), phi(t+1)]
-            ↓
-Re-encode Next Timestep (t + 1)
+- **Scientific Classification**: **`LEVEL B — quantum circuit/hardware-transpilation demonstration; real QPU execution not demonstrated.`**
+- **Formulation**: Discrete computational-basis open-system CPTP Stinespring realization of the nonlinear two-phase BGK+CSF evolution map.
+- **Physical Baseline Integrity**: Level-6B hybrid solver frozen with permanent SHA-256 integrity (`2a306f5a413945adc1acd10f3f63340c3d3617e4ef1c94981a92e8ebad8742c8`).
+- **No Quantum Advantage Claim**: No quantum speedup or practical advantage over classical solvers is claimed.
+- **Hardware Access Gate**: Physical execution on IBM Quantum processors is strictly protected by double opt-in safety guards (`QLBM_ENABLE_REAL_QPU=1`, `QLBM_CONFIRM_REAL_QPU=YES`).
+
+---
+
+## 2. Research Landscape & Architecture Tiers
+
+The repository consolidates four primary research tiers:
+
+```text
+1. GROUND-TRUTH REFERENCES:
+   - classical/level4_two_phase.py: Pure classical LBM validated against Martin & Moyce (1952) (<3.8% error).
+   - quantum/level6b_hybrid_solver.py: Stable hybrid K=1 local Carleman solver (SHA-256 frozen).
+
+2. FAULT-TOLERANT SCALABLE REVERSIBLE ARCHITECTURE (Phases F27–F31):
+   - quantum/f29_scalable_circuit.py & quantum/f31_reduced_architecture.py
+   - Exact reversible arithmetic (C^-1 C = I) in Q4.16 precision across 4x4, 8x8, 16x16 meshes.
+   - Resource-reduced environment compression (560 qubits/node, 15,232 Toffolis/node).
+
+3. NISQ HARDWARE DEMONSTRATOR (Phases F33–F38):
+   - quantum/f33_hardware_demo.py & quantum/f38_qpu_executor.py
+   - Condensed 16-qubit gate-level circuit (2x2 grid, depth 19, 16 ECR gates on 127Q IBM Sherbrooke).
+   - Multi-layer validation across Ideal, Noisy, and Transpiled states (SNR > 15).
+
+4. PRESERVED SCIENTIFIC FAILURE ARTIFACTS:
+   - quantum/f15_carleman_collision.py: Carleman truncation closure breakdown (>1400% error).
+   - docs/F18_FORENSIC_VALIDATION.md: Proof of non-injectivity of dissipative BGK mapping.
 ```
 
-* **Multi-Step Nature**: This solver is **hybrid quantum-classical**: at each timestep, local populations are decoded/measured and re-lifted to configure the local state for timestep $t+1$.
+---
+
+## 3. What Works vs. What is Not Yet Achieved
+
+| Research Capability | Scientific Status | Detailed Grounding |
+| :--- | :---: | :--- |
+| **Classical Two-Phase Hydrodynamics** | **VALIDATED** | Martin & Moyce surge front and residual height matched ($<3.8\%$ error). |
+| **Frozen Physical Reference** | **VERIFIED** | Level-6B SHA-256 checksum verified 100% intact. |
+| **Quantum State Preparation ($U_{\text{prep}}$)** | **VALIDATED** | Deterministic Pauli-$X$ basis initialization ($100\%$ fidelity). |
+| **Quantum Coordinate Streaming ($S$)** | **VALIDATED** | Exact spatial SWAP network on quantum wires ($S^\dagger S = I$). |
+| **Quantum Boundary Reflections ($B$)** | **VALIDATED** | Exact wall bounce-back involution ($B^2 = I$). |
+| **Reversible Arithmetic Logic** | **VALIDATED** | Gate-level invertibility ($C^{-1} C = I$) verified in clean-room engine. |
+| **Noisy Hardware Emulation** | **VALIDATED** | Executed on 127-qubit heavy-hex model (`FakeSherbrooke`, SNR $> 15$). |
+| **Cloud QPU Submission Gateway** | **READY** | Double opt-in safety guards verified; zero fabricated data. |
+| **Real IBM QPU Cloud Execution** | **BLOCKED** | Requires user-provided live IBM Quantum cloud API token. |
+| **Quantum Computational Advantage** | **NOT CLAIMED** | Algorithmic speedup over classical CFD is not demonstrated. |
 
 ---
 
-## 4. Installation
+## 4. Quick Start & Execution
 
+### Installation
 ```bash
-# 1. Create a clean virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-
-# 2. Install runtime dependencies
 pip install -r requirements.txt
 ```
 
----
-
-## 5. Execution
-
-### Default Run (4x4 Mesh, 10 Timesteps, Order-2 Carleman)
+### Run Regression Test Suite (336 Tests)
 ```bash
-python run.py
+./.venv/bin/pytest -q tests/
 ```
 
-### 1-Timestep Execution
+### Run NISQ Demonstrator
 ```bash
-python run.py --nx 4 --ny 4 --timesteps 1
+# Mode A: Ideal Statevector Simulator
+./.venv/bin/python scripts/run_phase_f38_ideal.py
+
+# Mode B: Noisy 127-Qubit Hardware Emulation (FakeSherbrooke)
+./.venv/bin/python scripts/run_phase_f38_noisy.py
+
+# Mode C: Hardware Transpilation & Gate Resource Audit
+./.venv/bin/python scripts/run_phase_f38_dryrun.py
+
+# Master Multi-Tier Validation
+./.venv/bin/python scripts/run_phase_f38_validation.py
 ```
 
-### 5-Timestep Execution
+### Run Scalable Fault-Tolerant Circuit (Phases F29–F31)
 ```bash
-python run.py --nx 4 --ny 4 --timesteps 5
-```
-
-### 10-Timestep Execution
-```bash
-python run.py --nx 4 --ny 4 --timesteps 10
-```
-
-### Aer Simulation & IBM Heavy-Hex Transpilation Preflight
-```bash
-# Run with Qiskit Aer simulation
-python run.py --backend aer
-
-# Run with IBM Quantum 127Q Heavy-Hex compilation preflight
-python run.py --backend fake_ibm
+./.venv/bin/python scripts/run_phase_f29_validation.py
+./.venv/bin/python scripts/run_phase_f31_validation.py
 ```
 
 ---
 
-## 6. Output Files
+## 5. Verification & Key Documentation
 
-Each execution populates the `results/` folder:
-* `results/classical/classical_fields.npz`: Complete classical reference ground truth history ($\rho, \phi, \mathbf{u}$).
-* `results/quantum/quantum_fields.npz`: Quantum Carleman simulation history ($\rho, \phi, \mathbf{u}$).
-* `results/comparison/comparison.json`: Detailed quantitative error and conservation metrics at every timestep.
-* `results/plots/dam_break_comparison.png`: Side-by-side plots of error convergence and final phase field contours.
-
----
-
-## 7. Validation Status
-
-### Validated Scientifically:
-* **Single-Step Accuracy ($t=1$)**: $0.000\%$ relative density error ($5.55 \times 10^{-17}$ at collision).
-* **Multi-Step Stability ($t=10$)**: **$1.42\%$** relative density error against classical reference across the enclosed dam break.
-* **Mass Conservation**: Mass error strictly bounded under $1.22\%$ over 10 steps.
-* **Unitary Dilation Precision**: $\|U_{\text{10Q}}^\dagger U_{\text{10Q}} - I\| < 10^{-13}$ on $1024 \times 1024$ Hilbert space.
-* **Transpilation to IBM Heavy-Hex**: Transpilation successfully verified on 127-qubit architecture (`generic_backend_127q`).
-
-### NOT Validated on Physical Hardware:
-* **Real IBM Quantum hardware execution: NOT PERFORMED.**
-* Physical cloud submission is safely protected by an environment dual-lock interlock (`QLBM_ENABLE_REAL_QPU=1` and `QLBM_CONFIRM_REAL_QPU=YES`). Real execution on unmitigated NISQ devices is currently depth-limited by two-qubit gate error rates.
+- [CONSOLIDATION_FINAL_REPORT.md](docs/CONSOLIDATION_FINAL_REPORT.md): Complete repository archaeology and zero-loss verification.
+- [FINAL_PRIMARY_QLBM_PROTOTYPE.md](docs/FINAL_PRIMARY_QLBM_PROTOTYPE.md): Definitive executable prototype specification.
+- [FINAL_END_TO_END_DEPENDENCY_GRAPH.md](docs/FINAL_END_TO_END_DEPENDENCY_GRAPH.md): End-to-end import and data-flow map.
+- [FINAL_SCIENTIFIC_STATUS.md](docs/FINAL_SCIENTIFIC_STATUS.md): Conservative capability classification matrix.
+- [FINAL_QUANTUM_CLAIM_AUDIT.md](docs/FINAL_QUANTUM_CLAIM_AUDIT.md): Quantum vs. classical component boundaries.
+- [FINAL_RESOURCE_AUDIT.md](docs/FINAL_RESOURCE_AUDIT.md): Resource estimates across NISQ and FTQC tiers.
+- [CLEAN_CHECKOUT_REPRODUCIBILITY.md](docs/CLEAN_CHECKOUT_REPRODUCIBILITY.md): Clean checkout verification report.
+- [PROFESSOR_REPRODUCTION_GUIDE.md](docs/PROFESSOR_REPRODUCTION_GUIDE.md): Concise command guide for external evaluation.
