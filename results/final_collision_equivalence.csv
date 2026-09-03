@@ -1,0 +1,23 @@
+State_Name,L1_Error,L2_Error,Linf_Error,Mass_Conserved,Phase_Conserved,Environment_Preserves_Input,Workspace_Clean
+Equilibrium Liquid Stationary,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Equilibrium Gas Stationary,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Equilibrium Liquid Moderate Velocity,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Equilibrium Gas Moderate Velocity,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Interface State Stationary,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Near-Equilibrium Liquid Perturbed,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Near-Equilibrium Gas Perturbed,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Strongly Non-Equilibrium Liquid Shear,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Strongly Non-Equilibrium Gas Shear,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+High-Velocity Liquid State,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+High-Velocity Gas State,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Low-Velocity Creep State,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Interface Non-Equilibrium Shear,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Fractional Rounding Inducing State,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Extreme Low Density Gas,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Liquid Free Surface Falling,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Compressed Gas Bubble,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Diagonal Flow Liquid,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+High Density Super-Liquid,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+Counter-Shearing Two-Phase Interface,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+F18 Non-Injective Preimage 1,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True
+F18 Non-Injective Preimage 2,0.000000e+00,0.000000e+00,0.000000e+00,True,True,True,True

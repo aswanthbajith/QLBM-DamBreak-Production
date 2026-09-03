@@ -1,0 +1,5 @@
+Input_State,Expected_Output,Channel_Trace,L1_Discrepancy,L2_Discrepancy,Linf_Discrepancy,Reproduces_Classical_BGK
+|0>,|0>,1.000000,0.000000e+00,0.000000e+00,0.000000e+00,True
+|1>,|0>,1.000000,0.000000e+00,0.000000e+00,0.000000e+00,True
+|2>,|2>,1.000000,0.000000e+00,0.000000e+00,0.000000e+00,True
+|3>,|2>,1.000000,0.000000e+00,0.000000e+00,0.000000e+00,True
