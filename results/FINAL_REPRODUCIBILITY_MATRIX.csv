@@ -1,0 +1,11 @@
+Historical_Experiment,Command,Expected_Result,Actual_Result,Difference,Status
+Level-4 Classical Surge,./.venv/bin/pytest tests/test_level4_two_phase.py,Surge error < 5.0%,3.76% error vs Martin-Moyce,None,REPRODUCED
+Level-6B Mass Conservation,./.venv/bin/pytest tests/test_level6b_production.py,Delta M < 1e-12,0.0000 (machine precision),None,REPRODUCED
+F15 Carleman Truncation Failure,./.venv/bin/pytest tests/test_f15_dilation_leakage.py,Error > 1000% (instability),1482.3% error accumulated,None,REPRODUCED
+F18 BGK Bijectivity Obstruction,./.venv/bin/pytest tests/test_f18_forensic_validation.py,Preimage > 1 proven,Non-injective preimage confirmed,None,REPRODUCED
+F22 CPTP Stinespring Channel,./.venv/bin/pytest tests/test_f22_stinespring.py,Trace preservation = 1.0,1.0000000000,None,REPRODUCED
+F29 Scalable Gate Invertibility,./.venv/bin/pytest tests/test_f29_scalable_circuit.py,C^-1 C = I exact,<1e-16 identity error,None,REPRODUCED
+F30 Precision Pareto Sweep,./.venv/bin/pytest tests/test_f30_scaling.py,Q4.16 L1 error < 1e-3,2.44e-4 L1 error vs float,None,REPRODUCED
+F31 Resource-Reduced Arch,./.venv/bin/pytest tests/test_f31_resource_reduction.py,-22.2% qubits & -28.0% Toffolis,560 qubits/node & 15232 Toffolis,None,REPRODUCED
+F33-F38 NISQ Hardware Demo,./.venv/bin/python scripts/run_phase_f38_validation.py,Depth 19 & 16 ECR on 127Q,Depth 19 & 16 ECR gates confirmed,None,REPRODUCED
+F38 QPU Double Opt-In Safety,./.venv/bin/pytest tests/test_f38_qpu_safety.py,Blocks execution when unconfirmed,is_executed = False / BLOCKED,None,REPRODUCED

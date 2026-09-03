@@ -1,0 +1,20 @@
+Module,Imported_By,Exists,Tested,Status,Historical_Origin,Required_At_Runtime
+quantum.f38_qpu_executor,scripts/run_phase_f38_qpu.py,YES,YES,ACTIVE,Phase F38,YES
+quantum.f38_backend_discovery,quantum.f38_qpu_executor,YES,YES,ACTIVE,Phase F38,YES
+quantum.f38_observables_reconstruction,quantum.f38_qpu_executor,YES,YES,ACTIVE,Phase F38,YES
+quantum.f38_multi_layer_validator,scripts/run_phase_f38_validation.py,YES,YES,ACTIVE,Phase F38,YES
+quantum.f33_hardware_demo,quantum.f38_qpu_executor,YES,YES,ACTIVE,Phase F33,YES
+quantum.f33_state_preparation,quantum.f33_hardware_demo,YES,YES,ACTIVE,Phase F33,YES
+quantum.f33_measurement,quantum.f33_hardware_demo,YES,YES,ACTIVE,Phase F33,YES
+quantum.f33_backend,quantum.f33_hardware_demo,YES,YES,ACTIVE,Phase F33,YES
+quantum.f31_reduced_architecture,scripts/run_phase_f31_validation.py,YES,YES,ACTIVE_FTQC,Phase F31,YES_SCALABLE
+quantum.f29_scalable_circuit,scripts/run_phase_f29_validation.py,YES,YES,ACTIVE_FTQC,Phase F29,YES_SCALABLE
+quantum.f27_local_node_circuit,quantum.f29_scalable_circuit,YES,YES,ACTIVE_FTQC,Phase F27,YES_SCALABLE
+classical.level4_two_phase,tests/test_level4_two_phase.py,YES,YES,ACTIVE_REF,Level 4,YES_REFERENCE
+quantum.level6b_hybrid_solver,tests/test_level6b_production.py,YES,YES,FROZEN_REF,Level 6B,YES_REFERENCE
+classical.d2q9,quantum.f27_local_node_circuit,YES,YES,ACTIVE_REF,Level 4,YES_CORE
+qiskit,All quantum modules,YES,YES,EXTERNAL,Third-party,YES
+qiskit_ibm_runtime,quantum.f38_backend_discovery,YES,YES,EXTERNAL,Third-party,YES
+qiskit_aer,quantum.f33_backend,YES,YES,EXTERNAL,Third-party,YES
+numpy,All modules,YES,YES,EXTERNAL,Third-party,YES
+pytest,All test modules,YES,YES,DEV_DEPENDENCY,Third-party,NO_RUNTIME_ONLY_TESTS

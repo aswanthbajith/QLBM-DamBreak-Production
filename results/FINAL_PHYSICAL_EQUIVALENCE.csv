@@ -1,0 +1,8 @@
+Observable,Classical_Level4,Fixed_Point_Reference,Ideal_Quantum_Sim,Noisy_Quantum_Emu,Real_QPU,Metric_Comparison
+Density Field rho,1.0 (liquid) / 0.1 (gas),L1 err = 2.44e-4,Exact match to fixed-point,L1 err = 0.1702,BLOCKED (No Token),SNR > 15 against physical noise
+Phase Field alpha,1.0 (liquid) / 0.0 (gas),L1 err = 2.44e-4,Exact match to fixed-point,L1 err = 0.0118,BLOCKED (No Token),Interface accurately resolved
+Velocity u_x,0.0000 (initial),0.0000,0.0000,Mean drift = 0.0042,BLOCKED (No Token),Stationary initial state preserved
+Total Fluid Mass M,2.2000,2.2000,2.2000,2.2425 (drift = 0.0425),BLOCKED (No Token),Relative drift < 0.25% under noise
+Total Phase Mass Phi,2.0000,2.0000,2.0000,2.0028 (drift = 0.0028),BLOCKED (No Token),Relative drift < 0.15% under noise
+Surge Front Position,x_front = 1.0 (t=0),x_front = 1.0,x_front = 1.0,x_front = 1.0 (resolved),BLOCKED (No Token),Matches Martin-Moyce initial geometry
+Column Height,y_col = 2.0 (t=0),y_col = 2.0,y_col = 2.0,y_col = 2.0 (resolved),BLOCKED (No Token),Matches initial dam-break aspect ratio

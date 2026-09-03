@@ -1,0 +1,7 @@
+Architecture_Tier,Mesh_Size,Logical_Qubits,Physical_Qubits,Transpiled_Depth,Native_2Q_Gates,Toffoli_Gates,T_Gates,Hardware_Target,Status
+NISQ Hardware Demonstrator,2x2 (4 nodes),16,127,19,16 (ECR),0,0,IBM Heavy-Hex (Sherbrooke),ACTIVE_EXECUTABLE
+FTQC Scalable Reversible (F29),4x4 (16 nodes),9264,N/A (Logical),34200,N/A,338688,1354752,Fault-Tolerant,ACTIVE_SCALABLE
+FTQC Scalable Reversible (F29),8x8 (64 nodes),36912,N/A (Logical),34200,N/A,1354752,5419008,Fault-Tolerant,ACTIVE_SCALABLE
+FTQC Scalable Reversible (F29),16x16 (256 nodes),147504,N/A (Logical),34200,N/A,5419008,21676032,Fault-Tolerant,ACTIVE_SCALABLE
+FTQC Resource-Reduced (F31),2x2 (4 nodes),2240,N/A (Logical),24500,N/A,60928,243712,Fault-Tolerant,ACTIVE_OPTIMIZED
+FTQC Resource-Reduced (F31),128x64 (8192 nodes),4194304,N/A (Logical),24500,N/A,124780544,499122176,Fault-Tolerant,ANALYTICAL_EXTRAPOLATION

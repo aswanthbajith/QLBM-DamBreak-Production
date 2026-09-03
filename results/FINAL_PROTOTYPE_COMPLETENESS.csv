@@ -1,0 +1,17 @@
+Capability,Present,Tested,Validated,Used_By_Final_Solver,Notes
+D2Q9 Velocity Set,YES,YES,YES,YES,9 discrete lattice velocities and weights
+Two-Phase Populations (f/g),YES,YES,YES,YES,Hydrodynamic f and conservative phase g
+Gravity Forcing,YES,YES,YES,YES,Guo forcing implementation in classical and hybrid baselines
+Streaming Permutation,YES,YES,YES,YES,Exact unitary SWAP network on quantum wires
+Boundary Bounce-Back,YES,YES,YES,YES,Exact Pauli reflection involution (B^2=I)
+Nonlinear BGK Collision,YES,YES,YES,YES,2Q entangling unitary in demonstrator; Q4.16 reversible in FTQC
+Continuum Surface Force (CSF),YES,YES,YES,YES,Cross-node CZ coupling in demonstrator; reversible in F21/F31
+State Preparation (U_prep),YES,YES,YES,YES,Deterministic Pauli-X state preparation (100% fidelity)
+Terminal Measurement,YES,YES,YES,YES,Standard computational-basis projective measurement
+Observable Reconstruction,YES,YES,YES,YES,Bitstring decoding into macroscopic rho, alpha, u, and stderr
+Multi-Layer Validation,YES,YES,YES,YES,Compares Ideal, Noisy, Transpiled, and Classical Reference
+Hardware Transpilation,YES,YES,YES,YES,Transpiles to IBM Heavy-Hex (depth 19, 16 ECR gates)
+Real QPU Submission Gateway,YES,YES,YES,YES,Double opt-in safety guarded; zero fabrication
+Real QPU Cloud Data,NO,NO,NO,NO,Blocked pending user-provided IBM Quantum API token
+Martin-Moyce Physical Validation,YES,YES,YES,YES,Surge front error <3.8% against 1952 benchmark
+Level-6B Baseline Integrity,YES,YES,YES,YES,SHA-256 verified 100% intact (frozen reference)
