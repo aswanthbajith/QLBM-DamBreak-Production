@@ -1,0 +1,14 @@
+Feature,Test_File,Test_Count,Result,Historical_Commit,Coverage_Scope
+Classical Level-4 LBM,tests/test_level4_two_phase.py,12,12/12 PASS,30807c7,Hydrodynamic BGK + CSF + Martin-Moyce benchmark
+Level-6B Hybrid Solver,tests/test_level6b_production.py,18,18/18 PASS,064e67a,Hybrid local Carleman K=1 physical solver
+Direct Population Encoding,tests/test_direct_prototype.py,8,8/8 PASS,a854e2c,Initial direct population encoding
+Boundary Reflection Masks,tests/test_boundary_mask.py,10,10/10 PASS,11910d7,Arbitrary geometry bounce-back reflection
+F15 Carleman Dilation Leakage,tests/test_f15_dilation_leakage.py,6,6/6 PASS,549192a,Demonstrates Carleman truncation instability
+F17 Reversible Collision,tests/test_f17_reversible_collision.py,14,14/14 PASS,6bf7d3a,Reversible fixed-point arithmetic verification
+F18 Bijectivity Audit,tests/test_f18_forensic_validation.py,12,12/12 PASS,c3dbc6c,Proves non-bijectivity of discrete BGK
+F20-F23 CPTP Stinespring Channel,tests/test_f22_stinespring.py,16,16/16 PASS,b167943,Complete positivity and trace preservation
+F27-F29 Scalable Gate-Level Circuit,tests/test_f29_scalable_circuit.py,24,24/24 PASS,f90e503,Invertibility and 3-Layer validation on 4x4/8x8/16x16
+F30 Scaling & Precision,tests/test_f30_scaling.py,18,18/18 PASS,8797c32,Spatial and precision Pareto sweep
+F31 Resource-Reduced Architecture,tests/test_f31_resource_reduction.py,16,16/16 PASS,cc3eef3,-22.2% qubits and -28.0% Toffolis
+F33-F38 Hardware QPU & Discovery,tests/test_f38_qpu_safety.py,20,20/20 PASS,a42040a,Backend discovery and dry-run transpilation on 127Q
+Total Regression Test Suite,tests/test_*.py,336,336/336 PASS,a42040a,Comprehensive 100% test coverage

@@ -1,0 +1,929 @@
+file_path,category,scientific_status,purpose,preserve_reason
+.gitignore,Data/Artifact,ACTIVE,Implementation/documentation of .gitignore,Preserved in repository
+ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of ARCHITECTURE.md,Preserved in repository
+COMPLEXITY_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of COMPLEXITY_ANALYSIS.md,Preserved in repository
+END_TO_END_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of END_TO_END_AUDIT.md,Preserved in repository
+FINAL_QUANTUM_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of FINAL_QUANTUM_ARCHITECTURE.md,Preserved in repository
+LEVEL_3_BASELINE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_3_BASELINE.md,Preserved in repository
+LEVEL_4_CLASSICAL_BENCHMARK_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_4_CLASSICAL_BENCHMARK_REPORT.md,Preserved in repository
+LEVEL_4_NEXT_ACTIONS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_4_NEXT_ACTIONS.md,Preserved in repository
+LEVEL_4_TWO_PHASE_RESEARCH_PLAN.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_4_TWO_PHASE_RESEARCH_PLAN.md,Preserved in repository
+LEVEL_5_INDEPENDENT_SCIENTIFIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_INDEPENDENT_SCIENTIFIC_AUDIT.md,Preserved in repository
+LEVEL_5_QUANTUM_VALIDATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_QUANTUM_VALIDATION_REPORT.md,Preserved in repository
+LEVEL_5_RESEARCH_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_RESEARCH_REPORT.md,Preserved in repository
+LEVEL_6_RESEARCH_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_RESEARCH_REPORT.md,Preserved in repository
+LIMITATIONS.md,Documentation,ACTIVE,Implementation/documentation of LIMITATIONS.md,Preserved in repository
+OLD_TO_NEW_FILE_MAPPING.csv,Data/Artifact,ACTIVE,Implementation/documentation of OLD_TO_NEW_FILE_MAPPING.csv,Preserved in repository
+OLD_vs_NEW_QLBM_FORENSIC_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of OLD_vs_NEW_QLBM_FORENSIC_COMPARISON.md,Preserved in repository
+PRODUCTION_STATUS.md,Documentation,ACTIVE,Implementation/documentation of PRODUCTION_STATUS.md,Preserved in repository
+QUANTUM_CIRCUITS.md,Documentation,ACTIVE,Implementation/documentation of QUANTUM_CIRCUITS.md,Preserved in repository
+README.md,Documentation,ACTIVE,Implementation/documentation of README.md,Preserved in repository
+VALIDATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of VALIDATION_REPORT.md,Preserved in repository
+backends/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+backends/aer_backend.py,Source Code,ACTIVE,Implementation/documentation of aer_backend.py,Preserved in repository
+backends/fake_ibm_backend.py,Source Code,ACTIVE,Implementation/documentation of fake_ibm_backend.py,Preserved in repository
+backends/select_backend.py,Source Code,ACTIVE,Implementation/documentation of select_backend.py,Preserved in repository
+classical/__init__.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of __init__.py,Classical reference and validation baseline
+classical/benchmarks/__init__.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of __init__.py,Classical reference and validation baseline
+classical/benchmarks/martin_moyce_data.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of martin_moyce_data.py,Classical reference and validation baseline
+classical/boundary.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of boundary.py,Classical reference and validation baseline
+classical/d2q9.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of d2q9.py,Classical reference and validation baseline
+classical/equilibrium.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of equilibrium.py,Classical reference and validation baseline
+classical/level4_two_phase.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of level4_two_phase.py,Classical reference and validation baseline
+classical/reference_solver.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of reference_solver.py,Classical reference and validation baseline
+classical/streaming.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of streaming.py,Classical reference and validation baseline
+classical/two_phase.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of two_phase.py,Classical reference and validation baseline
+config.py,Source Code,ACTIVE,Implementation/documentation of config.py,Preserved in repository
+conftest.py,Source Code,ACTIVE,Implementation/documentation of conftest.py,Preserved in repository
+docs/DIRECT_ENCODING_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of DIRECT_ENCODING_BASELINE_FREEZE.md,Preserved in repository
+docs/F21_FORENSIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F21_FORENSIC_AUDIT.md,Preserved in repository
+docs/F22_CHANNEL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F22_CHANNEL_VALIDATION.md,Preserved in repository
+docs/F23_FULL_QUANTUM_LBM_EQUIVALENCE.md,Documentation,ACTIVE,Implementation/documentation of F23_FULL_QUANTUM_LBM_EQUIVALENCE.md,Preserved in repository
+docs/F24_QUANTUM_CHANNEL_IMPLEMENTATION_FORENSICS.md,Documentation,ACTIVE,Implementation/documentation of F24_QUANTUM_CHANNEL_IMPLEMENTATION_FORENSICS.md,Preserved in repository
+docs/F25_GATE_LEVEL_BGK_CSF_FEASIBILITY.md,Documentation,ACTIVE,Implementation/documentation of F25_GATE_LEVEL_BGK_CSF_FEASIBILITY.md,Preserved in repository
+docs/F26_RESOURCE_OPTIMIZED_TWO_PHASE_QLBM.md,Documentation,ACTIVE,Implementation/documentation of F26_RESOURCE_OPTIMIZED_TWO_PHASE_QLBM.md,Preserved in repository
+docs/F27_ENVIRONMENT_SEMANTICS.md,Documentation,ACTIVE,Implementation/documentation of F27_ENVIRONMENT_SEMANTICS.md,Preserved in repository
+docs/F27_GATE_LEVEL_LOCAL_CIRCUIT_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F27_GATE_LEVEL_LOCAL_CIRCUIT_VALIDATION.md,Preserved in repository
+docs/F27_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F27_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F27_REGISTER_SPECIFICATION.md,Documentation,ACTIVE,Implementation/documentation of F27_REGISTER_SPECIFICATION.md,Preserved in repository
+docs/F28_2X2_CIRCUIT_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of F28_2X2_CIRCUIT_ARCHITECTURE.md,Preserved in repository
+docs/F28_END_TO_END_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F28_END_TO_END_VALIDATION.md,Preserved in repository
+docs/F28_ENVIRONMENT_REUSE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F28_ENVIRONMENT_REUSE_AUDIT.md,Preserved in repository
+docs/F28_F27_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F28_F27_CLAIM_AUDIT.md,Preserved in repository
+docs/F29_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F29_CLAIM_AUDIT.md,Preserved in repository
+docs/F29_END_TO_END_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F29_END_TO_END_VALIDATION.md,Preserved in repository
+docs/F29_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F29_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F29_REGISTER_SPECIFICATION.md,Documentation,ACTIVE,Implementation/documentation of F29_REGISTER_SPECIFICATION.md,Preserved in repository
+docs/F30_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F30_AUTONOMY_AUDIT.md,Preserved in repository
+docs/F30_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F30_CLAIM_AUDIT.md,Preserved in repository
+docs/F30_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F30_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F30_SCALING_RESOURCE_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F30_SCALING_RESOURCE_VALIDATION.md,Preserved in repository
+docs/F31_ARITHMETIC_OPTIMIZATION.md,Documentation,ACTIVE,Implementation/documentation of F31_ARITHMETIC_OPTIMIZATION.md,Preserved in repository
+docs/F31_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F31_AUTONOMY_AUDIT.md,Preserved in repository
+docs/F31_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F31_CLAIM_AUDIT.md,Preserved in repository
+docs/F31_ENVIRONMENT_COMPRESSION.md,Documentation,ACTIVE,Implementation/documentation of F31_ENVIRONMENT_COMPRESSION.md,Preserved in repository
+docs/F31_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F31_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F31_RESOURCE_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of F31_RESOURCE_COMPARISON.md,Preserved in repository
+docs/F31_RESOURCE_REDUCTION_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F31_RESOURCE_REDUCTION_VALIDATION.md,Preserved in repository
+docs/F31_WORKSPACE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F31_WORKSPACE_AUDIT.md,Preserved in repository
+docs/F33_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F33_CLAIM_AUDIT.md,Preserved in repository
+docs/F33_FINAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F33_FINAL_VALIDATION.md,Preserved in repository
+docs/F33_HARDWARE_PARAMETER_SET.md,Documentation,ACTIVE,Implementation/documentation of F33_HARDWARE_PARAMETER_SET.md,Preserved in repository
+docs/F33_HARDWARE_TARGET.md,Documentation,ACTIVE,Implementation/documentation of F33_HARDWARE_TARGET.md,Preserved in repository
+docs/F33_MULTI_TIMESTEP.md,Documentation,ACTIVE,Implementation/documentation of F33_MULTI_TIMESTEP.md,Preserved in repository
+docs/F33_NOISE_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F33_NOISE_VALIDATION.md,Preserved in repository
+docs/F33_OBSERVABLE_EXTRACTION.md,Documentation,ACTIVE,Implementation/documentation of F33_OBSERVABLE_EXTRACTION.md,Preserved in repository
+docs/F33_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F33_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F33_QPU_EXECUTION.md,Documentation,ACTIVE,Implementation/documentation of F33_QPU_EXECUTION.md,Preserved in repository
+docs/F33_STATE_PREPARATION.md,Documentation,ACTIVE,Implementation/documentation of F33_STATE_PREPARATION.md,Preserved in repository
+docs/F33_TRANSPILATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of F33_TRANSPILATION_REPORT.md,Preserved in repository
+docs/F34_BACKEND_SELECTION.md,Documentation,ACTIVE,Implementation/documentation of F34_BACKEND_SELECTION.md,Preserved in repository
+docs/F34_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F34_CLAIM_AUDIT.md,Preserved in repository
+docs/F34_CLASSICAL_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of F34_CLASSICAL_COMPARISON.md,Preserved in repository
+docs/F34_FINAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F34_FINAL_VALIDATION.md,Preserved in repository
+docs/F34_HARDWARE_EXECUTION.md,Documentation,ACTIVE,Implementation/documentation of F34_HARDWARE_EXECUTION.md,Preserved in repository
+docs/F34_MEASUREMENT.md,Documentation,ACTIVE,Implementation/documentation of F34_MEASUREMENT.md,Preserved in repository
+docs/F34_MULTI_TIMESTEP.md,Documentation,ACTIVE,Implementation/documentation of F34_MULTI_TIMESTEP.md,Preserved in repository
+docs/F34_NOISE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of F34_NOISE_ANALYSIS.md,Preserved in repository
+docs/F34_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F34_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F34_QPU_RESULTS.md,Documentation,ACTIVE,Implementation/documentation of F34_QPU_RESULTS.md,Preserved in repository
+docs/F34_STATE_PREPARATION.md,Documentation,ACTIVE,Implementation/documentation of F34_STATE_PREPARATION.md,Preserved in repository
+docs/F34_TRANSPILATION.md,Documentation,ACTIVE,Implementation/documentation of F34_TRANSPILATION.md,Preserved in repository
+docs/F35_BACKEND_DISCOVERY.md,Documentation,ACTIVE,Implementation/documentation of F35_BACKEND_DISCOVERY.md,Preserved in repository
+docs/F35_CIRCUIT_INTEGRITY.md,Documentation,ACTIVE,Implementation/documentation of F35_CIRCUIT_INTEGRITY.md,Preserved in repository
+docs/F35_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F35_CLAIM_AUDIT.md,Preserved in repository
+docs/F35_FINAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F35_FINAL_VALIDATION.md,Preserved in repository
+docs/F35_NOISE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of F35_NOISE_ANALYSIS.md,Preserved in repository
+docs/F35_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F35_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F35_PROVIDER_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F35_PROVIDER_AUDIT.md,Preserved in repository
+docs/F35_SAFETY_GUARD.md,Documentation,ACTIVE,Implementation/documentation of F35_SAFETY_GUARD.md,Preserved in repository
+docs/F36_BACKEND_DISCOVERY.md,Documentation,ACTIVE,Implementation/documentation of F36_BACKEND_DISCOVERY.md,Preserved in repository
+docs/F36_CIRCUIT_INTEGRITY.md,Documentation,ACTIVE,Implementation/documentation of F36_CIRCUIT_INTEGRITY.md,Preserved in repository
+docs/F36_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F36_CLAIM_AUDIT.md,Preserved in repository
+docs/F36_FINAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F36_FINAL_VALIDATION.md,Preserved in repository
+docs/F36_NOISE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of F36_NOISE_ANALYSIS.md,Preserved in repository
+docs/F36_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F36_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F36_PROVIDER_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F36_PROVIDER_AUDIT.md,Preserved in repository
+docs/F36_SAFETY_GUARD.md,Documentation,ACTIVE,Implementation/documentation of F36_SAFETY_GUARD.md,Preserved in repository
+docs/F37_BACKEND_DISCOVERY.md,Documentation,ACTIVE,Implementation/documentation of F37_BACKEND_DISCOVERY.md,Preserved in repository
+docs/F37_CIRCUIT_INTEGRITY.md,Documentation,ACTIVE,Implementation/documentation of F37_CIRCUIT_INTEGRITY.md,Preserved in repository
+docs/F37_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F37_CLAIM_AUDIT.md,Preserved in repository
+docs/F37_FINAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F37_FINAL_VALIDATION.md,Preserved in repository
+docs/F37_IBM_ACCESS_GUIDE.md,Documentation,ACTIVE,Implementation/documentation of F37_IBM_ACCESS_GUIDE.md,Preserved in repository
+docs/F37_NOISE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of F37_NOISE_ANALYSIS.md,Preserved in repository
+docs/F37_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F37_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F37_SAFETY_GUARD.md,Documentation,ACTIVE,Implementation/documentation of F37_SAFETY_GUARD.md,Preserved in repository
+docs/F38_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F38_CLAIM_AUDIT.md,Preserved in repository
+docs/F38_PREIMPLEMENTATION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of F38_PREIMPLEMENTATION_AUDIT.md,Preserved in repository
+docs/F38_REAL_QPU_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of F38_REAL_QPU_VALIDATION.md,Preserved in repository
+docs/LEVEL_5_AUDIT_LEVEL4_REDERIVATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_AUDIT_LEVEL4_REDERIVATION.md,Preserved in repository
+docs/LEVEL_5_CARLEMAN_DESIGN.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_CARLEMAN_DESIGN.md,Preserved in repository
+docs/LEVEL_5_COUPLED_NONLINEAR_FORMULATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_COUPLED_NONLINEAR_FORMULATION.md,Preserved in repository
+docs/LEVEL_5_COUPLED_STATE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_COUPLED_STATE.md,Preserved in repository
+docs/LEVEL_5_EXISTING_TWO_PHASE_MODEL.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_EXISTING_TWO_PHASE_MODEL.md,Preserved in repository
+docs/LEVEL_5_GLOBAL_LINEAR_SYSTEM.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_5_GLOBAL_LINEAR_SYSTEM.md,Preserved in repository
+docs/LEVEL_6A_IMPLEMENTATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_IMPLEMENTATION_REPORT.md,Preserved in repository
+docs/LEVEL_6A_MATHEMATICAL_DERIVATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_MATHEMATICAL_DERIVATION.md,Preserved in repository
+docs/LEVEL_6A_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6A_R_ARCHITECTURE_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_ARCHITECTURE_COMPARISON.md,Preserved in repository
+docs/LEVEL_6A_R_BLOCK_ENCODING_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_BLOCK_ENCODING_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6A_R_DECISION_GATE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_DECISION_GATE.md,Preserved in repository
+docs/LEVEL_6A_R_MATHEMATICAL_RESOLUTION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_MATHEMATICAL_RESOLUTION.md,Preserved in repository
+docs/LEVEL_6A_R_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6A_R_STREAMING_DERIVATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_R_STREAMING_DERIVATION.md,Preserved in repository
+docs/LEVEL_6A_STABILITY_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6A_STABILITY_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6B_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_ARCHITECTURE.md,Preserved in repository
+docs/LEVEL_6B_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_CLAIM_AUDIT.md,Preserved in repository
+docs/LEVEL_6B_ERROR_BUDGET.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_ERROR_BUDGET.md,Preserved in repository
+docs/LEVEL_6B_ERROR_ORIGIN_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_ERROR_ORIGIN_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6B_FINAL_RESEARCH_DIARY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_FINAL_RESEARCH_DIARY.md,Preserved in repository
+docs/LEVEL_6B_FINAL_SCIENTIFIC_STATUS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_FINAL_SCIENTIFIC_STATUS.md,Preserved in repository
+docs/LEVEL_6B_HARDWARE_READINESS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_HARDWARE_READINESS.md,Preserved in repository
+docs/LEVEL_6B_IMPLEMENTATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_IMPLEMENTATION_REPORT.md,Preserved in repository
+docs/LEVEL_6B_LIMITATIONS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_LIMITATIONS.md,Preserved in repository
+docs/LEVEL_6B_MATHEMATICAL_FORMULATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_MATHEMATICAL_FORMULATION.md,Preserved in repository
+docs/LEVEL_6B_PROFESSOR_SUMMARY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_PROFESSOR_SUMMARY.md,Preserved in repository
+docs/LEVEL_6B_QUANTUM_CLASSICAL_INTERFACE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_QUANTUM_CLASSICAL_INTERFACE.md,Preserved in repository
+docs/LEVEL_6B_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6B_SCIENTIFIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_SCIENTIFIC_AUDIT.md,Preserved in repository
+docs/LEVEL_6B_VALIDATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6B_VALIDATION_REPORT.md,Preserved in repository
+docs/LEVEL_6_ARCHITECTURE_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_ARCHITECTURE_COMPARISON.md,Preserved in repository
+docs/LEVEL_6_BASELINE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_BASELINE_AUDIT.md,Preserved in repository
+docs/LEVEL_6_ERROR_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_ERROR_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6_EXACT_LEVEL4_DEPENDENCY_GRAPH.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_EXACT_LEVEL4_DEPENDENCY_GRAPH.md,Preserved in repository
+docs/LEVEL_6_GLOBAL_QSVT_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_GLOBAL_QSVT_ARCHITECTURE.md,Preserved in repository
+docs/LEVEL_6_HQC_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_HQC_ARCHITECTURE.md,Preserved in repository
+docs/LEVEL_6_IMPLEMENTATION_PLAN.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_IMPLEMENTATION_PLAN.md,Preserved in repository
+docs/LEVEL_6_LITERATURE_NOVELTY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_LITERATURE_NOVELTY.md,Preserved in repository
+docs/LEVEL_6_LOCAL_CARLEMAN_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_LOCAL_CARLEMAN_ARCHITECTURE.md,Preserved in repository
+docs/LEVEL_6_MULTITIMESTEP_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_MULTITIMESTEP_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6_POLYNOMIALIZATION_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_POLYNOMIALIZATION_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6_SCIENTIFIC_INTEGRITY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_SCIENTIFIC_INTEGRITY.md,Preserved in repository
+docs/LEVEL_6_SURFACE_TENSION_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_SURFACE_TENSION_ANALYSIS.md,Preserved in repository
+docs/LEVEL_6_TARGET_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_6_TARGET_ARCHITECTURE.md,Preserved in repository
+docs/LEVEL_7_ADVISOR_READY_SUMMARY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_ADVISOR_READY_SUMMARY.md,Preserved in repository
+docs/LEVEL_7_ADVISOR_SUMMARY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_ADVISOR_SUMMARY.md,Preserved in repository
+docs/LEVEL_7_ARCHITECTURE_CANDIDATES.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_ARCHITECTURE_CANDIDATES.md,Preserved in repository
+docs/LEVEL_7_ARCHITECTURE_DECISION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_ARCHITECTURE_DECISION.md,Preserved in repository
+docs/LEVEL_7_BLOCK_ENCODING_COMPOSITION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_BLOCK_ENCODING_COMPOSITION.md,Preserved in repository
+docs/LEVEL_7_COHERENCE_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_COHERENCE_CLAIM_AUDIT.md,Preserved in repository
+docs/LEVEL_7_COHERENT_STREAMING.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_COHERENT_STREAMING.md,Preserved in repository
+docs/LEVEL_7_CSF_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_CSF_ANALYSIS.md,Preserved in repository
+docs/LEVEL_7_FINAL_CLAIM_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_CLAIM_AUDIT.md,Preserved in repository
+docs/LEVEL_7_FINAL_CLAIM_MATRIX.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_CLAIM_MATRIX.md,Preserved in repository
+docs/LEVEL_7_FINAL_CLAIM_MATRIX_HARDENED.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_CLAIM_MATRIX_HARDENED.md,Preserved in repository
+docs/LEVEL_7_FINAL_HARDENING_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_HARDENING_AUDIT.md,Preserved in repository
+docs/LEVEL_7_FINAL_LITERATURE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_LITERATURE_AUDIT.md,Preserved in repository
+docs/LEVEL_7_FINAL_RESEARCH_POSITION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_RESEARCH_POSITION.md,Preserved in repository
+docs/LEVEL_7_FINAL_SCIENTIFIC_STATUS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_SCIENTIFIC_STATUS.md,Preserved in repository
+docs/LEVEL_7_FINAL_THESIS_DEFENSE_STATUS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_FINAL_THESIS_DEFENSE_STATUS.md,Preserved in repository
+docs/LEVEL_7_IMPLEMENTATION_REPORT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_IMPLEMENTATION_REPORT.md,Preserved in repository
+docs/LEVEL_7_LEVEL8_DECISION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_LEVEL8_DECISION.md,Preserved in repository
+docs/LEVEL_7_LIMITATIONS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_LIMITATIONS.md,Preserved in repository
+docs/LEVEL_7_LITERATURE_NOVELTY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_LITERATURE_NOVELTY.md,Preserved in repository
+docs/LEVEL_7_MATHEMATICAL_INVESTIGATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_MATHEMATICAL_INVESTIGATION.md,Preserved in repository
+docs/LEVEL_7_MULTISTEP_HARDENING.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_MULTISTEP_HARDENING.md,Preserved in repository
+docs/LEVEL_7_NORMALIZATION_RECONCILIATION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_NORMALIZATION_RECONCILIATION.md,Preserved in repository
+docs/LEVEL_7_NOVELTY_MATRIX.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_NOVELTY_MATRIX.md,Preserved in repository
+docs/LEVEL_7_NOVELTY_MATRIX_FINAL.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_NOVELTY_MATRIX_FINAL.md,Preserved in repository
+docs/LEVEL_7_OAA_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_OAA_ANALYSIS.md,Preserved in repository
+docs/LEVEL_7_RESEARCH_DIARY.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_RESEARCH_DIARY.md,Preserved in repository
+docs/LEVEL_7_RESEARCH_QUESTION.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_RESEARCH_QUESTION.md,Preserved in repository
+docs/LEVEL_7_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/LEVEL_7_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_RESOURCE_AUDIT.md,Preserved in repository
+docs/LEVEL_7_TENSOR_INVARIANCE.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_TENSOR_INVARIANCE.md,Preserved in repository
+docs/LEVEL_7_THESIS_CONTRIBUTIONS.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_THESIS_CONTRIBUTIONS.md,Preserved in repository
+docs/LEVEL_7_THESIS_DEFENSE_QA.md,Documentation,ACTIVE,Implementation/documentation of LEVEL_7_THESIS_DEFENSE_QA.md,Preserved in repository
+docs/PHASE_F0_BASELINE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F0_BASELINE_AUDIT.md,Preserved in repository
+docs/PHASE_F10_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F10_BASELINE_FREEZE.md,Preserved in repository
+docs/PHASE_F10_BOUNDARY_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F10_BOUNDARY_ARCHITECTURE.md,Preserved in repository
+docs/PHASE_F10_BOUNDARY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F10_BOUNDARY_AUDIT.md,Preserved in repository
+docs/PHASE_F10_PHYSICAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F10_PHYSICAL_VALIDATION.md,Preserved in repository
+docs/PHASE_F11_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F11_BASELINE_FREEZE.md,Preserved in repository
+docs/PHASE_F11_ERROR_LOCALIZATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F11_ERROR_LOCALIZATION.md,Preserved in repository
+docs/PHASE_F11_MULTIPHASE_COUPLING.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F11_MULTIPHASE_COUPLING.md,Preserved in repository
+docs/PHASE_F11_QUANTUM_HYBRID_CLASSIFICATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F11_QUANTUM_HYBRID_CLASSIFICATION.md,Preserved in repository
+docs/PHASE_F11_SCALED_DAMBREAK_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F11_SCALED_DAMBREAK_VALIDATION.md,Preserved in repository
+docs/PHASE_F12_AUTONOMOUS_SOLVER_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_AUTONOMOUS_SOLVER_AUDIT.md,Preserved in repository
+docs/PHASE_F12_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_BASELINE_FREEZE.md,Preserved in repository
+docs/PHASE_F12_COHERENT_TIMESTEP.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_COHERENT_TIMESTEP.md,Preserved in repository
+docs/PHASE_F12_PARAMETER_ORACLE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_PARAMETER_ORACLE.md,Preserved in repository
+docs/PHASE_F12_QUANTUM_FORCE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_QUANTUM_FORCE.md,Preserved in repository
+docs/PHASE_F12_QUANTUM_MOMENTS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F12_QUANTUM_MOMENTS.md,Preserved in repository
+docs/PHASE_F13_AUTONOMOUS_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_AUTONOMOUS_AUDIT.md,Preserved in repository
+docs/PHASE_F13_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_BASELINE_FREEZE.md,Preserved in repository
+docs/PHASE_F13_COHERENT_COLLISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_COHERENT_COLLISION.md,Preserved in repository
+docs/PHASE_F13_COHERENT_FORCE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_COHERENT_FORCE.md,Preserved in repository
+docs/PHASE_F13_COHERENT_MOMENTS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_COHERENT_MOMENTS.md,Preserved in repository
+docs/PHASE_F13_COHERENT_PARAMETERS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_COHERENT_PARAMETERS.md,Preserved in repository
+docs/PHASE_F13_COHERENT_TIMESTEP.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F13_COHERENT_TIMESTEP.md,Preserved in repository
+docs/PHASE_F14_FORENSIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F14_FORENSIC_AUDIT.md,Preserved in repository
+docs/PHASE_F14_MATHEMATICAL_VALIDATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F14_MATHEMATICAL_VALIDATION.md,Preserved in repository
+docs/PHASE_F14_QUANTUM_ONLY_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F14_QUANTUM_ONLY_ARCHITECTURE.md,Preserved in repository
+docs/PHASE_F15_AUTONOMOUS_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_AUTONOMOUS_ARCHITECTURE.md,Preserved in repository
+docs/PHASE_F15_CARLEMAN_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_CARLEMAN_ANALYSIS.md,Preserved in repository
+docs/PHASE_F15_ERROR_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_ERROR_ANALYSIS.md,Preserved in repository
+docs/PHASE_F15_FINAL_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_FINAL_AUDIT.md,Preserved in repository
+docs/PHASE_F15_FORENSIC_GATE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_FORENSIC_GATE.md,Preserved in repository
+docs/PHASE_F15_MATHEMATICAL_FORMULATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_MATHEMATICAL_FORMULATION.md,Preserved in repository
+docs/PHASE_F15_QUANTUM_EMBEDDING.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_QUANTUM_EMBEDDING.md,Preserved in repository
+docs/PHASE_F15_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F15_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/PHASE_F16_ARCHITECTURE_COMPARISON.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_ARCHITECTURE_COMPARISON.md,Preserved in repository
+docs/PHASE_F16_AUTONOMY_DEFINITION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_AUTONOMY_DEFINITION.md,Preserved in repository
+docs/PHASE_F16_CARLEMAN_ROUTE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_CARLEMAN_ROUTE.md,Preserved in repository
+docs/PHASE_F16_CSF_INVESTIGATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_CSF_INVESTIGATION.md,Preserved in repository
+docs/PHASE_F16_ENCODING_ROUTE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_ENCODING_ROUTE.md,Preserved in repository
+docs/PHASE_F16_FINAL_DECISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_FINAL_DECISION.md,Preserved in repository
+docs/PHASE_F16_MATHEMATICAL_INVESTIGATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_MATHEMATICAL_INVESTIGATION.md,Preserved in repository
+docs/PHASE_F16_QSVT_ROUTE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_QSVT_ROUTE.md,Preserved in repository
+docs/PHASE_F16_REVERSIBLE_ARITHMETIC_ROUTE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_REVERSIBLE_ARITHMETIC_ROUTE.md,Preserved in repository
+docs/PHASE_F16_REVERSIBLE_COLLISION_ROUTE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F16_REVERSIBLE_COLLISION_ROUTE.md,Preserved in repository
+docs/PHASE_F17_AUTONOMOUS_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_AUTONOMOUS_ARCHITECTURE.md,Preserved in repository
+docs/PHASE_F17_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_AUTONOMY_AUDIT.md,Preserved in repository
+docs/PHASE_F17_ERROR_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_ERROR_ANALYSIS.md,Preserved in repository
+docs/PHASE_F17_FINAL_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_FINAL_AUDIT.md,Preserved in repository
+docs/PHASE_F17_FIXED_POINT_MODEL.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_FIXED_POINT_MODEL.md,Preserved in repository
+docs/PHASE_F17_RESOURCE_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_RESOURCE_ANALYSIS.md,Preserved in repository
+docs/PHASE_F17_REVERSIBLE_COLLISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_REVERSIBLE_COLLISION.md,Preserved in repository
+docs/PHASE_F17_REVERSIBLE_PRIMITIVES.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F17_REVERSIBLE_PRIMITIVES.md,Preserved in repository
+docs/PHASE_F18_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_AUTONOMY_AUDIT.md,Preserved in repository
+docs/PHASE_F18_BIJECTIVITY_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_BIJECTIVITY_ANALYSIS.md,Preserved in repository
+docs/PHASE_F18_CSF_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_CSF_AUDIT.md,Preserved in repository
+docs/PHASE_F18_FINAL_DECISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_FINAL_DECISION.md,Preserved in repository
+docs/PHASE_F18_FORENSIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_FORENSIC_AUDIT.md,Preserved in repository
+docs/PHASE_F18_PHYSICAL_EQUIVALENCE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_PHYSICAL_EQUIVALENCE.md,Preserved in repository
+docs/PHASE_F18_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_RESOURCE_AUDIT.md,Preserved in repository
+docs/PHASE_F18_REVERSIBILITY_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_REVERSIBILITY_ANALYSIS.md,Preserved in repository
+docs/PHASE_F18_TWO_PHASE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F18_TWO_PHASE_AUDIT.md,Preserved in repository
+docs/PHASE_F19_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_AUTONOMY_AUDIT.md,Preserved in repository
+docs/PHASE_F19_BGK_INFORMATION_LOSS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_BGK_INFORMATION_LOSS.md,Preserved in repository
+docs/PHASE_F19_COMPUTE_OUTPUT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_COMPUTE_OUTPUT.md,Preserved in repository
+docs/PHASE_F19_CSF_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_CSF_AUDIT.md,Preserved in repository
+docs/PHASE_F19_ENVIRONMENT_EMBEDDING.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_ENVIRONMENT_EMBEDDING.md,Preserved in repository
+docs/PHASE_F19_FINAL_DECISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_FINAL_DECISION.md,Preserved in repository
+docs/PHASE_F19_INFORMATION_ACCOUNTING.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_INFORMATION_ACCOUNTING.md,Preserved in repository
+docs/PHASE_F19_MASTER_REPORT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_MASTER_REPORT.md,Preserved in repository
+docs/PHASE_F19_MODE_RETENTION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_MODE_RETENTION.md,Preserved in repository
+docs/PHASE_F19_PHYSICAL_EQUIVALENCE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_PHYSICAL_EQUIVALENCE.md,Preserved in repository
+docs/PHASE_F19_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_RESOURCE_AUDIT.md,Preserved in repository
+docs/PHASE_F19_SUPERPOSITION_ANALYSIS.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_SUPERPOSITION_ANALYSIS.md,Preserved in repository
+docs/PHASE_F19_TWO_PHASE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F19_TWO_PHASE_AUDIT.md,Preserved in repository
+docs/PHASE_F20_BGK_CHANNEL_DEFINITION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_BGK_CHANNEL_DEFINITION.md,Preserved in repository
+docs/PHASE_F20_CHOI_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_CHOI_AUDIT.md,Preserved in repository
+docs/PHASE_F20_ENTANGLEMENT_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_ENTANGLEMENT_AUDIT.md,Preserved in repository
+docs/PHASE_F20_ENVIRONMENT_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_ENVIRONMENT_AUDIT.md,Preserved in repository
+docs/PHASE_F20_FINAL_DECISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_FINAL_DECISION.md,Preserved in repository
+docs/PHASE_F20_KRAUS_DERIVATION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_KRAUS_DERIVATION.md,Preserved in repository
+docs/PHASE_F20_MASTER_REPORT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_MASTER_REPORT.md,Preserved in repository
+docs/PHASE_F20_MULTISTEP_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_MULTISTEP_AUDIT.md,Preserved in repository
+docs/PHASE_F20_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_RESOURCE_AUDIT.md,Preserved in repository
+docs/PHASE_F20_SUPERPOSITION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_SUPERPOSITION_AUDIT.md,Preserved in repository
+docs/PHASE_F20_TWO_PHASE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F20_TWO_PHASE_AUDIT.md,Preserved in repository
+docs/PHASE_F21_AUTONOMY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_AUTONOMY_AUDIT.md,Preserved in repository
+docs/PHASE_F21_CSF_CHANNEL.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_CSF_CHANNEL.md,Preserved in repository
+docs/PHASE_F21_CURVATURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_CURVATURE.md,Preserved in repository
+docs/PHASE_F21_DAM_BREAK_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_DAM_BREAK_AUDIT.md,Preserved in repository
+docs/PHASE_F21_ENTANGLEMENT_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_ENTANGLEMENT_AUDIT.md,Preserved in repository
+docs/PHASE_F21_FINAL_DECISION.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_FINAL_DECISION.md,Preserved in repository
+docs/PHASE_F21_FIXED_POINT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_FIXED_POINT.md,Preserved in repository
+docs/PHASE_F21_FORCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_FORCE_AUDIT.md,Preserved in repository
+docs/PHASE_F21_GRADIENT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_GRADIENT.md,Preserved in repository
+docs/PHASE_F21_MASTER_REPORT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_MASTER_REPORT.md,Preserved in repository
+docs/PHASE_F21_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_RESOURCE_AUDIT.md,Preserved in repository
+docs/PHASE_F21_SUPERPOSITION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F21_SUPERPOSITION_AUDIT.md,Preserved in repository
+docs/PHASE_F8_2X2_END_TO_END.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F8_2X2_END_TO_END.md,Preserved in repository
+docs/PHASE_F8_SCIENTIFIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F8_SCIENTIFIC_AUDIT.md,Preserved in repository
+docs/PHASE_F9_BASELINE_FREEZE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F9_BASELINE_FREEZE.md,Preserved in repository
+docs/PHASE_F9_TRANSPARENCY_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F9_TRANSPARENCY_AUDIT.md,Preserved in repository
+docs/PHASE_F_COHERENT_PARAMETER_ORACLE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F_COHERENT_PARAMETER_ORACLE.md,Preserved in repository
+docs/PHASE_F_COLLISION_ARCHITECTURE.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F_COLLISION_ARCHITECTURE.md,Preserved in repository
+docs/PHASE_F_QUANTUM_CORE_REPORT.md,Documentation,ACTIVE,Implementation/documentation of PHASE_F_QUANTUM_CORE_REPORT.md,Preserved in repository
+docs/QLBM_ARCHITECTURE_COMPARISON_MATRIX.md,Documentation,ACTIVE,Implementation/documentation of QLBM_ARCHITECTURE_COMPARISON_MATRIX.md,Preserved in repository
+docs/QLBM_DIRECT_ENCODING_COLLISION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_DIRECT_ENCODING_COLLISION_AUDIT.md,Preserved in repository
+docs/QLBM_DIRECT_ENCODING_FOUNDATION.md,Documentation,ACTIVE,Implementation/documentation of QLBM_DIRECT_ENCODING_FOUNDATION.md,Preserved in repository
+docs/QLBM_DIRECT_ENCODING_RESOURCE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_DIRECT_ENCODING_RESOURCE_AUDIT.md,Preserved in repository
+docs/QLBM_DIRECT_ENCODING_SCIENTIFIC_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_DIRECT_ENCODING_SCIENTIFIC_AUDIT.md,Preserved in repository
+docs/QLBM_DIRECT_ENCODING_STATE_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_DIRECT_ENCODING_STATE_AUDIT.md,Preserved in repository
+docs/QLBM_ONE_NODE_COLLISION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_ONE_NODE_COLLISION_AUDIT.md,Preserved in repository
+docs/QLBM_PHASE1_EXECUTIVE_REPORT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_PHASE1_EXECUTIVE_REPORT.md,Preserved in repository
+docs/QLBM_PHASE2_ARITHMETIC_STREAMING.md,Documentation,ACTIVE,Implementation/documentation of QLBM_PHASE2_ARITHMETIC_STREAMING.md,Preserved in repository
+docs/QLBM_QUANTUM_COLLISION_AUDIT.md,Documentation,ACTIVE,Implementation/documentation of QLBM_QUANTUM_COLLISION_AUDIT.md,Preserved in repository
+hardware/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+hardware/isa_transpile.py,Source Code,ACTIVE,Implementation/documentation of isa_transpile.py,Preserved in repository
+hardware/preflight.py,Source Code,ACTIVE,Implementation/documentation of preflight.py,Preserved in repository
+quantum/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+quantum/arithmetic_streaming.py,Source Code,ACTIVE,Implementation/documentation of arithmetic_streaming.py,Preserved in repository
+quantum/boundary_quantum.py,Source Code,ACTIVE,Implementation/documentation of boundary_quantum.py,Preserved in repository
+quantum/carleman_collision.py,Source Code,ACTIVE,Implementation/documentation of carleman_collision.py,Preserved in repository
+quantum/carleman_quantum.py,Source Code,ACTIVE,Implementation/documentation of carleman_quantum.py,Preserved in repository
+quantum/carleman_two_phase_step.py,Source Code,ACTIVE,Implementation/documentation of carleman_two_phase_step.py,Preserved in repository
+quantum/coherent_collision.py,Source Code,ACTIVE,Implementation/documentation of coherent_collision.py,Preserved in repository
+quantum/coherent_force.py,Source Code,ACTIVE,Implementation/documentation of coherent_force.py,Preserved in repository
+quantum/coherent_moments.py,Source Code,ACTIVE,Implementation/documentation of coherent_moments.py,Preserved in repository
+quantum/coherent_parameter_oracle.py,Source Code,ACTIVE,Implementation/documentation of coherent_parameter_oracle.py,Preserved in repository
+quantum/coherent_timestep.py,Source Code,ACTIVE,Implementation/documentation of coherent_timestep.py,Preserved in repository
+quantum/coherent_velocity.py,Source Code,ACTIVE,Implementation/documentation of coherent_velocity.py,Preserved in repository
+quantum/direct_two_phase_prototype.py,Source Code,ACTIVE,Implementation/documentation of direct_two_phase_prototype.py,Preserved in repository
+quantum/f15_autonomous_solver.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of f15_autonomous_solver.py,F15 Carleman truncation closure failure artifact
+quantum/f15_carleman_collision.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of f15_carleman_collision.py,F15 Carleman truncation closure failure artifact
+quantum/f17_autonomous_solver.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of f17_autonomous_solver.py,F17 reversible arithmetic prototype
+quantum/f17_reversible_collision.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of f17_reversible_collision.py,F17 reversible arithmetic prototype
+quantum/f17_reversible_primitives.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of f17_reversible_primitives.py,F17 reversible arithmetic prototype
+quantum/f19_compute_output.py,Source Code,ACTIVE,Implementation/documentation of f19_compute_output.py,Preserved in repository
+quantum/f19_environment.py,Source Code,ACTIVE,Implementation/documentation of f19_environment.py,Preserved in repository
+quantum/f19_mode_retention.py,Source Code,ACTIVE,Implementation/documentation of f19_mode_retention.py,Preserved in repository
+quantum/f19_solver.py,Source Code,ACTIVE,Implementation/documentation of f19_solver.py,Preserved in repository
+quantum/f19_superposition.py,Source Code,ACTIVE,Implementation/documentation of f19_superposition.py,Preserved in repository
+quantum/f20_channel.py,Source Code,ACTIVE,Implementation/documentation of f20_channel.py,Preserved in repository
+quantum/f20_choi.py,Source Code,ACTIVE,Implementation/documentation of f20_choi.py,Preserved in repository
+quantum/f20_entanglement.py,Source Code,ACTIVE,Implementation/documentation of f20_entanglement.py,Preserved in repository
+quantum/f20_environment.py,Source Code,ACTIVE,Implementation/documentation of f20_environment.py,Preserved in repository
+quantum/f20_fixed_point.py,Source Code,ACTIVE,Implementation/documentation of f20_fixed_point.py,Preserved in repository
+quantum/f20_kraus.py,Source Code,ACTIVE,Implementation/documentation of f20_kraus.py,Preserved in repository
+quantum/f20_multistep.py,Source Code,ACTIVE,Implementation/documentation of f20_multistep.py,Preserved in repository
+quantum/f20_solver.py,Source Code,ACTIVE,Implementation/documentation of f20_solver.py,Preserved in repository
+quantum/f20_superposition.py,Source Code,ACTIVE,Implementation/documentation of f20_superposition.py,Preserved in repository
+quantum/f21_channel.py,Source Code,ACTIVE,Implementation/documentation of f21_channel.py,Preserved in repository
+quantum/f21_csf.py,Source Code,ACTIVE,Implementation/documentation of f21_csf.py,Preserved in repository
+quantum/f21_curvature.py,Source Code,ACTIVE,Implementation/documentation of f21_curvature.py,Preserved in repository
+quantum/f21_environment.py,Source Code,ACTIVE,Implementation/documentation of f21_environment.py,Preserved in repository
+quantum/f21_fixed_point.py,Source Code,ACTIVE,Implementation/documentation of f21_fixed_point.py,Preserved in repository
+quantum/f21_force.py,Source Code,ACTIVE,Implementation/documentation of f21_force.py,Preserved in repository
+quantum/f21_gradient.py,Source Code,ACTIVE,Implementation/documentation of f21_gradient.py,Preserved in repository
+quantum/f21_norm.py,Source Code,ACTIVE,Implementation/documentation of f21_norm.py,Preserved in repository
+quantum/f21_solver.py,Source Code,ACTIVE,Implementation/documentation of f21_solver.py,Preserved in repository
+quantum/f22_channel_solver.py,Source Code,ACTIVE,Implementation/documentation of f22_channel_solver.py,Preserved in repository
+quantum/f22_entanglement_superposition.py,Source Code,ACTIVE,Implementation/documentation of f22_entanglement_superposition.py,Preserved in repository
+quantum/f22_environment.py,Source Code,ACTIVE,Implementation/documentation of f22_environment.py,Preserved in repository
+quantum/f22_mass_conservation.py,Source Code,ACTIVE,Implementation/documentation of f22_mass_conservation.py,Preserved in repository
+quantum/f22_precision.py,Source Code,ACTIVE,Implementation/documentation of f22_precision.py,Preserved in repository
+quantum/f22_quantum_state.py,Source Code,ACTIVE,Implementation/documentation of f22_quantum_state.py,Preserved in repository
+quantum/f22_stinespring.py,Source Code,ACTIVE,Implementation/documentation of f22_stinespring.py,Preserved in repository
+quantum/f23_arbitrary_density_matrix.py,Source Code,ACTIVE,Implementation/documentation of f23_arbitrary_density_matrix.py,Preserved in repository
+quantum/f23_environment_semantics.py,Source Code,ACTIVE,Implementation/documentation of f23_environment_semantics.py,Preserved in repository
+quantum/f23_equivalence_engine.py,Source Code,ACTIVE,Implementation/documentation of f23_equivalence_engine.py,Preserved in repository
+quantum/f23_positivity_guard.py,Source Code,ACTIVE,Implementation/documentation of f23_positivity_guard.py,Preserved in repository
+quantum/f24_call_graph_forensics.py,Source Code,ACTIVE,Implementation/documentation of f24_call_graph_forensics.py,Preserved in repository
+quantum/f24_independent_reference.py,Source Code,ACTIVE,Implementation/documentation of f24_independent_reference.py,Preserved in repository
+quantum/f24_momentum_audit.py,Source Code,ACTIVE,Implementation/documentation of f24_momentum_audit.py,Preserved in repository
+quantum/f24_resource_audit.py,Source Code,ACTIVE,Implementation/documentation of f24_resource_audit.py,Preserved in repository
+quantum/f25_gate_resource_model.py,Source Code,ACTIVE,Implementation/documentation of f25_gate_resource_model.py,Preserved in repository
+quantum/f25_reversible_primitives.py,Source Code,ACTIVE,Implementation/documentation of f25_reversible_primitives.py,Preserved in repository
+quantum/f25_scaling_analysis.py,Source Code,ACTIVE,Implementation/documentation of f25_scaling_analysis.py,Preserved in repository
+quantum/f26_optimized_bgk.py,Source Code,ACTIVE,Implementation/documentation of f26_optimized_bgk.py,Preserved in repository
+quantum/f26_pareto_analysis.py,Source Code,ACTIVE,Implementation/documentation of f26_pareto_analysis.py,Preserved in repository
+quantum/f26_workspace_scheduler.py,Source Code,ACTIVE,Implementation/documentation of f26_workspace_scheduler.py,Preserved in repository
+quantum/f27_circuit_ir.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f27_circuit_ir.py,Gate-level scalable reversible QLBM architecture
+quantum/f27_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f27_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+quantum/f27_gate_primitives.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f27_gate_primitives.py,Gate-level scalable reversible QLBM architecture
+quantum/f27_local_node_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f27_local_node_circuit.py,Gate-level scalable reversible QLBM architecture
+quantum/f28_2x2_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f28_2x2_circuit.py,Gate-level scalable reversible QLBM architecture
+quantum/f28_cleanroom_2x2_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f28_cleanroom_2x2_reference.py,Gate-level scalable reversible QLBM architecture
+quantum/f29_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f29_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+quantum/f29_scalable_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f29_scalable_circuit.py,Gate-level scalable reversible QLBM architecture
+quantum/f29_three_layer_validator.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f29_three_layer_validator.py,Gate-level scalable reversible QLBM architecture
+quantum/f30_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f30_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+quantum/f30_scaling_engine.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f30_scaling_engine.py,Gate-level scalable reversible QLBM architecture
+quantum/f31_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f31_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+quantum/f31_reduced_architecture.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of f31_reduced_architecture.py,Gate-level scalable reversible QLBM architecture
+quantum/f33_backend.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f33_backend.py,NISQ hardware transpilation and QPU execution gate
+quantum/f33_hardware_demo.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f33_hardware_demo.py,NISQ hardware transpilation and QPU execution gate
+quantum/f33_measurement.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f33_measurement.py,NISQ hardware transpilation and QPU execution gate
+quantum/f33_state_preparation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f33_state_preparation.py,NISQ hardware transpilation and QPU execution gate
+quantum/f33_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f33_validation.py,NISQ hardware transpilation and QPU execution gate
+quantum/f34_hardware_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f34_hardware_validation.py,NISQ hardware transpilation and QPU execution gate
+quantum/f34_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f34_observables.py,NISQ hardware transpilation and QPU execution gate
+quantum/f34_qpu_runner.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f34_qpu_runner.py,NISQ hardware transpilation and QPU execution gate
+quantum/f34_result_parser.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f34_result_parser.py,NISQ hardware transpilation and QPU execution gate
+quantum/f35_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f35_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+quantum/f35_multi_layer_validator.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f35_multi_layer_validator.py,NISQ hardware transpilation and QPU execution gate
+quantum/f35_observables_reconstruction.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f35_observables_reconstruction.py,NISQ hardware transpilation and QPU execution gate
+quantum/f35_qpu_executor.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f35_qpu_executor.py,NISQ hardware transpilation and QPU execution gate
+quantum/f36_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f36_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+quantum/f36_multi_layer_validator.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f36_multi_layer_validator.py,NISQ hardware transpilation and QPU execution gate
+quantum/f36_observables_reconstruction.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f36_observables_reconstruction.py,NISQ hardware transpilation and QPU execution gate
+quantum/f36_qpu_executor.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f36_qpu_executor.py,NISQ hardware transpilation and QPU execution gate
+quantum/f37_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f37_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+quantum/f37_multi_layer_validator.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f37_multi_layer_validator.py,NISQ hardware transpilation and QPU execution gate
+quantum/f37_observables_reconstruction.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f37_observables_reconstruction.py,NISQ hardware transpilation and QPU execution gate
+quantum/f37_qpu_executor.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f37_qpu_executor.py,NISQ hardware transpilation and QPU execution gate
+quantum/f38_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f38_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+quantum/f38_multi_layer_validator.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f38_multi_layer_validator.py,NISQ hardware transpilation and QPU execution gate
+quantum/f38_observables_reconstruction.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f38_observables_reconstruction.py,NISQ hardware transpilation and QPU execution gate
+quantum/f38_qpu_executor.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of f38_qpu_executor.py,NISQ hardware transpilation and QPU execution gate
+quantum/force_quantum.py,Source Code,ACTIVE,Implementation/documentation of force_quantum.py,Preserved in repository
+quantum/level5_two_phase_carleman.py,Source Code,ACTIVE,Implementation/documentation of level5_two_phase_carleman.py,Preserved in repository
+quantum/level5_two_phase_quantum.py,Source Code,ACTIVE,Implementation/documentation of level5_two_phase_quantum.py,Preserved in repository
+quantum/level6_lifted_carleman.py,Source Code,ACTIVE,Implementation/documentation of level6_lifted_carleman.py,Preserved in repository
+quantum/level6b_hybrid_solver.py,Source Code,FROZEN REFERENCE,Implementation/documentation of level6b_hybrid_solver.py,Validated Level-6B physical baseline
+quantum/level7_coherent_multistep.py,Source Code,ACTIVE,Implementation/documentation of level7_coherent_multistep.py,Preserved in repository
+quantum/observables_quantum.py,Source Code,ACTIVE,Implementation/documentation of observables_quantum.py,Preserved in repository
+quantum/one_node_collision.py,Source Code,ACTIVE,Implementation/documentation of one_node_collision.py,Preserved in repository
+quantum/parameterized_collision_oracle.py,Source Code,ACTIVE,Implementation/documentation of parameterized_collision_oracle.py,Preserved in repository
+quantum/phase_f11_scaled_solver.py,Source Code,ACTIVE,Implementation/documentation of phase_f11_scaled_solver.py,Preserved in repository
+quantum/phase_f8_2x2_solver.py,Source Code,ACTIVE,Implementation/documentation of phase_f8_2x2_solver.py,Preserved in repository
+quantum/physical_boundary_mask.py,Source Code,ACTIVE,Implementation/documentation of physical_boundary_mask.py,Preserved in repository
+quantum/quantum_force.py,Source Code,ACTIVE,Implementation/documentation of quantum_force.py,Preserved in repository
+quantum/quantum_moments.py,Source Code,ACTIVE,Implementation/documentation of quantum_moments.py,Preserved in repository
+quantum/quantum_only_solver.py,Source Code,ACTIVE,Implementation/documentation of quantum_only_solver.py,Preserved in repository
+quantum/reference_collision.py,Source Code,ACTIVE,Implementation/documentation of reference_collision.py,Preserved in repository
+quantum/state_preparation.py,Source Code,ACTIVE,Implementation/documentation of state_preparation.py,Preserved in repository
+quantum/streaming.py,Source Code,ACTIVE,Implementation/documentation of streaming.py,Preserved in repository
+quantum/timestep_quantum.py,Source Code,ACTIVE,Implementation/documentation of timestep_quantum.py,Preserved in repository
+quantum/transparency_audit.py,Source Code,ACTIVE,Implementation/documentation of transparency_audit.py,Preserved in repository
+quantum/two_phase_boundary.py,Source Code,ACTIVE,Implementation/documentation of two_phase_boundary.py,Preserved in repository
+quantum/two_phase_carleman.py,Source Code,ACTIVE,Implementation/documentation of two_phase_carleman.py,Preserved in repository
+quantum/two_phase_encoding.py,Source Code,ACTIVE,Implementation/documentation of two_phase_encoding.py,Preserved in repository
+quantum/unitary_dilation.py,Source Code,ACTIVE,Implementation/documentation of unitary_dilation.py,Preserved in repository
+requirements.txt,Data/Artifact,ACTIVE,Implementation/documentation of requirements.txt,Preserved in repository
+research/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+research/ablation_studies/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+research/ablation_studies/approach_a_global_carleman.py,Source Code,ACTIVE,Implementation/documentation of approach_a_global_carleman.py,Preserved in repository
+research/ablation_studies/approach_b_local_carleman.py,Source Code,ACTIVE,Implementation/documentation of approach_b_local_carleman.py,Preserved in repository
+research/ablation_studies/approach_c_osslbm.py,Source Code,ACTIVE,Implementation/documentation of approach_c_osslbm.py,Preserved in repository
+research/ablation_studies/compare_three_approaches.py,Source Code,ACTIVE,Implementation/documentation of compare_three_approaches.py,Preserved in repository
+research/hardware_demos/01_block_encoding_demo.py,Source Code,ACTIVE,Implementation/documentation of 01_block_encoding_demo.py,Preserved in repository
+research/hardware_demos/02_qsvt_demo.py,Source Code,ACTIVE,Implementation/documentation of 02_qsvt_demo.py,Preserved in repository
+research/hardware_demos/03_measurement_demo.py,Source Code,ACTIVE,Implementation/documentation of 03_measurement_demo.py,Preserved in repository
+research/hardware_demos/04_small_qlbm_state.py,Source Code,ACTIVE,Implementation/documentation of 04_small_qlbm_state.py,Preserved in repository
+research/hardware_demos/05_qae_scalar_demo.py,Source Code,ACTIVE,Implementation/documentation of 05_qae_scalar_demo.py,Preserved in repository
+research/hardware_demos/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+research/noise_modeling/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+research/noise_modeling/shot_noise_analysis.py,Source Code,ACTIVE,Implementation/documentation of shot_noise_analysis.py,Preserved in repository
+research/noise_modeling/test_shot_noise.py,Source Code,ACTIVE,Implementation/documentation of test_shot_noise.py,Preserved in repository
+research/noise_modeling/test_shot_noise_statistics.py,Source Code,ACTIVE,Implementation/documentation of test_shot_noise_statistics.py,Preserved in repository
+research/qsvt/__init__.py,Source Code,ACTIVE,Implementation/documentation of __init__.py,Preserved in repository
+research/qsvt/block_encoding.py,Source Code,ACTIVE,Implementation/documentation of block_encoding.py,Preserved in repository
+research/qsvt/qsvt_solver.py,Source Code,ACTIVE,Implementation/documentation of qsvt_solver.py,Preserved in repository
+research/qsvt/test_qsvt.py,Source Code,ACTIVE,Implementation/documentation of test_qsvt.py,Preserved in repository
+research/qsvt/test_qsvt_condition_spectrum.py,Source Code,ACTIVE,Implementation/documentation of test_qsvt_condition_spectrum.py,Preserved in repository
+results/.gitkeep,Data/Artifact,ACTIVE,Implementation/documentation of .gitkeep,Preserved in repository
+results/classical/.gitkeep,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of .gitkeep,Classical reference and validation baseline
+results/classical/classical_fields.npz,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of classical_fields.npz,Classical reference and validation baseline
+results/classical/classical_fields/phi.npy,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of phi.npy,Classical reference and validation baseline
+results/classical/classical_fields/rho.npy,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of rho.npy,Classical reference and validation baseline
+results/classical/classical_fields/u.npy,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of u.npy,Classical reference and validation baseline
+results/comparison/.gitkeep,Data/Artifact,ACTIVE,Implementation/documentation of .gitkeep,Preserved in repository
+results/comparison/comparison.json,Data/Artifact,ACTIVE,Implementation/documentation of comparison.json,Preserved in repository
+results/direct_arithmetic_streaming_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of direct_arithmetic_streaming_metrics.csv,Preserved in repository
+results/direct_encoding_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of direct_encoding_resource_audit.csv,Preserved in repository
+results/direct_encoding_scientific_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of direct_encoding_scientific_audit.csv,Preserved in repository
+results/f34/job_metadata.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of job_metadata.json,NISQ hardware transpilation and QPU execution gate
+results/f34/measurement_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of measurement_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f34/raw_counts.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of raw_counts.json,NISQ hardware transpilation and QPU execution gate
+results/f34/validation_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of validation_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f35/hardware_observables.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of hardware_observables.json,NISQ hardware transpilation and QPU execution gate
+results/f35/job_metadata.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of job_metadata.json,NISQ hardware transpilation and QPU execution gate
+results/f35/measurement_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of measurement_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f35/raw_counts.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of raw_counts.json,NISQ hardware transpilation and QPU execution gate
+results/f35/validation_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of validation_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f36/hardware_observables.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of hardware_observables.json,NISQ hardware transpilation and QPU execution gate
+results/f36/job_metadata.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of job_metadata.json,NISQ hardware transpilation and QPU execution gate
+results/f36/measurement_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of measurement_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f36/raw_counts.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of raw_counts.json,NISQ hardware transpilation and QPU execution gate
+results/f36/validation_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of validation_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f37/hardware_observables.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of hardware_observables.json,NISQ hardware transpilation and QPU execution gate
+results/f37/job_metadata.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of job_metadata.json,NISQ hardware transpilation and QPU execution gate
+results/f37/measurement_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of measurement_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f37/raw_counts.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of raw_counts.json,NISQ hardware transpilation and QPU execution gate
+results/f37/validation_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of validation_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f38/RAW_HARDWARE_EVIDENCE.md,Documentation,ACTIVE / HARDWARE DEMO,Implementation/documentation of RAW_HARDWARE_EVIDENCE.md,NISQ hardware transpilation and QPU execution gate
+results/f38/hardware_observables.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of hardware_observables.json,NISQ hardware transpilation and QPU execution gate
+results/f38/job_metadata.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of job_metadata.json,NISQ hardware transpilation and QPU execution gate
+results/f38/measurement_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of measurement_summary.json,NISQ hardware transpilation and QPU execution gate
+results/f38/raw_counts.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of raw_counts.json,NISQ hardware transpilation and QPU execution gate
+results/f38/validation_summary.json,Data/Artifact,ACTIVE / HARDWARE DEMO,Implementation/documentation of validation_summary.json,NISQ hardware transpilation and QPU execution gate
+results/level4_benchmarks/dam_break_martin_moyce_comparison.png,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of dam_break_martin_moyce_comparison.png,Classical reference and validation baseline
+results/level4_benchmarks/grid_refinement_study.csv,Data/Artifact,ACTIVE REFERENCE,Implementation/documentation of grid_refinement_study.csv,Classical reference and validation baseline
+results/level5_audit_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of level5_audit_metrics.csv,Preserved in repository
+results/level5_carleman_validation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level5_carleman_validation.csv,Preserved in repository
+results/level5_carleman_validation.png,Data/Artifact,ACTIVE,Implementation/documentation of level5_carleman_validation.png,Preserved in repository
+results/level5_hardware_resource_analysis.csv,Data/Artifact,ACTIVE,Implementation/documentation of level5_hardware_resource_analysis.csv,Preserved in repository
+results/level5_quantum_validation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level5_quantum_validation.csv,Preserved in repository
+results/level5_quantum_validation.png,Data/Artifact,ACTIVE,Implementation/documentation of level5_quantum_validation.png,Preserved in repository
+results/level6_architecture_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6_architecture_comparison.csv,Preserved in repository
+results/level6_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6_error_budget.csv,Preserved in repository
+results/level6_resource_estimates.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6_resource_estimates.csv,Preserved in repository
+results/level6a_carleman_local_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_carleman_local_error.csv,Preserved in repository
+results/level6a_carleman_truncation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_carleman_truncation.csv,Preserved in repository
+results/level6a_mach_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_mach_scaling.csv,Preserved in repository
+results/level6a_measurement_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_measurement_comparison.csv,Preserved in repository
+results/level6a_mode_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_mode_comparison.csv,Preserved in repository
+results/level6a_projection_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_projection_error.csv,Preserved in repository
+results/level6a_r_architecture_scores.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_r_architecture_scores.csv,Preserved in repository
+results/level6a_r_block_encoding.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_r_block_encoding.csv,Preserved in repository
+results/level6a_r_resource_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_r_resource_comparison.csv,Preserved in repository
+results/level6a_r_tensor_invariance.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_r_tensor_invariance.csv,Preserved in repository
+results/level6a_stability_baseline.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_stability_baseline.csv,Preserved in repository
+results/level6a_tensor_consistency.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_tensor_consistency.csv,Preserved in repository
+results/level6a_timestep_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6a_timestep_scaling.csv,Preserved in repository
+results/level6b_control_experiments.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_control_experiments.csv,Preserved in repository
+results/level6b_convergence_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_convergence_audit.csv,Preserved in repository
+results/level6b_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_error_budget.csv,Preserved in repository
+results/level6b_error_origin.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_error_origin.csv,Preserved in repository
+results/level6b_final_error_attribution.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_final_error_attribution.csv,Preserved in repository
+results/level6b_final_grid_convergence.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_final_grid_convergence.csv,Preserved in repository
+results/level6b_final_hardware_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_final_hardware_audit.csv,Preserved in repository
+results/level6b_final_quantum_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_final_quantum_audit.csv,Preserved in repository
+results/level6b_final_reproducibility.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_final_reproducibility.csv,Preserved in repository
+results/level6b_force_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_force_audit.csv,Preserved in repository
+results/level6b_grid_refinement.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_grid_refinement.csv,Preserved in repository
+results/level6b_hardware_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_hardware_metrics.csv,Preserved in repository
+results/level6b_long_time_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_long_time_error.csv,Preserved in repository
+results/level6b_mass_momentum.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_mass_momentum.csv,Preserved in repository
+results/level6b_relaxation_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_relaxation_audit.csv,Preserved in repository
+results/level6b_resource_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_resource_metrics.csv,Preserved in repository
+results/level6b_timestep_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_timestep_metrics.csv,Preserved in repository
+results/level6b_validation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level6b_validation.csv,Preserved in repository
+results/level7_architecture_scores.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_architecture_scores.csv,Preserved in repository
+results/level7_final_claim_matrix.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_claim_matrix.csv,Preserved in repository
+results/level7_final_hardening_summary.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_hardening_summary.csv,Preserved in repository
+results/level7_final_literature_matrix.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_literature_matrix.csv,Preserved in repository
+results/level7_final_mach_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_mach_scaling.csv,Preserved in repository
+results/level7_final_multistep_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_multistep_error.csv,Preserved in repository
+results/level7_final_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_resource_audit.csv,Preserved in repository
+results/level7_final_status.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_final_status.csv,Preserved in repository
+results/level7_multistep_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_multistep_error.csv,Preserved in repository
+results/level7_multistep_hardening.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_multistep_hardening.csv,Preserved in repository
+results/level7_normalization_reconciliation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_normalization_reconciliation.csv,Preserved in repository
+results/level7_oaa_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_oaa_audit.csv,Preserved in repository
+results/level7_oaa_recalculation.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_oaa_recalculation.csv,Preserved in repository
+results/level7_oaa_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_oaa_resource_audit.csv,Preserved in repository
+results/level7_operator_composition.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_operator_composition.csv,Preserved in repository
+results/level7_qubit_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_qubit_audit.csv,Preserved in repository
+results/level7_resource_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_resource_metrics.csv,Preserved in repository
+results/level7_success_probability.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_success_probability.csv,Preserved in repository
+results/level7_tensor_invariance.csv,Data/Artifact,ACTIVE,Implementation/documentation of level7_tensor_invariance.csv,Preserved in repository
+results/phase_f10_boundary_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f10_boundary_kill_switch.csv,Preserved in repository
+results/phase_f10_boundary_unitarity.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f10_boundary_unitarity.csv,Preserved in repository
+results/phase_f10_physical_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f10_physical_metrics.csv,Preserved in repository
+results/phase_f10_population_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f10_population_comparison.csv,Preserved in repository
+results/phase_f10_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f10_resource_audit.csv,Preserved in repository
+results/phase_f11_force_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_force_audit.csv,Preserved in repository
+results/phase_f11_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_kill_switch.csv,Preserved in repository
+results/phase_f11_mass_conservation.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_mass_conservation.csv,Preserved in repository
+results/phase_f11_parameter_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_parameter_audit.csv,Preserved in repository
+results/phase_f11_phase_coupling.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_phase_coupling.csv,Preserved in repository
+results/phase_f11_physical_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_physical_metrics.csv,Preserved in repository
+results/phase_f11_population_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_population_scaling.csv,Preserved in repository
+results/phase_f11_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_resource_audit.csv,Preserved in repository
+results/phase_f11_stage_error.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_stage_error.csv,Preserved in repository
+results/phase_f11_velocity_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f11_velocity_audit.csv,Preserved in repository
+results/phase_f12_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f12_error_budget.csv,Preserved in repository
+results/phase_f12_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f12_kill_switch.csv,Preserved in repository
+results/phase_f12_multistep.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f12_multistep.csv,Preserved in repository
+results/phase_f12_quantum_hybrid_classification.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f12_quantum_hybrid_classification.csv,Preserved in repository
+results/phase_f12_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f12_resource_audit.csv,Preserved in repository
+results/phase_f13_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f13_error_budget.csv,Preserved in repository
+results/phase_f13_hybrid_interface_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f13_hybrid_interface_audit.csv,Preserved in repository
+results/phase_f13_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f13_kill_switch.csv,Preserved in repository
+results/phase_f13_multistep.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f13_multistep.csv,Preserved in repository
+results/phase_f13_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f13_resource_audit.csv,Preserved in repository
+results/phase_f14_coherence_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_coherence_audit.csv,Preserved in repository
+results/phase_f14_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_error_budget.csv,Preserved in repository
+results/phase_f14_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_kill_switch.csv,Preserved in repository
+results/phase_f14_multistep.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_multistep.csv,Preserved in repository
+results/phase_f14_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_resource_audit.csv,Preserved in repository
+results/phase_f14_unitarity.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f14_unitarity.csv,Preserved in repository
+results/phase_f15_architecture_comparison.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_architecture_comparison.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_coherence_trace.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_coherence_trace.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_dilation_power_audit.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_dilation_power_audit.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_error_budget.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_error_budget.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_error_budget_forensic.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_error_budget_forensic.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_kill_switch.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_kill_switch.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_manifold_audit.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_manifold_audit.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_manifold_trajectory.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_manifold_trajectory.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_multistep.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_multistep.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_resource_audit.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_resource_audit.csv,F15 Carleman truncation closure failure artifact
+results/phase_f15_static_operator_audit.csv,Data/Artifact,ARCHIVE / REJECTED,Implementation/documentation of phase_f15_static_operator_audit.csv,F15 Carleman truncation closure failure artifact
+results/phase_f16_architecture_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_architecture_comparison.csv,Preserved in repository
+results/phase_f16_autonomy_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_autonomy_audit.csv,Preserved in repository
+results/phase_f16_carleman_orders.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_carleman_orders.csv,Preserved in repository
+results/phase_f16_error_budget.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_error_budget.csv,Preserved in repository
+results/phase_f16_manifold_analysis.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_manifold_analysis.csv,Preserved in repository
+results/phase_f16_polynomial_approximation.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_polynomial_approximation.csv,Preserved in repository
+results/phase_f16_resource_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_resource_comparison.csv,Preserved in repository
+results/phase_f16_reversible_arithmetic.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f16_reversible_arithmetic.csv,Preserved in repository
+results/phase_f17_ancilla_garbage.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_ancilla_garbage.csv,F17 reversible arithmetic prototype
+results/phase_f17_autonomy_audit.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_autonomy_audit.csv,F17 reversible arithmetic prototype
+results/phase_f17_collision_accuracy.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_collision_accuracy.csv,F17 reversible arithmetic prototype
+results/phase_f17_fixed_point_convergence.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_fixed_point_convergence.csv,F17 reversible arithmetic prototype
+results/phase_f17_kill_switch.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_kill_switch.csv,F17 reversible arithmetic prototype
+results/phase_f17_multistep.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_multistep.csv,F17 reversible arithmetic prototype
+results/phase_f17_physical_validation.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_physical_validation.csv,F17 reversible arithmetic prototype
+results/phase_f17_resource_audit.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_resource_audit.csv,F17 reversible arithmetic prototype
+results/phase_f17_unitarity.csv,Data/Artifact,EXPERIMENTAL / ARCHIVE,Implementation/documentation of phase_f17_unitarity.csv,F17 reversible arithmetic prototype
+results/phase_f18_autonomy.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_autonomy.csv,F18 BGK bijectivity resolution
+results/phase_f18_bijectivity.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_bijectivity.csv,F18 BGK bijectivity resolution
+results/phase_f18_kill_switch.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_kill_switch.csv,F18 BGK bijectivity resolution
+results/phase_f18_multistep.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_multistep.csv,F18 BGK bijectivity resolution
+results/phase_f18_physical_equivalence.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_physical_equivalence.csv,F18 BGK bijectivity resolution
+results/phase_f18_physics.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_physics.csv,F18 BGK bijectivity resolution
+results/phase_f18_resource_audit.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_resource_audit.csv,F18 BGK bijectivity resolution
+results/phase_f18_unitarity.csv,Data/Artifact,FORENSIC REFERENCE,Implementation/documentation of phase_f18_unitarity.csv,F18 BGK bijectivity resolution
+results/phase_f19_architecture_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_architecture_comparison.csv,Preserved in repository
+results/phase_f19_autonomy.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_autonomy.csv,Preserved in repository
+results/phase_f19_bijectivity.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_bijectivity.csv,Preserved in repository
+results/phase_f19_information.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_information.csv,Preserved in repository
+results/phase_f19_kill_switch.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_kill_switch.csv,Preserved in repository
+results/phase_f19_multistep.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_multistep.csv,Preserved in repository
+results/phase_f19_physical_equivalence.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_physical_equivalence.csv,Preserved in repository
+results/phase_f19_resources.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_resources.csv,Preserved in repository
+results/phase_f19_superposition.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f19_superposition.csv,Preserved in repository
+results/phase_f9_dependency_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f9_dependency_audit.csv,Preserved in repository
+results/phase_f9_kill_switch_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f9_kill_switch_audit.csv,Preserved in repository
+results/phase_f9_runtime_event_trace.csv,Data/Artifact,ACTIVE,Implementation/documentation of phase_f9_runtime_event_trace.csv,Preserved in repository
+results/plots/.gitkeep,Data/Artifact,ACTIVE,Implementation/documentation of .gitkeep,Preserved in repository
+results/plots/dam_break_comparison.png,Data/Artifact,ACTIVE,Implementation/documentation of dam_break_comparison.png,Preserved in repository
+results/qlbm_architecture_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_architecture_comparison.csv,Preserved in repository
+results/qlbm_collision_architecture_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_collision_architecture_comparison.csv,Preserved in repository
+results/qlbm_collision_c1_block_encoding.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_collision_c1_block_encoding.csv,Preserved in repository
+results/qlbm_collision_c3_mach_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_collision_c3_mach_scaling.csv,Preserved in repository
+results/qlbm_direct_encoding_validation.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_direct_encoding_validation.csv,Preserved in repository
+results/qlbm_direct_hardware_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_direct_hardware_metrics.csv,Preserved in repository
+results/qlbm_one_node_collision_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_one_node_collision_comparison.csv,Preserved in repository
+results/qlbm_one_node_parameter_sweep.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_one_node_parameter_sweep.csv,Preserved in repository
+results/qlbm_phase_f8_leakage_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f8_leakage_audit.csv,Preserved in repository
+results/qlbm_phase_f8_multistep_progression.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f8_multistep_progression.csv,Preserved in repository
+results/qlbm_phase_f8_resource_audit.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f8_resource_audit.csv,Preserved in repository
+results/qlbm_phase_f8_twomodes_comparison.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f8_twomodes_comparison.csv,Preserved in repository
+results/qlbm_phase_f_coherent_moment_scaling.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f_coherent_moment_scaling.csv,Preserved in repository
+results/qlbm_phase_f_parameterized_sweep.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f_parameterized_sweep.csv,Preserved in repository
+results/qlbm_phase_f_quantum_oracle_metrics.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f_quantum_oracle_metrics.csv,Preserved in repository
+results/qlbm_phase_f_reference_validation.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_phase_f_reference_validation.csv,Preserved in repository
+results/qlbm_quantum_moment_readout.csv,Data/Artifact,ACTIVE,Implementation/documentation of qlbm_quantum_moment_readout.csv,Preserved in repository
+results/quantum/.gitkeep,Data/Artifact,ACTIVE,Implementation/documentation of .gitkeep,Preserved in repository
+results/quantum/quantum_fields.npz,Data/Artifact,ACTIVE,Implementation/documentation of quantum_fields.npz,Preserved in repository
+results/quantum/quantum_fields/phi.npy,Data/Artifact,ACTIVE,Implementation/documentation of phi.npy,Preserved in repository
+results/quantum/quantum_fields/rho.npy,Data/Artifact,ACTIVE,Implementation/documentation of rho.npy,Preserved in repository
+results/quantum/quantum_fields/u.npy,Data/Artifact,ACTIVE,Implementation/documentation of u.npy,Preserved in repository
+run.py,Source Code,ACTIVE,Implementation/documentation of run.py,Preserved in repository
+scripts/run_arithmetic_streaming_validation.py,Source Code,ACTIVE,Implementation/documentation of run_arithmetic_streaming_validation.py,Preserved in repository
+scripts/run_collision_architecture_investigation.py,Source Code,ACTIVE,Implementation/documentation of run_collision_architecture_investigation.py,Preserved in repository
+scripts/run_direct_encoding_benchmark.py,Source Code,ACTIVE,Implementation/documentation of run_direct_encoding_benchmark.py,Preserved in repository
+scripts/run_direct_encoding_scientific_audit.py,Source Code,ACTIVE,Implementation/documentation of run_direct_encoding_scientific_audit.py,Preserved in repository
+scripts/run_level4_grid_refinement.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of run_level4_grid_refinement.py,Classical reference and validation baseline
+scripts/run_level5_audit_verification.py,Source Code,ACTIVE,Implementation/documentation of run_level5_audit_verification.py,Preserved in repository
+scripts/run_level5_carleman_validation.py,Source Code,ACTIVE,Implementation/documentation of run_level5_carleman_validation.py,Preserved in repository
+scripts/run_level5_hardware_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level5_hardware_analysis.py,Preserved in repository
+scripts/run_level5_quantum_validation.py,Source Code,ACTIVE,Implementation/documentation of run_level5_quantum_validation.py,Preserved in repository
+scripts/run_level6_architecture_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level6_architecture_analysis.py,Preserved in repository
+scripts/run_level6_error_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level6_error_analysis.py,Preserved in repository
+scripts/run_level6_resource_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level6_resource_analysis.py,Preserved in repository
+scripts/run_level6a_r_resolution_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level6a_r_resolution_analysis.py,Preserved in repository
+scripts/run_level6a_stability_analysis.py,Source Code,ACTIVE,Implementation/documentation of run_level6a_stability_analysis.py,Preserved in repository
+scripts/run_level6a_validation.py,Source Code,ACTIVE,Implementation/documentation of run_level6a_validation.py,Preserved in repository
+scripts/run_level6b_final_verification.py,Source Code,ACTIVE,Implementation/documentation of run_level6b_final_verification.py,Preserved in repository
+scripts/run_level6b_hardware_transpilation.py,Source Code,ACTIVE,Implementation/documentation of run_level6b_hardware_transpilation.py,Preserved in repository
+scripts/run_level6b_scientific_audit.py,Source Code,ACTIVE,Implementation/documentation of run_level6b_scientific_audit.py,Preserved in repository
+scripts/run_level6b_validation.py,Source Code,ACTIVE,Implementation/documentation of run_level6b_validation.py,Preserved in repository
+scripts/run_level7_final_audit.py,Source Code,ACTIVE,Implementation/documentation of run_level7_final_audit.py,Preserved in repository
+scripts/run_level7_final_literature_audit.py,Source Code,ACTIVE,Implementation/documentation of run_level7_final_literature_audit.py,Preserved in repository
+scripts/run_level7_hardening_verification.py,Source Code,ACTIVE,Implementation/documentation of run_level7_hardening_verification.py,Preserved in repository
+scripts/run_level7_investigation.py,Source Code,ACTIVE,Implementation/documentation of run_level7_investigation.py,Preserved in repository
+scripts/run_one_node_collision_audit.py,Source Code,ACTIVE,Implementation/documentation of run_one_node_collision_audit.py,Preserved in repository
+scripts/run_phase_f10_boundary_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f10_boundary_audit.py,Preserved in repository
+scripts/run_phase_f11_validation.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f11_validation.py,Preserved in repository
+scripts/run_phase_f12_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f12_audit.py,Preserved in repository
+scripts/run_phase_f12_quantum_solver.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f12_quantum_solver.py,Preserved in repository
+scripts/run_phase_f13_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f13_audit.py,Preserved in repository
+scripts/run_phase_f13_coherent_solver.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f13_coherent_solver.py,Preserved in repository
+scripts/run_phase_f14_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f14_audit.py,Preserved in repository
+scripts/run_phase_f15_audit.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of run_phase_f15_audit.py,F15 Carleman truncation closure failure artifact
+scripts/run_phase_f15_forensic_gate.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of run_phase_f15_forensic_gate.py,F15 Carleman truncation closure failure artifact
+scripts/run_phase_f16_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f16_audit.py,Preserved in repository
+scripts/run_phase_f17_audit.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of run_phase_f17_audit.py,F17 reversible arithmetic prototype
+scripts/run_phase_f17_autonomy_audit.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of run_phase_f17_autonomy_audit.py,F17 reversible arithmetic prototype
+scripts/run_phase_f18_forensic_gate.py,Source Code,FORENSIC REFERENCE,Implementation/documentation of run_phase_f18_forensic_gate.py,F18 BGK bijectivity resolution
+scripts/run_phase_f19_reversible_embedding.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f19_reversible_embedding.py,Preserved in repository
+scripts/run_phase_f20_channel_equivalence.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f20_channel_equivalence.py,Preserved in repository
+scripts/run_phase_f21_csf.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f21_csf.py,Preserved in repository
+scripts/run_phase_f22_validation.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f22_validation.py,Preserved in repository
+scripts/run_phase_f23_full_equivalence.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f23_full_equivalence.py,Preserved in repository
+scripts/run_phase_f24_forensics.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f24_forensics.py,Preserved in repository
+scripts/run_phase_f25_feasibility.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f25_feasibility.py,Preserved in repository
+scripts/run_phase_f26_optimization.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f26_optimization.py,Preserved in repository
+scripts/run_phase_f27_validation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of run_phase_f27_validation.py,Gate-level scalable reversible QLBM architecture
+scripts/run_phase_f28_audit_2x2.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of run_phase_f28_audit_2x2.py,Gate-level scalable reversible QLBM architecture
+scripts/run_phase_f29_validation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of run_phase_f29_validation.py,Gate-level scalable reversible QLBM architecture
+scripts/run_phase_f30_scaling.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of run_phase_f30_scaling.py,Gate-level scalable reversible QLBM architecture
+scripts/run_phase_f31_reduction.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of run_phase_f31_reduction.py,Gate-level scalable reversible QLBM architecture
+scripts/run_phase_f33_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f33_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f33_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f33_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f33_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f33_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f33_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f33_validation.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f34_dryrun.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f34_dryrun.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f34_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f34_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f34_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f34_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f34_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f34_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f34_validate.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f34_validate.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_discovery.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_dryrun.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_dryrun.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f35_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f35_validation.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_discovery.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_dryrun.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_dryrun.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f36_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f36_validation.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_discovery.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_dryrun.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_dryrun.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f37_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f37_validation.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_discovery.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_dryrun.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_dryrun.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_ideal.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_ideal.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_noisy.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_noisy.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_qpu.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_qpu.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f38_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of run_phase_f38_validation.py,NISQ hardware transpilation and QPU execution gate
+scripts/run_phase_f8_2x2_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f8_2x2_audit.py,Preserved in repository
+scripts/run_phase_f9_transparency_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f9_transparency_audit.py,Preserved in repository
+scripts/run_phase_f_quantum_core_audit.py,Source Code,ACTIVE,Implementation/documentation of run_phase_f_quantum_core_audit.py,Preserved in repository
+tests/test_arithmetic_streaming.py,Source Code,ACTIVE,Implementation/documentation of test_arithmetic_streaming.py,Preserved in repository
+tests/test_boundary_unitarity.py,Source Code,ACTIVE,Implementation/documentation of test_boundary_unitarity.py,Preserved in repository
+tests/test_carleman_quantum.py,Source Code,ACTIVE,Implementation/documentation of test_carleman_quantum.py,Preserved in repository
+tests/test_direct_encoding_scientific_audit.py,Source Code,ACTIVE,Implementation/documentation of test_direct_encoding_scientific_audit.py,Preserved in repository
+tests/test_direct_two_phase_prototype.py,Source Code,ACTIVE,Implementation/documentation of test_direct_two_phase_prototype.py,Preserved in repository
+tests/test_end_to_end.py,Source Code,ACTIVE,Implementation/documentation of test_end_to_end.py,Preserved in repository
+tests/test_f20_autonomy.py,Source Code,ACTIVE,Implementation/documentation of test_f20_autonomy.py,Preserved in repository
+tests/test_f20_channel.py,Source Code,ACTIVE,Implementation/documentation of test_f20_channel.py,Preserved in repository
+tests/test_f20_choi.py,Source Code,ACTIVE,Implementation/documentation of test_f20_choi.py,Preserved in repository
+tests/test_f20_entanglement.py,Source Code,ACTIVE,Implementation/documentation of test_f20_entanglement.py,Preserved in repository
+tests/test_f20_environment.py,Source Code,ACTIVE,Implementation/documentation of test_f20_environment.py,Preserved in repository
+tests/test_f20_fixed_point.py,Source Code,ACTIVE,Implementation/documentation of test_f20_fixed_point.py,Preserved in repository
+tests/test_f20_kraus.py,Source Code,ACTIVE,Implementation/documentation of test_f20_kraus.py,Preserved in repository
+tests/test_f20_multistep.py,Source Code,ACTIVE,Implementation/documentation of test_f20_multistep.py,Preserved in repository
+tests/test_f20_superposition.py,Source Code,ACTIVE,Implementation/documentation of test_f20_superposition.py,Preserved in repository
+tests/test_f20_two_phase.py,Source Code,ACTIVE,Implementation/documentation of test_f20_two_phase.py,Preserved in repository
+tests/test_f21_autonomy.py,Source Code,ACTIVE,Implementation/documentation of test_f21_autonomy.py,Preserved in repository
+tests/test_f21_channel.py,Source Code,ACTIVE,Implementation/documentation of test_f21_channel.py,Preserved in repository
+tests/test_f21_csf.py,Source Code,ACTIVE,Implementation/documentation of test_f21_csf.py,Preserved in repository
+tests/test_f21_curvature.py,Source Code,ACTIVE,Implementation/documentation of test_f21_curvature.py,Preserved in repository
+tests/test_f21_droplet.py,Source Code,ACTIVE,Implementation/documentation of test_f21_droplet.py,Preserved in repository
+tests/test_f21_environment.py,Source Code,ACTIVE,Implementation/documentation of test_f21_environment.py,Preserved in repository
+tests/test_f21_fixed_point.py,Source Code,ACTIVE,Implementation/documentation of test_f21_fixed_point.py,Preserved in repository
+tests/test_f21_force.py,Source Code,ACTIVE,Implementation/documentation of test_f21_force.py,Preserved in repository
+tests/test_f21_forensic_corrections.py,Source Code,ACTIVE,Implementation/documentation of test_f21_forensic_corrections.py,Preserved in repository
+tests/test_f21_gradient.py,Source Code,ACTIVE,Implementation/documentation of test_f21_gradient.py,Preserved in repository
+tests/test_f21_multistep.py,Source Code,ACTIVE,Implementation/documentation of test_f21_multistep.py,Preserved in repository
+tests/test_f21_norm.py,Source Code,ACTIVE,Implementation/documentation of test_f21_norm.py,Preserved in repository
+tests/test_f21_two_phase.py,Source Code,ACTIVE,Implementation/documentation of test_f21_two_phase.py,Preserved in repository
+tests/test_f22_entanglement_superposition.py,Source Code,ACTIVE,Implementation/documentation of test_f22_entanglement_superposition.py,Preserved in repository
+tests/test_f22_mass_conservation.py,Source Code,ACTIVE,Implementation/documentation of test_f22_mass_conservation.py,Preserved in repository
+tests/test_f22_multistep_channel.py,Source Code,ACTIVE,Implementation/documentation of test_f22_multistep_channel.py,Preserved in repository
+tests/test_f22_precision.py,Source Code,ACTIVE,Implementation/documentation of test_f22_precision.py,Preserved in repository
+tests/test_f22_quantum_state.py,Source Code,ACTIVE,Implementation/documentation of test_f22_quantum_state.py,Preserved in repository
+tests/test_f22_stinespring.py,Source Code,ACTIVE,Implementation/documentation of test_f22_stinespring.py,Preserved in repository
+tests/test_f23_arbitrary_density.py,Source Code,ACTIVE,Implementation/documentation of test_f23_arbitrary_density.py,Preserved in repository
+tests/test_f23_environment_semantics.py,Source Code,ACTIVE,Implementation/documentation of test_f23_environment_semantics.py,Preserved in repository
+tests/test_f23_equivalence.py,Source Code,ACTIVE,Implementation/documentation of test_f23_equivalence.py,Preserved in repository
+tests/test_f23_multistep_full.py,Source Code,ACTIVE,Implementation/documentation of test_f23_multistep_full.py,Preserved in repository
+tests/test_f23_positivity.py,Source Code,ACTIVE,Implementation/documentation of test_f23_positivity.py,Preserved in repository
+tests/test_f24_channel_linearity.py,Source Code,ACTIVE,Implementation/documentation of test_f24_channel_linearity.py,Preserved in repository
+tests/test_f24_independent_monte_carlo.py,Source Code,ACTIVE,Implementation/documentation of test_f24_independent_monte_carlo.py,Preserved in repository
+tests/test_f24_momentum_invariance.py,Source Code,ACTIVE,Implementation/documentation of test_f24_momentum_invariance.py,Preserved in repository
+tests/test_f24_resource_audit.py,Source Code,ACTIVE,Implementation/documentation of test_f24_resource_audit.py,Preserved in repository
+tests/test_f25_gate_resource_model.py,Source Code,ACTIVE,Implementation/documentation of test_f25_gate_resource_model.py,Preserved in repository
+tests/test_f25_reversible_primitives.py,Source Code,ACTIVE,Implementation/documentation of test_f25_reversible_primitives.py,Preserved in repository
+tests/test_f25_scaling_analysis.py,Source Code,ACTIVE,Implementation/documentation of test_f25_scaling_analysis.py,Preserved in repository
+tests/test_f26_optimized_bgk.py,Source Code,ACTIVE,Implementation/documentation of test_f26_optimized_bgk.py,Preserved in repository
+tests/test_f26_pareto_analysis.py,Source Code,ACTIVE,Implementation/documentation of test_f26_pareto_analysis.py,Preserved in repository
+tests/test_f26_workspace_scheduler.py,Source Code,ACTIVE,Implementation/documentation of test_f26_workspace_scheduler.py,Preserved in repository
+tests/test_f27_environment_semantics.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_environment_semantics.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_independent_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_independent_reference.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_inverse_circuits.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_inverse_circuits.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_noninjective_collision.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_noninjective_collision.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_precision.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_precision.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_register_spec.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_register_spec.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_resource_validation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_resource_validation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_reversible_circuits.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_reversible_circuits.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_stinespring.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_stinespring.py,Gate-level scalable reversible QLBM architecture
+tests/test_f27_workspace_reuse.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f27_workspace_reuse.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_2x2_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_2x2_circuit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_2x2_inverse.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_2x2_inverse.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_boundary_integration.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_boundary_integration.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_conservation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_conservation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_end_to_end_equivalence.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_end_to_end_equivalence.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_environment_reuse.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_environment_reuse.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_f27_claim_audit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_f27_claim_audit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_failure_modes.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_failure_modes.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_resource_accounting.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_resource_accounting.py,Gate-level scalable reversible QLBM architecture
+tests/test_f28_streaming_integration.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f28_streaming_integration.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_4x4_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_4x4_circuit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_8x8_circuit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_8x8_circuit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_autonomy_audit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_autonomy_audit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_cleanroom_equivalence.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_cleanroom_equivalence.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_conservation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_conservation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_multi_timestep.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_multi_timestep.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_resource_scaling.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_resource_scaling.py,Gate-level scalable reversible QLBM architecture
+tests/test_f29_three_layer_validation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f29_three_layer_validation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_autonomy_audit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_autonomy_audit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_cleanroom_reference.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_cleanroom_reference.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_component_breakdown.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_component_breakdown.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_large_lattice_extrapolation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_large_lattice_extrapolation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_multi_timestep_convergence.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_multi_timestep_convergence.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_precision_pareto.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_precision_pareto.py,Gate-level scalable reversible QLBM architecture
+tests/test_f30_spatial_scaling.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f30_spatial_scaling.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_arithmetic_optimization.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_arithmetic_optimization.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_autonomy_audit.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_autonomy_audit.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_cleanroom_equivalence.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_cleanroom_equivalence.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_environment_compression.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_environment_compression.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_multi_timestep_conservation.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_multi_timestep_conservation.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_reduced_architecture_inversion.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_reduced_architecture_inversion.py,Gate-level scalable reversible QLBM architecture
+tests/test_f31_workspace_bounds.py,Source Code,ACTIVE / VALIDATED,Implementation/documentation of test_f31_workspace_bounds.py,Gate-level scalable reversible QLBM architecture
+tests/test_f33_backend_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_backend_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f33_ideal_equivalence.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_ideal_equivalence.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f33_measurement.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_measurement.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f33_noise_model.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_noise_model.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f33_state_preparation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_state_preparation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f33_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f33_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f34_ideal_reference.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f34_ideal_reference.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f34_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f34_observables.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f34_qpu_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f34_qpu_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f34_result_parsing.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f34_result_parsing.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f34_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f34_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f35_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f35_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f35_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f35_observables.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f35_qpu_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f35_qpu_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f35_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f35_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f36_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f36_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f36_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f36_observables.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f36_qpu_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f36_qpu_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f36_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f36_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f37_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f37_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f37_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f37_observables.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f37_qpu_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f37_qpu_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f37_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f37_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f38_backend_discovery.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f38_backend_discovery.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f38_observables.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f38_observables.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f38_qpu_safety.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f38_qpu_safety.py,NISQ hardware transpilation and QPU execution gate
+tests/test_f38_validation.py,Source Code,ACTIVE / HARDWARE DEMO,Implementation/documentation of test_f38_validation.py,NISQ hardware transpilation and QPU execution gate
+tests/test_force_quantum.py,Source Code,ACTIVE,Implementation/documentation of test_force_quantum.py,Preserved in repository
+tests/test_full_quantum_step.py,Source Code,ACTIVE,Implementation/documentation of test_full_quantum_step.py,Preserved in repository
+tests/test_level4_two_phase.py,Source Code,ACTIVE REFERENCE,Implementation/documentation of test_level4_two_phase.py,Classical reference and validation baseline
+tests/test_level5_carleman.py,Source Code,ACTIVE,Implementation/documentation of test_level5_carleman.py,Preserved in repository
+tests/test_level5_quantum.py,Source Code,ACTIVE,Implementation/documentation of test_level5_quantum.py,Preserved in repository
+tests/test_level6_architecture.py,Source Code,ACTIVE,Implementation/documentation of test_level6_architecture.py,Preserved in repository
+tests/test_level6a_lifted_carleman.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_lifted_carleman.py,Preserved in repository
+tests/test_level6a_r_architectures.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_r_architectures.py,Preserved in repository
+tests/test_level6a_r_block_encoding.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_r_block_encoding.py,Preserved in repository
+tests/test_level6a_r_invariance.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_r_invariance.py,Preserved in repository
+tests/test_level6a_r_streaming.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_r_streaming.py,Preserved in repository
+tests/test_level6a_stability.py,Source Code,ACTIVE,Implementation/documentation of test_level6a_stability.py,Preserved in repository
+tests/test_level6b_csf.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_csf.py,Preserved in repository
+tests/test_level6b_hybrid.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_hybrid.py,Preserved in repository
+tests/test_level6b_scientific_audit.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_scientific_audit.py,Preserved in repository
+tests/test_level6b_streaming.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_streaming.py,Preserved in repository
+tests/test_level6b_timestep.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_timestep.py,Preserved in repository
+tests/test_level6b_validation.py,Source Code,ACTIVE,Implementation/documentation of test_level6b_validation.py,Preserved in repository
+tests/test_level7_coherent_streaming.py,Source Code,ACTIVE,Implementation/documentation of test_level7_coherent_streaming.py,Preserved in repository
+tests/test_level7_final_audit.py,Source Code,ACTIVE,Implementation/documentation of test_level7_final_audit.py,Preserved in repository
+tests/test_level7_literature_audit.py,Source Code,ACTIVE,Implementation/documentation of test_level7_literature_audit.py,Preserved in repository
+tests/test_level7_multistep_prototype.py,Source Code,ACTIVE,Implementation/documentation of test_level7_multistep_prototype.py,Preserved in repository
+tests/test_level7_operator_composition.py,Source Code,ACTIVE,Implementation/documentation of test_level7_operator_composition.py,Preserved in repository
+tests/test_level7_tensor_invariance.py,Source Code,ACTIVE,Implementation/documentation of test_level7_tensor_invariance.py,Preserved in repository
+tests/test_observables.py,Source Code,ACTIVE,Implementation/documentation of test_observables.py,Preserved in repository
+tests/test_one_node_collision.py,Source Code,ACTIVE,Implementation/documentation of test_one_node_collision.py,Preserved in repository
+tests/test_phase_f10_boundaries.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f10_boundaries.py,Preserved in repository
+tests/test_phase_f11_multiphase.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f11_multiphase.py,Preserved in repository
+tests/test_phase_f12_coherent_timestep.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f12_coherent_timestep.py,Preserved in repository
+tests/test_phase_f12_force.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f12_force.py,Preserved in repository
+tests/test_phase_f12_parameter_oracle.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f12_parameter_oracle.py,Preserved in repository
+tests/test_phase_f12_quantum_moments.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f12_quantum_moments.py,Preserved in repository
+tests/test_phase_f13_coherent_collision.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f13_coherent_collision.py,Preserved in repository
+tests/test_phase_f13_coherent_force.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f13_coherent_force.py,Preserved in repository
+tests/test_phase_f13_coherent_moments.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f13_coherent_moments.py,Preserved in repository
+tests/test_phase_f13_coherent_timestep.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f13_coherent_timestep.py,Preserved in repository
+tests/test_phase_f13_coherent_velocity.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f13_coherent_velocity.py,Preserved in repository
+tests/test_phase_f14_forensic_audit.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f14_forensic_audit.py,Preserved in repository
+tests/test_phase_f14_quantum_only.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f14_quantum_only.py,Preserved in repository
+tests/test_phase_f14_unitarity.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f14_unitarity.py,Preserved in repository
+tests/test_phase_f15_autonomous_solver.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of test_phase_f15_autonomous_solver.py,F15 Carleman truncation closure failure artifact
+tests/test_phase_f15_carleman.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of test_phase_f15_carleman.py,F15 Carleman truncation closure failure artifact
+tests/test_phase_f15_manifold.py,Source Code,ARCHIVE / REJECTED,Implementation/documentation of test_phase_f15_manifold.py,F15 Carleman truncation closure failure artifact
+tests/test_phase_f17_autonomous_solver.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of test_phase_f17_autonomous_solver.py,F17 reversible arithmetic prototype
+tests/test_phase_f17_reversible_collision.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of test_phase_f17_reversible_collision.py,F17 reversible arithmetic prototype
+tests/test_phase_f17_reversible_primitives.py,Source Code,EXPERIMENTAL / ARCHIVE,Implementation/documentation of test_phase_f17_reversible_primitives.py,F17 reversible arithmetic prototype
+tests/test_phase_f19_autonomy.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_autonomy.py,Preserved in repository
+tests/test_phase_f19_bijectivity.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_bijectivity.py,Preserved in repository
+tests/test_phase_f19_compute_output.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_compute_output.py,Preserved in repository
+tests/test_phase_f19_environment.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_environment.py,Preserved in repository
+tests/test_phase_f19_information.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_information.py,Preserved in repository
+tests/test_phase_f19_physical_equivalence.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_physical_equivalence.py,Preserved in repository
+tests/test_phase_f19_resources.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_resources.py,Preserved in repository
+tests/test_phase_f19_superposition.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_superposition.py,Preserved in repository
+tests/test_phase_f19_two_phase.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f19_two_phase.py,Preserved in repository
+tests/test_phase_f8_2x2_solver.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f8_2x2_solver.py,Preserved in repository
+tests/test_phase_f9_transparency.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f9_transparency.py,Preserved in repository
+tests/test_phase_f_quantum_collision.py,Source Code,ACTIVE,Implementation/documentation of test_phase_f_quantum_collision.py,Preserved in repository
+tests/test_quantum_collision_investigation.py,Source Code,ACTIVE,Implementation/documentation of test_quantum_collision_investigation.py,Preserved in repository
+tests/test_state_preparation.py,Source Code,ACTIVE,Implementation/documentation of test_state_preparation.py,Preserved in repository
+tests/test_streaming_unitarity.py,Source Code,ACTIVE,Implementation/documentation of test_streaming_unitarity.py,Preserved in repository
+validation_results.csv,Data/Artifact,ACTIVE,Implementation/documentation of validation_results.csv,Preserved in repository
