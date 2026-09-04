@@ -1,0 +1,9 @@
+Basis_Input_x,System_Output_F(x),Environment_Output_e(x),Joint_State_Output,Isometry_Inner_Product_Preserved,Physical_Interpretation
+|0>,|0>,|0>_E (Full Microstate Copy),|0>_S |0>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|1>,|0>,|1>_E (Full Microstate Copy),|0>_S |1>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|2>,|0>,|2>_E (Full Microstate Copy),|0>_S |2>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|3>,|3>,|3>_E (Full Microstate Copy),|3>_S |3>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|4>,|3>,|4>_E (Full Microstate Copy),|3>_S |4>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|5>,|5>,|5>_E (Full Microstate Copy),|5>_S |5>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|6>,|6>,|6>_E (Full Microstate Copy),|6>_S |6>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map
+|7>,|7>,|7>_E (Full Microstate Copy),|7>_S |7>_E,YES (<x|y> = <F(x)|F(y)><x|y> = 0),Reversible embedding of classical map

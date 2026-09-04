@@ -1,0 +1,6 @@
+Superposition_Pair,NonEq_Sector,Input_Coherence,Output_Purity,Output_Coherence,Coherence_Retention,Hypothesis_Confirmed
+Equilibria |0> and |3> (neq=0),neq=0,1.0000,1.0000,1.0000,100.0%,YES (100% Coherence Preserved)
+Equilibria |0> and |5> (neq=0),neq=0,1.0000,1.0000,1.0000,100.0%,YES (100% Coherence Preserved)
+Equilibria |3> and |6> (neq=0),neq=0,1.0000,1.0000,1.0000,100.0%,YES (100% Coherence Preserved)
+Equilibria |5> and |7> (neq=0),neq=0,1.0000,1.0000,1.0000,100.0%,YES (100% Coherence Preserved)
+Perturbed States |1> and |4> (both neq=1),neq=1,1.0000,1.0000,1.0000,100.0%,YES (100% Coherence Preserved)

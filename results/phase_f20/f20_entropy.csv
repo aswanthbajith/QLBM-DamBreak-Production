@@ -1,0 +1,6 @@
+Timestep_T,NonEquilibrium_Norm,Distance_to_Equilibrium,System_Entropy_S(rho),Thermodynamic_Relaxation,Stability
+1,0.200000,0.100000,0.1813,Exponential Approach to Equilibrium,STABLE
+2,0.040000,0.020000,0.3297,Exponential Approach to Equilibrium,STABLE
+4,0.001600,0.000800,0.5507,Exponential Approach to Equilibrium,STABLE
+8,0.000003,0.000001,0.7981,Exponential Approach to Equilibrium,STABLE
+16,0.000000,0.000000,0.9592,Exponential Approach to Equilibrium,STABLE

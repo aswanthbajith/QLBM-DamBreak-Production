@@ -1,0 +1,9 @@
+Input_Basis_State,Conserved_Hydrodynamic_Mode,NonEquilibrium_Mode,Environment_Coupled_State,Coupled_To_Hydrodynamics,Output_System_State
+|0>,|0>_cons,|0>_neq,|e=0>_E,NO (Strictly Non-Eq Only),|0>_S
+|1>,|0>_cons,|1>_neq,|e=1>_E,NO (Strictly Non-Eq Only),|0>_S
+|2>,|0>_cons,|2>_neq,|e=2>_E,NO (Strictly Non-Eq Only),|0>_S
+|3>,|3>_cons,|0>_neq,|e=0>_E,NO (Strictly Non-Eq Only),|3>_S
+|4>,|3>_cons,|1>_neq,|e=1>_E,NO (Strictly Non-Eq Only),|3>_S
+|5>,|5>_cons,|0>_neq,|e=0>_E,NO (Strictly Non-Eq Only),|5>_S
+|6>,|6>_cons,|0>_neq,|e=0>_E,NO (Strictly Non-Eq Only),|6>_S
+|7>,|7>_cons,|0>_neq,|e=0>_E,NO (Strictly Non-Eq Only),|7>_S

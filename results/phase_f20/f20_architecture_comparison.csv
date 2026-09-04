@@ -1,0 +1,13 @@
+Criterion,A_Level6B_Hybrid,B_F18_FullCopy,C_F19_MomentChannel,D_ComputeOutput,E_F20_ValidatedCPTP
+Scientific Principle,Local Carleman block encoding,Full-state CNOT fanout,Moment-space non-eq open channel,Compute-out reversible chain,Validated moment-space CPTP channel
+Physical Collision Fidelity,HIGH (<3.8% surge error),EXACT on basis states,EXACT on basis states,EXACT on basis states,EXACT (conserved + relaxed non-eq)
+Coherence Preservation,ZERO (classical re-lifting),ZERO (universal dephasing),PARTIAL (conserved modes),HIGH (in joint space),EXACT FOR IDENTICAL NON-EQ SECTOR
+CPTP Validity,N/A (Hybrid projector),YES (Rank 512),YES (Rank 8),YES (Unitary Rank 1),YES (Verified Choi lambda_min >= 0)
+Quantum Autonomy,HYBRID,AUTONOMOUS,AUTONOMOUS CPTP,AUTONOMOUS,AUTONOMOUS CPTP CHANNEL
+Two-Phase Support,YES (f and g coupled),YES (integer registers),YES (f and g moments),YES,YES (dual moment registers)
+Surface Tension CSF,VALIDATED (sigma > 0),EXCLUDED (sigma = 0),THEORETICAL,THEORETICAL,TIER 2 HYBRID / TIER 3 THEORETICAL
+Resource Cost,LOW (hybrid),VERY HIGH (288Q/node),MEDIUM (48Q/node),EXTREME (unbounded),"OPTIMIZED (48Q/node, 7616 Toff)"
+Environment Memory Scaling,O(1),O(T),O(1) with reset,O(T),O(1) PROVEN VIA DISSIPATIVE RESET
+Multi-Step Viability,HIGH (up to T=2000),LOW (T <= 2),HIGH (T=64),LOW,DEMONSTRATED (T=64 STABLE)
+Hardware Feasibility,16Q NISQ demonstrator,FTQC only,FTQC only,FTQC only,NISQ DEMO + FTQC CHANNEL BLUEPRINT
+Scientific Classification,LEVEL B,LEVEL B,LEVEL B,LEVEL B,LEVEL B (DEFENSIBLE CHANNEL)

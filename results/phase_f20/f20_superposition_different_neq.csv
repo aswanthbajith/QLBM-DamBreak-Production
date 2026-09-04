@@ -1,0 +1,5 @@
+Superposition_Pair,NonEq_Sector_A,NonEq_Sector_B,Input_Coherence,Output_Purity,Output_Coherence,Decoherence_Behavior,Physical_Interpretation
+Equilibrium |0> (neq=0) vs Perturbed |1> (neq=1),neq=0,neq=1,1.0000,1.0000,0.0000,Incoherent Mixture,Dissipative environment distinguishes kinetic modes
+Equilibrium |0> (neq=0) vs Perturbed |2> (neq=2),neq=0,neq=2,1.0000,1.0000,0.0000,Incoherent Mixture,Dissipative environment distinguishes kinetic modes
+Perturbed |1> (neq=1) vs Perturbed |2> (neq=2),neq=1,neq=2,1.0000,1.0000,0.0000,Incoherent Mixture,Dissipative environment distinguishes kinetic modes
+Equilibrium |3> (neq=0) vs Perturbed |4> (neq=1),neq=0,neq=1,1.0000,1.0000,0.0000,Incoherent Mixture,Dissipative environment distinguishes kinetic modes

@@ -1,0 +1,6 @@
+Channel_Block,Input_Populations,Conserved_Mode,Reversible_or_Channel,Hardware_Realizability
+Phase-Field Order Parameter alpha,g_0 ... g_8,alpha = sum_i g_i,Conserved Sector (Unitary),Quantum Adder Tree
+Phase-Field Mobility Relaxation,g_neq,Non-equilibrium g modes,Open Channel (Environment),Stinespring Ancillas
+Density Interpolation rho(alpha),alpha,rho = alpha*rho_L + (1-alpha)*rho_G,Exact Reversible Arithmetic,Toffoli Fused Add
+Viscosity Interpolation nu(alpha),alpha,nu = alpha*nu_L + (1-alpha)*nu_G,Exact Reversible Arithmetic,Toffoli Fused Add
+Hydrodynamic Collision f*,f_0 ... f_8,"rho, jx, jy conserved",Open Channel (Environment),Moment-Space Stinespring

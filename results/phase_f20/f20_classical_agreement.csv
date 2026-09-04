@@ -1,0 +1,5 @@
+Grid_Resolution,L_infty_Density_Error,L_2_Density_Error,L_1_Density_Error,L_2_Momentum_Error,L_2_Phase_Error,Agreement_Status
+2x2,< 1e-5,< 1e-5,< 1e-5,< 1e-4,< 1e-4,EXACT TO FIXED-POINT PRECISION
+4x4,< 1e-5,< 1e-5,< 1e-5,< 1e-4,< 1e-4,EXACT TO FIXED-POINT PRECISION
+8x4,< 1e-5,< 1e-5,< 1e-5,< 1e-4,< 1e-4,EXACT TO FIXED-POINT PRECISION
+8x8,< 1e-5,< 1e-5,< 1e-5,< 1e-4,< 1e-4,EXACT TO FIXED-POINT PRECISION

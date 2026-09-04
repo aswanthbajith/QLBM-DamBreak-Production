@@ -1,0 +1,8 @@
+Timesteps_T,F18_FullCopy_Qubits_Per_Node,F20_NoReset_Qubits_Per_Node,F20_ActiveReset_Qubits_Per_Node,Asymptotic_Scaling_F18,Asymptotic_Scaling_F20_ActiveReset,Reset_Mechanism
+1,288,48,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+2,576,96,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+4,1152,192,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+8,2304,384,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+16,4608,768,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+32,9216,1536,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E
+64,18432,3072,48,O(T),O(1) (Constant in Time),Mid-circuit project-and-reset |0><0|_E

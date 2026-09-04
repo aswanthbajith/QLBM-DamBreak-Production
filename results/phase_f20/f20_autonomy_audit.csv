@@ -1,0 +1,9 @@
+Operation,Module,Classification,Classical_Feedback
+State Initialization,quantum/f33_state_preparation.py,QUANTUM_UNITARY,None
+Moment Transform M,quantum/phase_f20_research_engine.py,REVERSIBLE_ARITHMETIC,None
+Non-Eq Dissipation,quantum/phase_f20_research_engine.py,QUANTUM_CHANNEL,None (CPTP Ancillas)
+Spatial Streaming,classical/streaming.py,QUANTUM_UNITARY,None (SWAP network)
+Bounce-Back Wall,classical/boundary.py,QUANTUM_UNITARY,None (Pauli-X involution)
+Guo Body Forcing,quantum/f21_force.py,REVERSIBLE_ARITHMETIC,None
+CSF Surface Tension,quantum/level6b_hybrid_solver.py,HYBRID,Classical Host Parameter Bus
+Terminal Readout,quantum/f33_measurement.py,FINAL_READOUT,Terminal Only

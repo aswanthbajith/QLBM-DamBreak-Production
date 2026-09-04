@@ -1,0 +1,6 @@
+Relaxation_Parameter_omega,Conserved_Eigenvalues,NonEq_Eigenvalues,Contraction_Dimension,Zero_Eigenvalue_Kernel_Dim,Max_Singular_Value,Min_Singular_Value,Is_Strict_Contraction_on_NonEq
+0.50,1.000 (x3),0.500 (x6),6 Modes,0 Modes,1.0147,0.4927,YES
+0.80,1.000 (x3),0.200 (x6),6 Modes,0 Modes,1.0295,0.1943,YES
+1.00,1.000 (x3),0.000 (x6),6 Modes,6 Modes,1.0440,0.0000,YES
+1.20,1.000 (x3),-0.200 (x6),6 Modes,0 Modes,1.0651,0.1878,YES
+1.50,1.000 (x3),-0.500 (x6),6 Modes,0 Modes,1.1194,0.4467,YES

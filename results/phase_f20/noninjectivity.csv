@@ -1,0 +1,8 @@
+Scenario_Name,Input_L1_Distance,Output_L1_Distance,Is_NonInjective_Collision,Isometric_Env_Overlap_Required,Kernel_Dimension,Degenerate_Information_Lost
+"1. Ideal BGK (omega=1.0, no force)",40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+"2. Finite-precision BGK (Q4.12, no force)",40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+"3. Two-phase BGK (alpha=0.5, no force)",40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+4. Forcing enabled (buoyancy g=-0.0005),40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+5. Forcing disabled (g=0.0),40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+6. CSF surface tension disabled (sigma=0),40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"
+7. CSF surface tension enabled (sigma=0.001),40,0,True,0.0,6 (Non-eq modes),"Shear stress (pxx, pxy, e, eps, qx, qy)"

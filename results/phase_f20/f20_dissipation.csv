@@ -1,0 +1,10 @@
+Moment_Index,Name,Is_Conserved,Theoretical_Relaxation_Rate,Contraction_Factor_(1-omega),Dissipation_Verified
+0,"rho (density, conserved)",YES,0.00,1.00,YES (Zero Dissipation)
+1,"e (energy, non-eq)",NO,0.80,0.20,YES (Exact Contraction)
+2,"epsilon (energy sq, non-eq)",NO,0.80,0.20,YES (Exact Contraction)
+3,"jx (x-momentum, conserved)",YES,0.00,1.00,YES (Zero Dissipation)
+4,"qx (heat flux x, non-eq)",NO,0.80,0.20,YES (Exact Contraction)
+5,"jy (y-momentum, conserved)",YES,0.00,1.00,YES (Zero Dissipation)
+6,"qy (heat flux y, non-eq)",NO,0.80,0.20,YES (Exact Contraction)
+7,"pxx (normal stress, non-eq)",NO,0.80,0.20,YES (Exact Contraction)
+8,"pxy (shear stress, non-eq)",NO,0.80,0.20,YES (Exact Contraction)

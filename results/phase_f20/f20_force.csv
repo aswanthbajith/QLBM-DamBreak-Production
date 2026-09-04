@@ -1,0 +1,4 @@
+Force_Type,Formula,Implementation,Is_Autonomous_Quantum,Requires_Classical_Oracle
+Gravitational Buoyancy F_g,(rho - rho_G) * g_acc,Reversible addition into momentum j_y,YES (Linear Arithmetic),NO
+Guo Source Cross Terms,(c_i . u)(c_i . F),Bilinear register multiplication,YES (Reversible Multiplier),NO
+Surface Tension F_CSF,sigma * kappa * grad(alpha),Multi-node spatial finite difference,HYBRID / THEORETICAL,YES (In Level-6B)

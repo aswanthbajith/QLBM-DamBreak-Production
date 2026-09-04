@@ -1,0 +1,5 @@
+Hydrodynamic_Subspace,Common_Equilibrium_Target,Input_Coherence,Output_Purity,Output_Coherence,Physical_Finding,Thermodynamically_Sensible
+Hydro State 0: |0> (equilibrium) vs |1> (shear perturbation),|0>,1.0000,1.0000,0.0000,Preimages relax to pure equilibrium; non-eq phase information dissipates into environment,YES (BGK removes microscopic kinetic memory)
+Hydro State 0: |0> (equilibrium) vs |2> (energy perturbation),|0>,1.0000,1.0000,0.0000,Preimages relax to pure equilibrium; non-eq phase information dissipates into environment,YES (BGK removes microscopic kinetic memory)
+Hydro State 0: |1> (shear) vs |2> (energy),|0>,1.0000,1.0000,0.0000,Preimages relax to pure equilibrium; non-eq phase information dissipates into environment,YES (BGK removes microscopic kinetic memory)
+Hydro State 3: |3> (equilibrium) vs |4> (shear perturbation),|3>,1.0000,1.0000,0.0000,Preimages relax to pure equilibrium; non-eq phase information dissipates into environment,YES (BGK removes microscopic kinetic memory)

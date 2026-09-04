@@ -1,0 +1,8 @@
+Timestep_T,Density_L2_Error,Phase_L2_Error,Mass_Conservation_Error,Channel_Stability,Environment_Recycled
+1,0.010%,4.600%,0.000%,STABLE,YES (Active Dissipative Reset)
+2,0.020%,9.200%,0.000%,STABLE,YES (Active Dissipative Reset)
+4,0.910%,16.220%,0.000%,STABLE,YES (Active Dissipative Reset)
+8,0.910%,16.220%,0.000%,STABLE,YES (Active Dissipative Reset)
+16,0.910%,16.220%,0.000%,STABLE,YES (Active Dissipative Reset)
+32,0.910%,16.220%,0.000%,STABLE,YES (Active Dissipative Reset)
+64,0.910%,16.220%,0.000%,STABLE,YES (Active Dissipative Reset)

@@ -1,0 +1,6 @@
+Timestep_T,F18_FullCopy_Coherence,F18_Visibility,F20_SameNonEq_Coherence,F20_SameNonEq_Visibility,F20_DiffNonEq_Coherence,F20_DiffNonEq_Visibility,Falsification_Verdict
+1,0.0000,0.0000,0.9615,0.9608,0.0000,0.0000,CONFIRMED: High visibility iff non-eq modes match
+2,0.0000,0.0000,0.9259,0.9423,0.0000,0.0000,CONFIRMED: High visibility iff non-eq modes match
+4,0.0000,0.0000,0.8621,0.9074,0.0000,0.0000,CONFIRMED: High visibility iff non-eq modes match
+8,0.0000,0.0000,0.7576,0.8448,0.0000,0.0000,CONFIRMED: High visibility iff non-eq modes match
+16,0.0000,0.0000,0.6098,0.7424,0.0000,0.0000,CONFIRMED: High visibility iff non-eq modes match

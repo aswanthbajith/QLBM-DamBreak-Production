@@ -1,0 +1,4 @@
+Lattice_Configuration,Streaming_Operator,Is_Unitary,Unitarity_Error,Qubit_Overhead,Gate_Depth
+2x2,Spatial SWAP Network,YES (Exact),0.00e+00,0 Ancillas (In-Place SWAP),9 Parallel Layers
+4x4,Spatial SWAP Network,YES (Exact),0.00e+00,0 Ancillas (In-Place SWAP),9 Parallel Layers
+8x8,Spatial SWAP Network,YES (Exact),0.00e+00,0 Ancillas (In-Place SWAP),9 Parallel Layers

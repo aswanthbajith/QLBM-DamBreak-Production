@@ -1,0 +1,13 @@
+Equation_Component,Mathematical_Form,Clipping_or_Limit,Hardware_Arithmetic,Source_File
+Density Reconstruction,rho = sum_i f_i,rho >= 1e-6 (rho_safe),Adder Tree,classical/level4_two_phase.py:132
+Phase Fraction Reconstruction,alpha = sum_i g_i,"clip(alpha, 0.0, 1.0)",Saturating Adder,classical/level4_two_phase.py:133
+Shifted Velocity ux,ux = (sum c_ix f_i + 0.5 F_x) / rho_safe,|u| <= 0.15 (Mach limiter),Divider & Limiter,classical/level4_two_phase.py:140-147
+Shifted Velocity uy,uy = (sum c_iy f_i + 0.5 F_y) / rho_safe,|u| <= 0.15 (Mach limiter),Divider & Limiter,classical/level4_two_phase.py:141-147
+Phase-Dependent Viscosity,nu_mix = alpha * nu_L + (1 - alpha) * nu_G,Linear Interpolation,Fused Multiply-Add,classical/level4_two_phase.py:150
+Hydrodynamic Relaxation,"tau_f = 3 * nu_mix + 0.5, omega_f = 1 / tau_f",0.5 < tau_f < 2.0,Reciprocal LUT,classical/level4_two_phase.py:151-152
+Phase Relaxation,omega_g = 1 / tau_phi,Constant tau_phi = 0.7,Constant Shift,classical/level4_two_phase.py:153
+Hydrodynamic Equilibrium f_eq,w_i * rho * [1 + 3(c_i.u) + 4.5(c_i.u)^2 - 1.5 u^2],Second-order low Mach expansion,Multiplier & Multi-Add,classical/level4_two_phase.py:156
+Phase Equilibrium g_eq,w_i * alpha * [1 + 3(c_i.u)],First-order advective equilibrium,Linear FMA,classical/level4_two_phase.py:160
+Guo External Forcing Source S_i,(1 - 0.5 omega_f) w_i [3(c_i.F) + 9(c_i.u)(c_i.F) - 3(u.F)],Exact second-order Guo forcing,Fused Inner Products,classical/level4_two_phase.py:173
+Hydrodynamic BGK Collision,f_i^* = f_i - omega_f (f_i - f_i^eq) + S_i,Positivity guard f_i* >= 0,Subtractor & Adder,classical/level4_two_phase.py:174
+Phase BGK Collision,g_i^* = g_i - omega_g (g_i - g_i^eq),Positivity guard g_i* >= 0,Subtractor & Adder,classical/level4_two_phase.py:175

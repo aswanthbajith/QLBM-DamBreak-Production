@@ -1,0 +1,2 @@
+Boundary_Scheme,Involution_B2_Equals_I,Unitarity_Bdag_B_Equals_I,Implementation,Toffoli_Cost,Mass_Leakage
+Generalized Half-Way Bounce-Back,YES,YES,Pauli-X Bit Permutation on Direction Register,0 Gates (Clifford / SWAP),0.000% (Exact Conservation)

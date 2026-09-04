@@ -1,0 +1,5 @@
+Tier,Status,Method,Quantum_Cost,Physical_Accuracy
+Tier 1: Classical CSF,VALIDATED,Classical host computation of kappa and grad(alpha),0 Qubits,Exact (Level-4 baseline)
+Tier 2: Quantum-Compatible Oracle,VALIDATED,Classical parameter bus feeding quantum registers,32 Ancillas,Exact (Level-6B baseline)
+Tier 3: Reversible Arithmetic CSF,FEASIBLE,Cross-node quantum finite-difference stencils,"18,500 Toffolis/node",Theoretical FTQC Blueprint
+Tier 4: Fully Autonomous Quantum CSF,THEORETICAL,End-to-end unitary curvature evaluator,"> 25,000 Toffolis/node",Unimplemented in Gate Level
