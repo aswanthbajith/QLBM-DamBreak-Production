@@ -1,0 +1,6 @@
+Subsystem,Physical_Role,Quantum_Representation,Dissipation_Type
+Hydrodynamic Transport (f_i),Navier-Stokes momentum and pressure,"Conserved moments (rho, jx, jy) + relaxed stress",BGK Viscous Shear Dissipation
+Phase Field (g_i),Conservative interface capturing (alpha),Conserved order parameter (alpha) + relaxed gradient,Mobility / Interface Relaxation
+Density Coupling rho(alpha),rho = alpha * rho_L + (1-alpha) * rho_G,Reversible arithmetic linear interpolation,Reversible / Hamiltonian
+Viscosity Coupling nu(alpha),nu = alpha * nu_L + (1-alpha) * nu_G,Reversible parameter generation,Reversible / Hamiltonian
+Gravitational Buoyancy,F_g = (rho - rho_G) * g_acc,Reversible momentum increment,Exact Unitary Shift

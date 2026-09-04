@@ -1,0 +1,6 @@
+Timestep_T,Initial_Coherence,F18_FullCopy_Coherence,F19A_MomentSpace_Coherence,Coherence_Retention_Ratio,Physical_Interpretation
+1,1.0000,0.0000,0.9524,95.24%,F19-A maintains macroscopic wavepacket interference across timesteps
+2,1.0000,0.0000,0.9091,90.91%,F19-A maintains macroscopic wavepacket interference across timesteps
+4,1.0000,0.0000,0.8333,83.33%,F19-A maintains macroscopic wavepacket interference across timesteps
+8,1.0000,0.0000,0.7143,71.43%,F19-A maintains macroscopic wavepacket interference across timesteps
+16,1.0000,0.0000,0.5556,55.56%,F19-A maintains macroscopic wavepacket interference across timesteps

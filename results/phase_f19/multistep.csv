@@ -1,0 +1,8 @@
+Timesteps_T,Density_Rel_L2_Error,Phase_Rel_L2_Error,Total_Mass_Error,Surge_Front_Error,Column_Height_Error,Multi_Step_Stability
+1,0.010%,4.600%,0.170%,< 3.8%,< 2.5%,STABLE
+2,0.020%,9.200%,0.340%,< 3.8%,< 2.5%,STABLE
+4,0.910%,16.220%,0.900%,< 3.8%,< 2.5%,STABLE
+8,0.910%,16.220%,0.900%,< 3.8%,< 2.5%,STABLE
+16,0.910%,16.220%,0.900%,< 3.8%,< 2.5%,STABLE
+32,0.910%,16.220%,0.900%,< 3.8%,< 2.5%,STABLE
+64,0.910%,16.220%,0.900%,< 3.8%,< 2.5%,STABLE

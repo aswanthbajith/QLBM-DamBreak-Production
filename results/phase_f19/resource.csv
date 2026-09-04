@@ -1,0 +1,6 @@
+Architecture,Data_Qubits,Env_Qubits,Work_Qubits,Total_Qubits,Circuit_Depth,2Q_Gates,Toffoli_Gates,Target_Backend
+NISQ Demonstrator (2x2),16,0,0,16,19,16,0,127Q IBM Heavy-Hex
+FTQC Reversible F29 (4x4),4608,4608,768,9984,34200,1354752,338688,Fault-Tolerant
+FTQC Reduced F31 (4x4),4608,3584,768,8960,24500,974848,243712,Fault-Tolerant
+Proposed F19-A Moment Channel (4x4),4608,768,768,6144,18200,487424,121856,Fault-Tolerant
+Proposed F19-A Full Dam-Break (128x64),2359296,393216,393216,3145728,18200,249561088,62390272,Fault-Tolerant

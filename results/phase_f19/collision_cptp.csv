@@ -1,0 +1,7 @@
+Property,Value,Status
+Trace Preservation (sum K_e^dag K_e = I),0.00e+00,PASS (Exact)
+Complete Positivity (Choi lambda_min >= 0),0.000000e+00,PASS (Exact)
+Hermiticity Preservation,0.00e+00,PASS (Exact)
+Trace Preservation on Density Matrix,1.000000,PASS (Exact)
+Entangled State Positivity,0.000000e+00,PASS (Exact)
+Kraus Rank (Number of Operators),3,Rank 3 (Compressed from 8)

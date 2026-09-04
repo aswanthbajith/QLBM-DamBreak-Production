@@ -1,0 +1,10 @@
+Moment_Index,Moment_Name,Sector,Orthogonal_Norm_Squared,Relaxation_Rate_s_k,Eigenvalue_Lambda_k,Environment_Coupling_Needed
+0,"rho (density, conserved)",Conserved,9.0,0.0000,1.0000,NO
+1,"e (energy, non-eq)",Non-Equilibrium,36.0,1.2500,-0.2500,YES
+2,"epsilon (energy sq, non-eq)",Non-Equilibrium,36.0,1.2500,-0.2500,YES
+3,"jx (x-momentum, conserved)",Conserved,6.0,0.0000,1.0000,NO
+4,"qx (heat flux x, non-eq)",Non-Equilibrium,12.0,1.2500,-0.2500,YES
+5,"jy (y-momentum, conserved)",Conserved,6.0,0.0000,1.0000,NO
+6,"qy (heat flux y, non-eq)",Non-Equilibrium,12.0,1.2500,-0.2500,YES
+7,"pxx (normal stress, non-eq)",Non-Equilibrium,4.0,1.2500,-0.2500,YES
+8,"pxy (shear stress, non-eq)",Non-Equilibrium,4.0,1.2500,-0.2500,YES

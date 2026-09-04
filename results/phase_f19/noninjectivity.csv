@@ -1,0 +1,11 @@
+Perturbation_Type,Input_Population_L1_Distance,Output_Population_L1_Distance,Conserved_Moment_Difference,NonEquilibrium_Moment_Difference,Is_Exact_Degeneracy,Degrees_of_Freedom_Contracted
+Shear stress perturbation (pxx),40,0,0.0,40.0,True,Non-equilibrium (6 modes)
+Cross shear perturbation (pxy),40,0,0.0,40.0,True,Non-equilibrium (6 modes)
+Opposite normal perturbation,40,0,0.0,200.0,True,Non-equilibrium (6 modes)
+Diagonal heat flux perturbation,60,60,60.0,60.0,False,Non-equilibrium (6 modes)
+Higher kinetic energy mode,64,0,0.0,144.0,True,Non-equilibrium (6 modes)
+Pure energy squared mode,64,0,0.0,144.0,True,Non-equilibrium (6 modes)
+Symmetric double shear,80,0,0.0,400.0,True,Non-equilibrium (6 modes)
+Opposite vertical normal,40,0,0.0,200.0,True,Non-equilibrium (6 modes)
+Mixed shear and heat flux,80,0,0.0,180.0,True,Non-equilibrium (6 modes)
+Extreme non-equilibrium distortion,120,0,0.0,600.0,True,Non-equilibrium (6 modes)

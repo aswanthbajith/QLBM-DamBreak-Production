@@ -1,0 +1,5 @@
+Model,System_Dim,Environment_Dim,Kraus_Rank,Entropy_Per_Step,Scaling
+F18 Full Copying,512,512,512,9.00 bits,O(2^n)
+F31 Compressed Copying,512,64,64,6.00 bits,O(2^neq)
+F19-A Moment-Space Channel,512,8,8,3.00 bits,O(dim neq)
+F19-B Compute-Output,512,512,1,0.00 bits (Reversible),O(T * n)

@@ -1,0 +1,6 @@
+Implementation_Tier,Surface_Tension_sigma,Curvature_kappa,CSF_Force_Fs,Status
+Classical Level-4 Reference,0.001 (sigma > 0),Analytical finite-difference div(grad(alpha)/|grad|),sigma * kappa * grad(alpha),VALIDATED (Ground Truth)
+Hybrid Level-6B Baseline,0.001 (sigma > 0),Evaluated on classical parameter bus,Coupled into local Carleman linear block,VALIDATED (Hybrid Baseline)
+Reversible FTQC (F27/F31),0.0 (sigma = 0),Excluded in autonomous integer arithmetic,Zero external CSF force,REVERSIBLE ARITHMETIC DEMO
+NISQ Demonstrator (F38),Qualitative,Cross-node CZ entangling phase gate,Phase-shift interface pinning,NISQ QUALITATIVE COUPLING
+Proposed F19-A Moment Channel,0.001 (sigma > 0),Quantum finite-difference stencil circuit,Reversible addition into conserved momentum j,THEORETICAL ARCHITECTURE

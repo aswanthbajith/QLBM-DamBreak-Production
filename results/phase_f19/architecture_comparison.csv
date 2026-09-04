@@ -1,0 +1,7 @@
+Criterion,Level6B_Hybrid,F18_FullCopy,F19A_MomentChannel,F19B_ComputeOutput
+Scientific Principle,Local Carleman block encoding,Full-state CNOT fanout,Moment-space non-eq open channel,Compute-out reversible chain
+Quantum Autonomy,HYBRID (classical re-lifting),AUTONOMOUS (reversible),AUTONOMOUS CPTP CHANNEL,AUTONOMOUS (reversible chain)
+Conserved Coherence Survives?,NO (re-encoded classically),NO (universal dephasing),YES (conserved modes protected),YES (in joint register space)
+Entropy Management,Post-selection projection,Accumulates in full env,Confined to 6 non-eq modes,Requires fresh output register
+Two-Phase Dam-Break Agreement,< 3.8% surge front error,Exact in basis states,Exact in basis states,Exact in basis states
+Scientific Classification,LEVEL B,LEVEL B,LEVEL B (Strongest CPTP),LEVEL B (Reversible Classical)

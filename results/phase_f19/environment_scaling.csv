@@ -1,0 +1,8 @@
+Timesteps_T,F18_NoReset_Qubits_Per_Node,F31_NoReset_Qubits_Per_Node,F19A_DissipativeReset_Qubits_Per_Node,F19B_ComputeOutput_Qubits_Per_Node,Feasibility_on_NISQ
+1,288,224,48,576,YES (T=1)
+2,576,448,48,864,NO (FTQC Required)
+4,1152,896,48,1440,NO (FTQC Required)
+8,2304,1792,48,2592,NO (FTQC Required)
+16,4608,3584,48,4896,NO (FTQC Required)
+32,9216,7168,48,9504,NO (FTQC Required)
+64,18432,14336,48,18720,NO (FTQC Required)
