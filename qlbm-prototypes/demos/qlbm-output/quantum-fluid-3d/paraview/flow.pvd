@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<VTKFile type="Collection" version="0.1">
+  <Collection>
+    <DataSet timestep="0" part="0" file="step_000.vti" />
+    <DataSet timestep="1" part="0" file="step_001.vti" />
+    <DataSet timestep="2" part="0" file="step_002.vti" />
+    <DataSet timestep="3" part="0" file="step_003.vti" />
+    <DataSet timestep="4" part="0" file="step_004.vti" />
+    <DataSet timestep="5" part="0" file="step_005.vti" />
+    <DataSet timestep="6" part="0" file="step_006.vti" />
+    <DataSet timestep="7" part="0" file="step_007.vti" />
+    <DataSet timestep="8" part="0" file="step_008.vti" />
+    <DataSet timestep="9" part="0" file="step_009.vti" />
+    <DataSet timestep="10" part="0" file="step_010.vti" />
+    <DataSet timestep="11" part="0" file="step_011.vti" />
+    <DataSet timestep="12" part="0" file="step_012.vti" />
+  </Collection>
+</VTKFile>

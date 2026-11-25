@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<VTKFile type="ImageData" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <ImageData WholeExtent="0 8 0 8 0 4" Origin="0 0 0" Spacing="0.25 0.25 0.25" Direction="1 0 0 0 1 0 0 0 1">
+    <Piece Extent="0 8 0 8 0 4"                                                       >
+      <PointData Scalars="speed_display_m_s">
+        <DataArray type="Float32" Name="speed_display_m_s" format="appended" RangeMin="0"                    RangeMax="0"                    offset="0"                   />
+      </PointData>
+      <CellData Scalars="speed_m_s" Vectors="velocity_m_s">
+        <DataArray type="Float64" Name="velocity_m_s" NumberOfComponents="3" format="appended" RangeMin="0"                    RangeMax="0"                    offset="52"                  />
+        <DataArray type="Float32" Name="speed_m_s" format="appended" RangeMin="0"                    RangeMax="0"                    offset="116"                 />
+        <DataArray type="UInt8" Name="water_column" format="appended" RangeMin="0"                    RangeMax="1"                    offset="164"                 />
+        <DataArray type="Float64" Name="surface_elevation_m" format="appended" RangeMin="0"                    RangeMax="1.0717241379"         offset="220"                 />
+      </CellData>
+    </Piece>
+  </ImageData>
+  <AppendedData encoding="base64">
+   _AQAAAACAAABUBgAAFQAAAA==eJxjYBgFo2AUjIJRMAqoAwAGVAABAQAAAACAAAAAGAAAHAAAAA==eJztwQENAAAAwqD3T20PBxQAAAAAAPBmGAAAAQ==AQAAAACAAAAABAAAEQAAAA==eJxjYBgFo2AUjFQAAAQAAAE=AQAAAACAAAAAAQAAGAAAAA==eJxjZGRkZGCEAHQaHeBSN5T1AwB1gADpAQAAAACAAAAACAAAuQAAAA==eJztkTsKwkAURRU/TYiFqNERFdSEgIoQCFgEZhVuQRs34JrciEsQLOyFFBbaapHzmrcF3zSHGc6d33WfS36NX34OU5jAGmN5PI1u69LvYAzHeB3Yhz2Vb+Bv4Ax+35X3hENyU5WXc1PoYYjXhC31ji1eJj5MoMOL1Dtk3zNeeaj4gAvWJ3iBor5/gR/BO/vIv7dhV50v+ZzcSu4NB6ovmddVfo8fqB6c9W/9W//Wv/X/l/3/ANr+aTo=
+  </AppendedData>
+</VTKFile>

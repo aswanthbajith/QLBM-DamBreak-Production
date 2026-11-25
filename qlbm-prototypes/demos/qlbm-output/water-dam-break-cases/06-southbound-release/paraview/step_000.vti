@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<VTKFile type="ImageData" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <ImageData WholeExtent="0 64 0 64 0 0" Origin="0 0 0" Spacing="0.25 0.25 1" Direction="1 0 0 0 1 0 0 0 1">
+    <Piece Extent="0 64 0 64 0 0"                                                     >
+      <PointData Scalars="water_depth_display_m">
+        <DataArray type="Float32" Name="water_depth_display_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="0"                   />
+      </PointData>
+      <CellData Scalars="water_depth_m" Vectors="velocity_m_s">
+        <DataArray type="Float64" Name="water_depth_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="84"                  />
+        <DataArray type="Float64" Name="velocity_m_s" NumberOfComponents="3" format="appended" RangeMin="0"                    RangeMax="0"                    offset="204"                 />
+        <DataArray type="Float64" Name="speed_m_s" format="appended" RangeMin="0"                    RangeMax="0"                    offset="444"                 />
+        <DataArray type="Float64" Name="surface_elevation_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="540"                 />
+        <DataArray type="Float64" Name="bed_gauge_pressure_pa" format="appended" RangeMin="0"                    RangeMax="9810"                 offset="660"                 />
+        <DataArray type="Float64" Name="water_mass_kg" format="appended" RangeMin="0"                    RangeMax="62.5"                 offset="780"                 />
+        <DataArray type="UInt8" Name="solid" format="appended" RangeMin="0"                    RangeMax="1"                    offset="900"                 />
+      </CellData>
+    </Piece>
+  </ImageData>
+  <AppendedData encoding="base64">
+   _AQAAAACAAAAEQgAALQAAAA==eJztwzENAAAIA7A5wxrS54FwtkkTAAAAAAAAgLNxVVVVVVVVVVVVXxbcFeI2AQAAAACAAAAAAAAARwAAAA==eJztxTENAAAIA7A5w78bJMwF4WifJgAAAAAAAAAAAAAAAADATzu2bdu2bdu2bdu2bdu2bdu2bdu2bdu2bdu2bfvuAnM1p5c=AwAAAACAAAAAAAAANAAAADQAAAA0AAAAeJztwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYgAAAAXic7cEBAQAAAICQ/q/uCAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGIAAAAF4nO3BAQEAAACAkP6v7ggKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABiAAAABAQAAAACAAAAAAAAANAAAAA==eJztwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYgAAAAQ==AQAAAACAAAAAAAAARwAAAA==eJztxTENAAAIA7A5w78bJMwF4WifJgAAAAAAAAAAAAAAAADATzu2bdu2bdu2bdu2bdu2bdu2bdu2bdu2bdu2bfvuAnM1p5c=AQAAAACAAAAAAAAARwAAAA==eJztxTERAAAIBKCvYwu7W8wWngMsJAAAAAAAAAAAAAAAAADASzVt27Zt27Zt27Zt27Zt27Zt27Zt27Zt27Zt27bvXthQjJc=AQAAAACAAAAAAAAARwAAAA==eJztxTENAAAIA7BJmwP8u8EF4WifJgAAAAAAAAAAAAAAAADAS53atm3btm3btm3btm3btm3btm3btm3btm3btu27F0vTR2o=AQAAAACAAAAAEAAAKQAAAA==eJzt0qERADAIADHYf2kGqOnhgMS/+wiAm/JDp9HP6N8jAAB2KxehAYE=
+  </AppendedData>
+</VTKFile>

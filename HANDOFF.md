@@ -2,7 +2,7 @@
 
 ## Review goal
 
-Evaluate the mathematical formulation, circuit implementation, and validation of a narrow-gate water release. The long-term goal is a 3D dam break with quantum-circuit fluid evolution. The latest prototype advances a linearized moving water surface on simulated quantum gates. This handoff describes work from a separate working copy of `QCFD-Lab/qlbm`. The local prototype source and generated data referenced below are outside this handoff commit. The host repository's existing 2D hybrid Carleman solver is a separate implementation.
+Evaluate the mathematical formulation, circuit implementation, and validation of a narrow-gate water release. The long-term goal is a 3D dam break with quantum-circuit fluid evolution. The latest prototype advances a linearized moving water surface on simulated quantum gates. The review branch contains the full [QLBM prototype snapshot](qlbm-prototypes/) and its [generated results](qlbm-prototypes/demos/qlbm-output/). The host repository's existing 2D hybrid Carleman solver is a separate implementation.
 
 ## Current prototype
 
@@ -12,7 +12,7 @@ Evaluate the mathematical formulation, circuit implementation, and validation of
 - The evolution equations are `d(eta)/dt = G phi` and `d(phi)/dt = -g eta`. In energy coordinates `a = sqrt(g) eta` and `b = sqrt(G) phi`, the propagator is real orthogonal. For each eigenvalue `lambda` of `G`, the circuit update is the two-component rotation with rows `[cos(theta), sin(theta)]` and `[-sin(theta), cos(theta)]`, where `theta = sqrt(g lambda) dt`. Zero modes remain stationary. The inverse square root on positive modes decodes `phi` in a fixed gauge.
 - Python assembles `G`, constructs the gate, and prepares the initial state once. Qiskit Aer applies the same unitary for every timestep and records statevector snapshots. The decoded surface potential is extended harmonically to obtain three-component water velocity. The classical reference integration checks the output after the circuit run and supplies no timestep feedback.
 
-## Results recorded locally
+## Verified results
 
 | Check | Result |
 |---|---:|
@@ -25,17 +25,18 @@ Evaluate the mathematical formulation, circuit implementation, and validation of
 
 Additional checks verified exactly zero normal velocity on impermeable faces, agreement between breach discharge and the downstream rate of volume change, and a motionless solution when the gate was sealed. A rectangular-tank cosine mode showed second-order spatial convergence toward the finite-depth dispersion relation. The DOP853 comparison verifies circuit time evolution for the discrete equations. Physical validation of the release against an experiment is pending.
 
-## Related experiments and local reproduction
+## Related experiments and reproduction
 
-Run these commands from the `qlbm` working copy with Qiskit 2.1.0, Qiskit Aer 0.17.2, NumPy, SciPy, Matplotlib, Pillow, and VTK installed.
+Run these commands from the repository root with Qiskit 2.1.0, Qiskit Aer 0.17.2, NumPy, SciPy, Matplotlib, Pillow, and VTK installed.
 
 ```sh
+cd qlbm-prototypes
 python -m demos.simulation.quantum_fluid_evolution
 python -m demos.simulation.quantum_free_surface
 ```
 
-- `demos/simulation/quantum_fluid_evolution.py`, `quantum_flow_reference.py`, and `quantum_flow_output.py` implement a periodic 8 × 8 × 8 D3Q19 shear-wave benchmark. Its 15-qubit circuit implements linearized full-relaxation BGK collision via postselection and periodic streaming via controlled shifts. Twelve steps matched the exact discrete velocity within 5.85 × 10⁻¹³ lattice units. Fourteen of 128 simulated shots survived all collisions.
-- `demos/simulation/quantum_free_surface.py` assembles and runs the free-surface circuit. `quantum_free_surface_model.py` supplies the spatial model and `quantum_free_surface_output.py` writes the GIF and VTK data. In `demos/qlbm-output/quantum-free-surface-3d/`, `flow.gif` shows the moving interface, `paraview/surface.pvd` animates the surface, and `paraview/flow.pvd` shows the reference-grid velocity. `simulation.json` holds the run diagnostics.
+- [`quantum_fluid_evolution.py`](qlbm-prototypes/demos/simulation/quantum_fluid_evolution.py) and its reference and output modules implement a periodic 8 × 8 × 8 D3Q19 shear-wave benchmark. Its 15-qubit circuit implements linearized full-relaxation BGK collision via postselection and periodic streaming via controlled shifts. Twelve steps matched the exact discrete velocity within 5.85 × 10⁻¹³ lattice units. Fourteen of 128 simulated shots survived all collisions.
+- [`quantum_free_surface.py`](qlbm-prototypes/demos/simulation/quantum_free_surface.py) assembles and runs the free-surface circuit. [`quantum_free_surface_model.py`](qlbm-prototypes/demos/simulation/quantum_free_surface_model.py) supplies the spatial model and [`quantum_free_surface_output.py`](qlbm-prototypes/demos/simulation/quantum_free_surface_output.py) writes the GIF and VTK data. In `demos/qlbm-output/quantum-free-surface-3d/`, `flow.gif` shows the moving interface, `paraview/surface.pvd` animates the surface, and `paraview/flow.pvd` shows the reference-grid velocity. `simulation.json` holds the run diagnostics. [Free-surface results](qlbm-prototypes/demos/qlbm-output/quantum-free-surface-3d/) · [D3Q19 benchmark results](qlbm-prototypes/demos/qlbm-output/quantum-fluid-3d/)
 - The earlier OpenFOAM 3D narrow-gate result is a classical water–air CFD comparison. The ten other water-depth and velocity cases use a classical depth-averaged shallow-water solver.
 
 ## Questions for the reviewer

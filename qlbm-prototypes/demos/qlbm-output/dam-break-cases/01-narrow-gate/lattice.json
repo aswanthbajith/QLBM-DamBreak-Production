@@ -1,0 +1,1 @@
+{"lattice": {"dim": {"x": 16, "y": 16}, "velocities": "D2Q9"}, "geometry": [{"x": [9, 10], "y": [0, 6], "boundary": "bounceback", "shape": "cuboid"}, {"x": [9, 10], "y": [9, 15], "boundary": "bounceback", "shape": "cuboid"}]}

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<VTKFile type="ImageData" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <ImageData WholeExtent="0 64 0 64 0 0" Origin="0 0 0" Spacing="0.25 0.25 1" Direction="1 0 0 0 1 0 0 0 1">
+    <Piece Extent="0 64 0 64 0 0"                                                     >
+      <PointData Scalars="water_depth_display_m">
+        <DataArray type="Float32" Name="water_depth_display_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="0"                   />
+      </PointData>
+      <CellData Scalars="water_depth_m" Vectors="velocity_m_s">
+        <DataArray type="Float64" Name="water_depth_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="188"                 />
+        <DataArray type="Float64" Name="velocity_m_s" NumberOfComponents="3" format="appended" RangeMin="0"                    RangeMax="0"                    offset="572"                 />
+        <DataArray type="Float64" Name="speed_m_s" format="appended" RangeMin="0"                    RangeMax="0"                    offset="812"                 />
+        <DataArray type="Float64" Name="surface_elevation_m" format="appended" RangeMin="0"                    RangeMax="1"                    offset="908"                 />
+        <DataArray type="Float64" Name="bed_gauge_pressure_pa" format="appended" RangeMin="0"                    RangeMax="9810"                 offset="1292"                />
+        <DataArray type="Float64" Name="water_mass_kg" format="appended" RangeMin="0"                    RangeMax="62.5"                 offset="1676"                />
+        <DataArray type="UInt8" Name="solid" format="appended" RangeMin="0"                    RangeMax="1"                    offset="2060"                />
+      </CellData>
+    </Piece>
+  </ImageData>
+  <AppendedData encoding="base64">
+   _AQAAAACAAAAEQgAAeQAAAA==eJzt0EENACAAxLBzhjWkk6ng0yUz0O2efX39OQYMigGDYsCgGDAoBgyKAYNiwKAYMCgGDIoBg2LAoBgwKAYMigGDYsCgGDAoBgyKAYNiwKAYMCgGDIoBg2LAoBgwKAYMigGDYsCgGDAoBgyKAYNiwKAYMNgeOQEgOg==AQAAAACAAAAAAAAADQEAAA==eJzl0DERACAAxLB3hn83SOBQkaFZunf77lm6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+t2PWHleIg=AwAAAACAAAAAAAAANAAAADQAAAA0AAAAeJztwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYgAAAAXic7cEBAQAAAICQ/q/uCAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGIAAAAF4nO3BAQEAAACAkP6v7ggKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABiAAAABAQAAAACAAAAAAAAANAAAAA==eJztwQEBAAAAgJD+r+4ICgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYgAAAAQ==AQAAAACAAAAAAAAADQEAAA==eJzl0DERACAAxLB3hn83SOBQkaFZunf77lm6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+vW6f+6dfq/bp3+r1un/+t2PWHleIg=AQAAAACAAAAAAAAADgEAAA==eJzl0DEBACAMwLDZwQXeZwxc5Gie/p35zt4pt07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dOv1ft07/163T/3Xr9H/dsAd3QGCIAQAAAACAAAAAAAAADQEAAA==eJzl0DEBADAMgLBKq4P5d9O5yEEefma+fTvl1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q9bp//r1un/unX6v26d/q8bdgM4eFs=AQAAAACAAAAAEAAAOAAAAA==eJzt1SEOADAIBEH6/0/XVFRRRUnIrGbcJUTkrdPjjOf5gV66694jz/P+gf7UvTee5+v8BgN0AYE=
+  </AppendedData>
+</VTKFile>

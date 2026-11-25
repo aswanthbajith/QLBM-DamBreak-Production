@@ -1,0 +1,1160 @@
+"""Implementation of cuboid data structure."""
+
+from functools import cmp_to_key
+from itertools import product
+from json import dumps
+from typing import Dict, List, Tuple, cast, override
+
+import numpy as np
+from stl import mesh
+
+from qlbm.lattice.geometry.encodings.ms import (
+    DimensionalReflectionData,
+    ReflectionPoint,
+    ReflectionResetEdge,
+    ReflectionWall,
+)
+from qlbm.lattice.geometry.encodings.spacetime import (
+    SpaceTimePWReflectionData,
+    SpaceTimeVolumetricReflectionData,
+)
+from qlbm.lattice.geometry.shapes.base import LQLGAShape, SpaceTimeShape
+from qlbm.lattice.spacetime.properties_base import (
+    LatticeDiscretization,
+    SpaceTimeLatticeBuilder,
+)
+from qlbm.tools.exceptions import LatticeException
+from qlbm.tools.utils import bit_value, dimension_letter, flatten, get_qubits_to_invert
+
+
+class Block(SpaceTimeShape, LQLGAShape):
+    r"""
+    Contains information required for the generation of boundary conditions for an axis-parallel cuboid obstacle.
+
+    Available for the specular reflection and bounce-back for the :class:`.CQLBM` algorithm and bounce-back for the :class:`.SpaceTimeQLBM` algorithm.
+    A block can be constructed from minimal information, see the Table below.
+
+    .. list-table:: Constructor parameters
+        :widths: 25 50
+        :header-rows: 1
+
+        * - Parameter
+          - Description
+        * - :attr:`bounds`
+          - A ``List[Tuple[int, int]]`` of inclusive lower and upper bounds in each dimension. For example, ``[(2, 5), (10, 12)]`` contains x coordinates 2, 3, 4, and 5 and y coordinates 10, 11, and 12.
+        * - :attr:`num_qubits`
+          - The number of grid qubits of the underlying lattice.
+        * - :attr:`boundary_condition`
+          - A string indicating the type of boundary condition of the block. Should be either ``"specular"`` or ``"bounceback"``.
+
+    The :class:`.Block` constructor will parse this information and automatically infer all of the information
+    required to perform all of the reflection edge cases.
+    This data is split over several attributes, see the table below.
+
+    .. list-table:: Class attributes
+        :widths: 25 50
+        :header-rows: 1
+
+        * - Attribute
+          - Description
+        * - :attr:`bounds`
+          - The ``List[Tuple[int, int]]`` of inclusive lower and upper bounds in each dimension. For example, ``[(2, 5), (10, 12)]`` includes x coordinates 2 through 5 and y coordinates 10 through 12.
+        * - :attr:`inside_points_data`
+          - The ``List[Tuple[DimensionalReflectionData, ...]]`` data encoding the corner points on the `inside` of the obstacle. The outer list contains :math:`d` entries, one per dimension. Each entry is a tuple of :class:`DimensionalReflectionData` of the lower and upper bounds of that dimension, respectively.
+        * - :attr:`outside_points_data`
+          - The ``List[Tuple[DimensionalReflectionData, ...]]`` data encoding the corner points on the `outside` of the obstacle. The outer list contains :math:`d` entries, one per dimension. Each entry is a tuple of :class:`DimensionalReflectionData` of the lower and upper bounds of that dimension, respectively.
+        * - :attr:`walls_inside`
+          - The ``List[List[ReflectionWall, ...]]`` data encoding the walls of the `inside` of the obstacle. The outer list contains :math:`d` entries, one per dimension. Each inner list is a list of two :class:`ReflectionWall`\ s of the lower and upper bounds of that dimension, respectively.
+        * - :attr:`walls_outside`
+          - The ``List[List[ReflectionWall, ...]]`` data encoding the walls of the `outside` of the obstacle. The outer list contains :math:`d` entries, one per dimension. Each inner list is a list of two :class:`ReflectionWall`\ s of the lower and upper bounds of that dimension, respectively.
+        * - :attr:`corners_inside`
+          - The ``List[ReflectionPoint]`` data encoding the corner points on the `inside` of the obstacle. There are 4 inner corner :class:`ReflectionPoint`\ s per obstacle in 2D, and 8 in 3D.
+        * - :attr:`corners_outside`
+          - The ``List[ReflectionPoint]`` data encoding the corner points on the `outside` of the obstacle. There are 4 outer corner :class:`ReflectionPoint`\ s per obstacle in 2D, and 8 in 3D.
+        * - :attr:`near_corner_points_2d`
+          - The ``List[ReflectionPoint]`` data encoding points on the outside of the object that are adjacent to inner corner points. These points require additional logic in the quantum circuit for particles that have streamed without reflecting off the obstacle. Only applicable to 2D example, since 3D example use edges instead. There are 8 near-corner :class:`ReflectionPoint` \s per obstacle.
+        * - :attr:`corner_edges_3d`
+          - The ``List[ReflectionResetEdge]`` data encoding edges on the outside of the object that are adjacent to corners of the obstacle. Used to reset ancilla qubit states after reflection. There are 12 corner :class:`ReflectionResetEdge` \s per obstacle.
+        * - :attr:`near_corner_edges_3d`
+          - The ``List[ReflectionResetEdge]`` data encoding edges on the outside of the object that are adjacent either side of :attr:`corner_edges_3d`. These edges require additional logic in the quantum circuit for particles that have streamed without reflecting off the obstacle. There are 24 near-corner :class:`ReflectionResetEdge` \s per obstacle.
+        * - :attr:`overlapping_near_corner_edge_points_3d`
+          - The ``List[ReflectionPoint]`` data encoding the set of points at the intersections of :attr:`near_corner_edges_3d`. These points require additional logic in to account for the fact that the state of obstacle ancilla qubits was doubly reset (once by each edge). There are 24 such :class:`ReflectionPoint` \s per obstacle.
+        * - :attr:`num_gridpoints`
+          - The ``List[int]`` of gridpoint counts per dimension.
+        * - :attr:`mesh_vertices`
+          - The ``np.ndarray`` of obstacle mesh vertices used to build the ``stl`` representation.
+        * - :attr:`mesh_indices`
+          - The ``np.ndarray`` of triangle indices selecting faces from :attr:`mesh_vertices`.
+        * - :attr:`mesh_indices_list`
+          - A class-level ``List[np.ndarray]`` containing precomputed triangulations by dimensionality.
+        * - :attr:`ab_wall_indices_to_reset`
+          - A class-level lookup mapping wall configurations to velocity indices to reset for bounce-back schemes.
+        * - :attr:`ab_near_corner_indices_to_reset`
+          - A class-level lookup mapping near-corner configurations to velocity indices to reset.
+        * - :attr:`ab_corner_indices_to_reset`
+          - A class-level lookup mapping corner configurations to velocity indices to reset.
+    """
+
+    bounds: List[Tuple[int, int]]
+    """Inclusive lower and upper bounds in each spatial dimension."""
+
+    num_gridpoints: List[int]
+    """Number of gridpoints in each spatial dimension."""
+
+    mesh_vertices: np.ndarray
+    """Vertices of the polygonal surface representation used for ``stl`` export."""
+
+    mesh_indices: np.ndarray
+    """Triangle index array selecting faces from :attr:`mesh_vertices`."""
+
+    inside_points_data: List[Tuple[DimensionalReflectionData, ...]]
+    """Per-dimension lower/upper reflection metadata for points inside the obstacle."""
+
+    outside_points_data: List[Tuple[DimensionalReflectionData, ...]]
+    """Per-dimension lower/upper reflection metadata for points outside the obstacle."""
+
+    walls_inside: List[List[ReflectionWall]]
+    """Reflection wall metadata for interior-facing obstacle walls by dimension."""
+
+    walls_outside: List[List[ReflectionWall]]
+    """Reflection wall metadata for exterior-facing obstacle walls by dimension."""
+
+    corners_inside: List[ReflectionPoint]
+    """Corner reflection points located on the interior boundary of the obstacle."""
+
+    corners_outside: List[ReflectionPoint]
+    """Corner reflection points located on the exterior boundary of the obstacle."""
+
+    near_corner_points_2d: List[ReflectionPoint]
+    """2D points adjacent to interior corners that require extra non-reflection logic."""
+
+    corner_edges_3d: List[ReflectionResetEdge]
+    """3D exterior edges adjacent to corners, used to reset ancilla state."""
+
+    near_corner_edges_3d: List[ReflectionResetEdge]
+    """3D exterior edges adjacent to :attr:`corner_edges_3d` requiring extra handling."""
+
+    overlapping_near_corner_edge_points_3d: List[ReflectionPoint]
+    """3D points where near-corner edge reset effects overlap and need compensation."""
+
+    mesh_indices_list: List[np.ndarray] = [
+        np.array([[0, 1, 2], [1, 2, 3]]),
+        np.array(
+            [
+                [0, 1, 4],  # Face 1, facing +Y
+                [1, 4, 5],
+                [4, 5, 6],  # Face 2, right of Face 1
+                [5, 6, 7],
+                [2, 3, 6],  # Face 3, behind Face 1
+                [3, 6, 7],
+                [0, 1, 2],  # Face 4, left of Face 1
+                [1, 2, 3],
+                [1, 3, 5],  # Face 5, above
+                [3, 5, 7],
+                [0, 2, 4],  # Face 6, below
+                [2, 4, 6],
+            ]
+        ),
+    ]
+    """Precomputed triangle-index templates by dimensionality for ``stl`` generation."""
+
+    ab_wall_indices_to_reset: Dict[
+        LatticeDiscretization, Dict[Tuple[int, bool], List[int]]
+    ] = {
+        LatticeDiscretization.D2Q9: {
+            (0, False): [3, 6, 7],
+            (0, True): [1, 5, 8],
+            (1, False): [4, 7, 8],
+            (1, True): [2, 5, 6],
+        }
+    }
+    """Lookup of bounce-back velocity indices to reset for wall reflections."""
+
+    ab_near_corner_indices_to_reset: Dict[
+        LatticeDiscretization, Dict[int, Dict[Tuple[bool, ...], List[int]]]
+    ] = {
+        LatticeDiscretization.D2Q9: {
+            0: {
+                (False, False): [6],
+                (False, True): [7],
+                (True, False): [5],
+                (True, True): [8],
+            },
+            1: {
+                (False, False): [8],
+                (False, True): [5],
+                (True, False): [7],
+                (True, True): [6],
+            },
+        }
+    }
+    """Lookup of bounce-back velocity indices to reset for near-corner reflections."""
+
+    ab_corner_indices_to_reset: Dict[
+        LatticeDiscretization, Dict[Tuple[bool, ...], List[int]]
+    ] = {
+        LatticeDiscretization.D2Q9: {
+            (False, False): [7],
+            (False, True): [6],
+            (True, False): [8],
+            (True, True): [5],
+        }
+    }
+    """Lookup of bounce-back velocity indices to reset for corner reflections."""
+
+    ab_sr_inner_corner_non_entering_velocity_indices: Dict[
+        LatticeDiscretization, Dict[int, Dict[bool, List[int]]]
+    ] = {
+        LatticeDiscretization.D2Q9: {
+            0: {
+                False: [0, 2, 3, 4, 6, 7],
+                True: [0, 1, 2, 4, 5, 8],
+            },
+            1: {
+                False: [0, 1, 3, 4, 7, 8],
+                True: [0, 1, 2, 3, 5, 6],
+            },
+        }
+    }
+    """Velocity indices that do NOT enter through wall *d* at the given bound.
+
+    At inner corner gridpoints both per-dimension obstacle ancillae are
+    set by the wall comparators (Phase 1), but ``a_d`` should only be
+    set for velocities whose *d*-component points into the obstacle
+    through wall *d*.  This table lists the velocities for which
+    ``a_d`` must be **unset** at each inner corner.
+
+    Keyed by ``[discretization][dim][bound]`` where *bound* is
+    ``False`` for the lower wall and ``True`` for the upper wall of
+    dimension *dim*.
+    """
+
+    ab_sr_near_corner_cross_dim_indices: Dict[
+        LatticeDiscretization, Dict[int, Dict[Tuple[bool, ...], List[int]]]
+    ] = {
+        LatticeDiscretization.D2Q9: {
+            0: {
+                (False, False): [3],
+                (False, True): [3],
+                (True, False): [1],
+                (True, True): [1],
+            },
+            1: {
+                (False, False): [4],
+                (False, True): [2],
+                (True, False): [4],
+                (True, True): [2],
+            },
+        }
+    }
+    """Lookup of specular reflection cross-dimension velocity indices to reset at near-corner points.
+
+    When a cardinal velocity particle sits at an inner corner, both per-dimension
+    obstacle ancillae are set but only one dimension's reflection applies.
+    The other dimension's ancilla must be corrected at the near-corner point
+    where the particle ends up after streaming.
+
+    The outer key is the dimension that is *outside* the obstacle (same as
+    for ``ab_near_corner_indices_to_reset``). The correction targets the
+    ancilla of the *other* dimension.
+    """
+
+    def __init__(
+        self,
+        bounds: List[Tuple[int, int]],
+        num_grid_qubits: List[int],
+        boundary_condition: str,
+        num_gridpoints: List[int] | None = None,
+    ) -> None:
+        super().__init__(num_grid_qubits, boundary_condition)
+        if num_gridpoints is None:
+            self.num_gridpoints = [2**nq for nq in num_grid_qubits]
+        else:
+            self.num_gridpoints = num_gridpoints
+        # TODO: check whether the number of dimensions is consistent
+        self.bounds: List[Tuple[int, int]] = bounds
+        if self.num_dims == 3:
+            self.mesh_vertices = np.array(
+                list(
+                    product(*bounds)  # All combinations of bounds for 3D
+                )
+            )
+        elif self.num_dims == 2:
+            self.mesh_vertices = np.array(
+                [
+                    corner_point
+                    + (
+                        1,
+                    )  # All combinations of bounds and (1) for the z dimension in 2D
+                    for corner_point in list(product(*bounds))
+                ]
+            )
+        else:  # 1D
+            # self.mesh_vertices = np.array([(bounds[0][0], 0, 1), (bounds[0][1], 1, 1)])
+            self.mesh_vertices = np.array(
+                [
+                    corner_point
+                    + (
+                        1,
+                    )  # All combinations of bounds and (1) for the z dimension in 2D
+                    for corner_point in list(product(*(bounds + [(0, 1)])))
+                ]
+            )
+
+        self.mesh_indices = self.mesh_indices_list[max(0, self.num_dims - 2)]
+
+        self.inside_points_data: List[Tuple[DimensionalReflectionData, ...]] = [
+            tuple(
+                DimensionalReflectionData(
+                    [
+                        self.previous_qubits[dim] + i
+                        for i in range(num_grid_qubits[dim])
+                        if not bit_value(bounds[dim][bound_type], i)
+                    ],
+                    bound_type=bound_type,
+                    is_outside_obstacle_bounds=False,
+                    gridpoint_encoded=bounds[dim][bound_type],
+                    dim=dim,
+                    name=f"swap_{'l' if not bound_type else 'u'}{dimension_letter(dim)}_in",
+                )
+                for bound_type in [False, True]
+            )
+            for dim in range(self.num_dims)
+        ]
+
+        self.outside_points_data: List[Tuple[DimensionalReflectionData, ...]] = [
+            tuple(
+                DimensionalReflectionData(
+                    [
+                        self.previous_qubits[dim] + i
+                        for i in range(num_grid_qubits[dim])
+                        if not bit_value(
+                            bounds[dim][bound_type] + 2 * bound_type - 1, i
+                        )  # 2 * bound - 1 results in +1 for upper bound (True) and -1 for lower bounds (False)
+                    ],
+                    bound_type=bound_type,
+                    is_outside_obstacle_bounds=True,
+                    gridpoint_encoded=bounds[dim][bound_type] + 2 * bound_type - 1,
+                    dim=dim,
+                    name=f"swap_{'l' if not bound_type else 'u'}{dimension_letter(dim)}_out",
+                )
+                for bound_type in [False, True]
+            )
+            for dim in range(self.num_dims)
+        ]
+
+        # List of inside walls ordered by dimension
+        self.walls_inside: List[List[ReflectionWall]] = [
+            [
+                ReflectionWall(
+                    dim,
+                    [
+                        bounds[wall_alignment_dim][0]
+                        for wall_alignment_dim in wall_alignment_dims
+                    ],  # The lower bounds of the obstacle in the alignment directions, i.e., ly and lz for x-walls
+                    [
+                        bounds[wall_alignment_dim][1]
+                        for wall_alignment_dim in wall_alignment_dims
+                    ],  # The upper bounds of the obstacle in the alignment directions, i.e., uy and uz for x-walls
+                    self.inside_points_data[dim][
+                        bound
+                    ],  # The grid qubits to swap for the dimension and bound
+                )
+                for bound in [
+                    False,
+                    True,
+                ]  # False pertains to lower bounds, True to upper bounds
+            ]
+            for dim, wall_alignment_dims in [
+                (d, [dimension for dimension in range(self.num_dims) if dimension != d])
+                for d in range(self.num_dims)
+            ]  # `dim` is the dimension that the wall reflects (i.e., x-walls)
+            # `wall_alignment_dims` are the dimensions that the wall spans
+            # In 2D, an x-wall is aligned with dimension y=1
+            # In 3D, an x-wall is aligned with dimensions y=1 and z=2
+        ]
+
+        # List of outside walls ordered by dimension
+        # Identical to inside walls except of `outer_qubits_to_swap` is selected instead
+        self.walls_outside: List[List[ReflectionWall]] = [
+            [
+                ReflectionWall(
+                    dim,
+                    [
+                        bounds[wall_alignment_dim][0]
+                        for wall_alignment_dim in wall_alignment_dims
+                    ],
+                    [
+                        bounds[wall_alignment_dim][1]
+                        for wall_alignment_dim in wall_alignment_dims
+                    ],
+                    self.outside_points_data[dim][bound],
+                )
+                for bound in [
+                    False,
+                    True,
+                ]
+            ]
+            for dim, wall_alignment_dims in [
+                (d, [dimension for dimension in range(self.num_dims) if dimension != d])
+                for d in range(self.num_dims)
+            ]
+        ]
+
+        self.corners_inside: List[ReflectionPoint] = [
+            ReflectionPoint(
+                list(inner_corner_point),
+                dims_inside=list(range(self.num_dims)),
+                dims_outside=[],
+                inversion_function=lambda data: [data.invert_velocity for data in data],
+            )
+            for inner_corner_point in product(*self.inside_points_data)
+        ]
+
+        self.corners_outside: List[ReflectionPoint] = [
+            ReflectionPoint(
+                list(outer_corner_point),
+                dims_inside=[],
+                dims_outside=list(range(self.num_dims)),
+                inversion_function=lambda data: [data.invert_velocity for data in data],
+            )
+            for outer_corner_point in product(*self.outside_points_data)
+        ]
+
+        self.near_corner_points_2d: List[ReflectionPoint] = flatten(
+            [
+                [
+                    ReflectionPoint(
+                        list(near_corner_point_dimensional_data),
+                        dims_inside=[
+                            dim_index
+                            for dim_index, is_outside in enumerate(dim_data)
+                            if not is_outside
+                        ],
+                        dims_outside=[
+                            dim_index
+                            for dim_index, is_outside in enumerate(dim_data)
+                            if is_outside
+                        ],
+                        inversion_function=lambda data: [
+                            (not data.bound_type)
+                            if data.is_outside_obstacle_bounds
+                            else (data.bound_type)
+                            for data in data
+                        ],
+                    )
+                    for near_corner_point_dimensional_data in product(
+                        *(
+                            self.outside_points_data[dim_index]
+                            if is_outside
+                            else self.inside_points_data[dim_index]
+                            for dim_index, is_outside in enumerate(dim_data)
+                        )
+                    )
+                ]
+                for dim_data in [
+                    [(dimension == d) for dimension in range(self.num_dims)]
+                    for d in range(self.num_dims)
+                ]
+            ]
+        )
+
+        self.near_corner_edges_3d: List[ReflectionResetEdge] = (
+            (self.__get_3d_near_corner_edges()) if self.num_dims > 2 else []
+        )
+
+        self.corner_edges_3d: List[ReflectionResetEdge] = (
+            (self.__get_3d_corner_edges()) if self.num_dims > 2 else []
+        )
+
+        self.overlapping_near_corner_edge_points_3d: List[ReflectionPoint] = (
+            self.__get_overlapping_near_corner_edge_points_3d()
+            if self.num_dims > 2
+            else []
+        )
+
+    def __get_overlapping_near_corner_edge_points_3d(self):
+        # Whether lower (F) or upper (T) bound in a given dimension
+        bound_type_wall = [False, True]
+        bound_type_neighboring_walls = [False, True]
+
+        # The two walls joining together
+        dimension_outside = [
+            dim_data
+            for dim_data in [
+                [(dimension == d) for dimension in range(3)] for d in range(3)
+            ]
+        ]
+
+        points: List[ReflectionPoint] = []
+
+        for point_data in product(
+            dimension_outside,
+            bound_type_wall,
+            bound_type_neighboring_walls,
+            bound_type_neighboring_walls,
+        ):
+            outside_dimension: int = [e[0] for e in enumerate(point_data[0]) if e[1]][0]
+            neighboring_wall_dims: List[int] = [
+                e[0] for e in enumerate(point_data[0]) if not e[1]
+            ]
+
+            point_outside = [self.outside_points_data[outside_dimension][point_data[1]]]
+            points_inside = [
+                self.inside_points_data[dim_and_bound[0]][dim_and_bound[1]]
+                for dim_and_bound in zip(neighboring_wall_dims, point_data[-2:])
+            ]
+
+            sorted_point_data: List[DimensionalReflectionData] = sorted(
+                point_outside + points_inside,
+                key=cmp_to_key(lambda d1, d2: d1.dim - d2.dim),  # type: ignore
+            )
+
+            def overlapping_near_corner_edge_points_3d_inversion(
+                sorted_data: List[DimensionalReflectionData],
+            ) -> List[bool]:
+                outside_dim_data = [
+                    d for d in sorted_data if d.is_outside_obstacle_bounds
+                ][0]
+
+                return [
+                    not d.bound_type if d == outside_dim_data else (d.bound_type)
+                    for d in sorted_data
+                ]
+
+            points.append(
+                ReflectionPoint(
+                    data=sorted_point_data,
+                    dims_inside=[d.dim for d in points_inside],
+                    dims_outside=[point_outside[0].dim],
+                    inversion_function=overlapping_near_corner_edge_points_3d_inversion,
+                )
+            )
+
+        return points
+
+    def __get_3d_corner_edges(self):
+        # Whether lower (F) or upper (T) bound in a given dimension
+        bound_types = [False, True]
+
+        # The two walls joining together
+        dimensions_joining = [
+            dim_data
+            for dim_data in [
+                [(dimension != d) for dimension in range(3)] for d in [2, 1, 0]
+            ]
+        ]
+
+        segments: List[ReflectionResetEdge] = []
+
+        for edge_data in product(dimensions_joining, bound_types, bound_types):
+            dim_index_in: int = [e[0] for e in enumerate(edge_data[0]) if not e[1]][0]
+            dim_index_out = tuple(e[0] for e in enumerate(edge_data[0]) if e[1])
+            walls_out: List[DimensionalReflectionData] = []
+
+            for dim_bool, dim_index in enumerate(
+                [e[0] for e in enumerate(edge_data[0]) if e[1]]
+            ):
+                walls_out.append(
+                    self.outside_points_data[dim_index][edge_data[1 + dim_bool]]  # type: ignore
+                )
+
+            segments.append(
+                ReflectionResetEdge(
+                    walls_out,
+                    dim_index_out,  # type: ignore
+                    self.bounds[dim_index_in],
+                    None,
+                )
+            )
+
+        return segments
+
+    def __get_3d_near_corner_edges(self):
+        # Whether lower (F) or upper (T) bound in a given dimension
+        bound_types = [False, True]
+
+        # Whether the edge is orthogonal to the first (F) or second (T) dimension
+        # For an x- and a z- wall, coming together, F
+        # Would encode the edge directly adjacent (perpendicular to) the x-wall
+        orthogonal_dim = [0, 1]
+
+        # The two walls joining together
+        dimensions_joining = [
+            dim_data
+            for dim_data in [
+                [(dimension != d) for dimension in range(3)] for d in [2, 1, 0]
+            ]
+        ]
+
+        segments: List[ReflectionResetEdge] = []
+
+        for edge_data in product(
+            dimensions_joining, bound_types, bound_types, orthogonal_dim
+        ):
+            dim_index_in: int = [e[0] for e in enumerate(edge_data[0]) if not e[1]][0]
+            dim_index_out = tuple(e[0] for e in enumerate(edge_data[0]) if e[1])
+            walls_joining: List[DimensionalReflectionData] = []
+
+            for dim_bool, dim_index in enumerate(
+                [
+                    e[0] for e in enumerate(edge_data[0]) if e[1]
+                ]  # Enumerate over the indices of the dimensions that join at this edge
+            ):
+                walls_joining.append(
+                    self.outside_points_data[dim_index][edge_data[1 + dim_bool]]  # type: ignore
+                    if dim_bool
+                    == edge_data[3]  # If this is the dimension that is outside
+                    else self.inside_points_data[dim_index][edge_data[1 + dim_bool]]  # type: ignore
+                )
+
+            segments.append(
+                ReflectionResetEdge(
+                    walls_joining,
+                    dim_index_out,  # type: ignore
+                    self.bounds[dim_index_in],
+                    edge_data[3],  # type: ignore
+                )
+            )
+
+        return segments
+
+    @override
+    def get_spacetime_reflection_data_d1q2(
+        self,
+        properties: SpaceTimeLatticeBuilder,
+        num_steps: int | None = None,
+    ) -> List[SpaceTimePWReflectionData]:
+        if num_steps is None:
+            num_steps = properties.num_timesteps
+
+        reflection_list = []
+        for c, reflection_bound in enumerate(self.bounds[0]):
+            for reflection_direction in [1 - c, c]:
+                increment = properties.get_reflection_increments(reflection_direction)
+                origin: Tuple[int, ...] = (reflection_bound, 0)
+                for t in range(num_steps):
+                    num_gps_in_dim = 2 ** self.num_grid_qubits[0]
+                    gridpoint_encoded = tuple(
+                        a + (t + 1 if 1 - c == reflection_direction else t) * b
+                        for a, b in zip(origin, increment)
+                    )
+
+                    # Add periodic boundary conditions
+                    gridpoint_encoded = tuple(
+                        x % num_gps_in_dim
+                        if num_gps_in_dim
+                        else (x + num_gps_in_dim if x < 0 else x)
+                        for x in gridpoint_encoded
+                    )
+                    distance_from_origin = tuple((t + 1) * x for x in increment)
+                    qubits_to_invert = get_qubits_to_invert(
+                        gridpoint_encoded[0], self.num_grid_qubits[0]
+                    )
+
+                    reflection_list.append(
+                        SpaceTimePWReflectionData(
+                            gridpoint_encoded,
+                            qubits_to_invert,
+                            [not bool(reflection_direction)],
+                            distance_from_origin,
+                            properties,
+                        )
+                    )
+        return reflection_list
+
+    @override
+    def get_spacetime_reflection_data_d2q4(
+        self,
+        properties: SpaceTimeLatticeBuilder,
+        num_steps: int | None = None,
+    ) -> List[SpaceTimePWReflectionData]:
+        if num_steps is None:
+            num_steps = properties.num_timesteps
+        reflection_list: List[SpaceTimePWReflectionData] = []
+        surfaces = self.get_d2q4_surfaces()
+
+        # Surfaces are stored by dimension first
+        for fixed_dim, surfaces_of_dim in enumerate(surfaces):
+            # Each dimension has a lower bound and an upper bound surface
+            for bound, wall_of_surface in enumerate(surfaces_of_dim):
+                streaming_line_velocities = [0, 2] if fixed_dim == 0 else [1, 3]
+                if not bound:
+                    streaming_line_velocities = list(
+                        reversed(streaming_line_velocities)
+                    )
+                symmetric_non_reflection_dimension_increment: List[
+                    Tuple[int, Tuple[int, ...]]
+                ] = [(0, (0, 0))] + flatten(
+                    [
+                        [
+                            (
+                                direction_factor * t,
+                                tuple(
+                                    a * direction_factor * t
+                                    for a in properties.get_reflection_increments(
+                                        1 if fixed_dim == 0 else 0
+                                    )
+                                ),
+                            )
+                            for t in range(1, num_steps)
+                        ]
+                        for direction_factor in [1, -1]
+                    ]
+                )
+
+                reflection_list.extend(
+                    self.get_spacetime_reflection_data_d2q4_from_points(
+                        properties,
+                        wall_of_surface,
+                        streaming_line_velocities,
+                        symmetric_non_reflection_dimension_increment,
+                        num_steps,
+                    )
+                )
+
+        return reflection_list
+
+    @override
+    def get_d2q4_volumetric_reflection_data(
+        self,
+        properties: SpaceTimeLatticeBuilder,
+        num_steps: int | None = None,
+    ) -> List[SpaceTimeVolumetricReflectionData]:
+        if num_steps is None:
+            num_steps = properties.num_timesteps
+
+        reflection_list = []
+        num_gps_in_dim = [2**n for n in self.num_grid_qubits]
+        for fixed_dim, bounds_of_fixed_dim in enumerate(self.bounds):
+            ranged_dim = 1 - fixed_dim
+            bounds_ranged_dim: Tuple[int, int] = self.bounds[ranged_dim]
+            for bound in [False, True]:
+                streaming_line_velocities = [0, 2] if fixed_dim == 0 else [1, 3]
+                fixed_dimension_gp = bounds_of_fixed_dim[bound]
+                if not bound:
+                    streaming_line_velocities = list(
+                        reversed(streaming_line_velocities)
+                    )
+
+                symmetric_non_reflection_dimension_increment: List[
+                    Tuple[int, Tuple[int, ...]]
+                ] = [(0, (0, 0))] + flatten(
+                    [
+                        [
+                            (
+                                direction_factor * t,
+                                tuple(
+                                    a * direction_factor * t
+                                    for a in properties.get_reflection_increments(
+                                        1 if fixed_dim == 0 else 0
+                                    )
+                                ),
+                            )
+                            for t in range(1, num_steps)
+                        ]
+                        for direction_factor in [1, -1]
+                    ]
+                )
+
+                for reflection_direction in streaming_line_velocities:
+                    increment = properties.get_reflection_increments(
+                        reflection_direction
+                    )
+
+                    opposite_reflection_direction = (
+                        streaming_line_velocities[1]
+                        if reflection_direction == streaming_line_velocities[0]
+                        else streaming_line_velocities[0]
+                    )
+                    for (
+                        offset,
+                        starting_increment,
+                    ) in symmetric_non_reflection_dimension_increment:
+                        fixed_dimension_gp_adjusted = (
+                            fixed_dimension_gp + starting_increment[fixed_dim]
+                        )
+                        bounds_ranged_dim_adjusted = [
+                            b + starting_increment[ranged_dim]
+                            for b in bounds_ranged_dim
+                        ]
+                        for t in range(num_steps - abs(offset)):
+                            fixed_dim_reflection = (
+                                fixed_dimension_gp_adjusted
+                                + (
+                                    t + 1
+                                    if (
+                                        streaming_line_velocities[0]
+                                        == reflection_direction
+                                    )
+                                    else t
+                                )
+                                * increment[fixed_dim]
+                            )
+                            fixed_dim_reflection = (
+                                fixed_dim_reflection + num_gps_in_dim[fixed_dim]
+                                if fixed_dim_reflection < 0
+                                else fixed_dim_reflection % num_gps_in_dim[fixed_dim]
+                            )
+
+                            # Ranged dimension bounds are left unadjusted
+                            # As they are corrected in the quantum component
+                            # Responsible for placing the comparators and controls
+                            bounds_ranged_dim_reflection = cast(
+                                Tuple[int, int],
+                                tuple(
+                                    b
+                                    + (
+                                        t + 1
+                                        if (
+                                            streaming_line_velocities[0]
+                                            == reflection_direction
+                                        )
+                                        else t
+                                    )
+                                    * increment[ranged_dim]
+                                    for b in bounds_ranged_dim_adjusted
+                                ),
+                            )
+                            opposite_reflection_direction = (
+                                streaming_line_velocities[1]
+                                if reflection_direction == streaming_line_velocities[0]
+                                else streaming_line_velocities[0]
+                            )
+                            reflection_list.append(
+                                SpaceTimeVolumetricReflectionData(
+                                    fixed_dim,
+                                    [ranged_dim],
+                                    [bounds_ranged_dim_reflection],
+                                    get_qubits_to_invert(
+                                        fixed_dim_reflection,
+                                        self.num_grid_qubits[fixed_dim],
+                                    ),
+                                    fixed_dim_reflection,
+                                    opposite_reflection_direction,
+                                    tuple(
+                                        (t + 1) * x + y
+                                        for x, y in zip(increment, starting_increment)
+                                    ),
+                                    properties,
+                                )
+                            )
+        return reflection_list
+
+    def get_d2q4_surfaces(self) -> List[List[List[Tuple[int, ...]]]]:
+        """
+        Get all surfaces of the block in 2 dimensions.
+
+        The information is formatted as ``List[List[List[Tuple[int, ...]]]]``.
+        The outermost list is by dimension.
+        The middle list contains two lists pertaining to the lower and upper bounds of the block in that dimension.
+        The innermost list contains the gridpoints that make up the surface encoded as tuples.
+
+        Returns
+        -------
+        List[List[List[Tuple[int, ...]]]]
+            The block surfaces in two dimensions.
+        """
+        surfaces: List[List[List[Tuple[int, ...]]]] = []
+
+        for d, walls in enumerate(self.walls_inside):
+            surfaces_of_dim: List[List[Tuple[int, ...]]] = []
+            for wall in walls:
+                surfaces_of_dim.append(
+                    [
+                        (wall.data.gridpoint_encoded, coordinate_across_wall)
+                        if d == 0
+                        else (coordinate_across_wall, wall.data.gridpoint_encoded)
+                        for coordinate_across_wall in range(
+                            wall.lower_bounds[0], wall.upper_bounds[0] + 1
+                        )
+                    ]
+                )
+            surfaces.append(surfaces_of_dim)
+
+        return surfaces
+
+    def get_lbm_wall_velocity_indices_to_reflect(
+        self, discretization: LatticeDiscretization, dim: int, bound: bool
+    ) -> List[int]:
+        """
+        Get the indices of the velocities that need to be reflected at gridpoints outside the wall of the object.
+
+        Parameters
+        ----------
+        discretization : LatticeDiscretization
+            The discretization of the lattice.
+        dim : int
+            The dimension that the wall reflects.
+        bounds : Tuple[bool, ...]
+            The bounds of the corner to address.
+
+        Returns
+        -------
+        List[int]
+            The list of velocity indices to reflect.
+
+        Raises
+        ------
+        LatticeException
+            If the discretization is not supported or if the dimension or bounds are inconsistent.
+        """
+        if discretization not in self.ab_wall_indices_to_reset:
+            raise LatticeException(
+                f"Discretization {discretization} not supported. Supported discretizations are: {self.ab_wall_indices_to_reset.keys()}"
+            )
+
+        if (dim, bound) not in self.ab_wall_indices_to_reset[discretization]:
+            raise LatticeException(
+                f"{(dim, bound)} is not a valid description of a wall for {discretization}."
+            )
+
+        return self.ab_wall_indices_to_reset[discretization][(dim, bound)]
+
+    def get_lbm_near_corner_velocity_indices_to_reflect(
+        self, discretization: LatticeDiscretization, dim: int, bounds: Tuple[bool, ...]
+    ) -> List[int]:
+        """
+        Get the indices of the velocities that need to be reflected at gridpoints near the corners of the object.
+
+        Parameters
+        ----------
+        discretization : LatticeDiscretization
+            The discretization of the lattice.
+        dim : int
+            The dimension outside of obstacle bounds.
+        bounds : Tuple[bool, ...]
+            The bounds of the corner to address.
+
+        Returns
+        -------
+        List[int]
+            The list of velocity indices to reflect.
+
+        Raises
+        ------
+        LatticeException
+            If the discretization is not supported or if the dimension or bounds are inconsistent.
+        """
+        if discretization not in self.ab_near_corner_indices_to_reset:
+            raise LatticeException(
+                f"Discretization {discretization} not supported. Supported discretizations are: {self.ab_wall_indices_to_reset.keys()}"
+            )
+
+        if dim not in self.ab_near_corner_indices_to_reset[discretization]:
+            raise LatticeException(
+                f"{dim} is not a valid dimension for {discretization}."
+            )
+
+        if bounds not in self.ab_near_corner_indices_to_reset[discretization][dim]:
+            raise LatticeException(
+                f"{bounds} is not a valid description of a near corner gridpoint of {discretization}."
+            )
+
+        return self.ab_near_corner_indices_to_reset[discretization][dim][bounds]
+
+    def get_lbm_outside_corner_indices_to_reflect(
+        self, discretization: LatticeDiscretization, bounds: Tuple[bool, ...]
+    ) -> List[int]:
+        """
+        Get the indices of the velocities that need to be reflected at the outside corners of the object.
+
+        Parameters
+        ----------
+        discretization : LatticeDiscretization
+            The discretization of the lattice.
+        bounds : Tuple[bool, ...]
+            The bounds of the corner to address.
+
+        Returns
+        -------
+        List[int]
+            The list of velocity indices to reflect.
+
+        Raises
+        ------
+        LatticeException
+            If the discretization is not supported or if the bounds are inconsistent.
+        """
+        if discretization not in self.ab_corner_indices_to_reset:
+            raise LatticeException(
+                f"Discretization {discretization} not supported. Supported discretizations are: {self.ab_wall_indices_to_reset.keys()}"
+            )
+
+        if bounds not in self.ab_corner_indices_to_reset[discretization]:
+            raise LatticeException(
+                f"{bounds} is not a valid description of a wall for {discretization}."
+            )
+
+        return self.ab_corner_indices_to_reset[discretization][bounds]
+
+    def get_lbm_sr_near_corner_cross_dim_velocity_indices(
+        self,
+        discretization: LatticeDiscretization,
+        dim: int,
+        bounds: Tuple[bool, ...],
+    ) -> List[int]:
+        """
+        Get the cross-dimension velocity indices that need correction at specular near-corner points.
+
+        At inner corners both per-dimension obstacle ancillae are set, but
+        cardinal velocities only trigger reflection in one dimension. The
+        other dimension's ancilla must be corrected at the near-corner
+        point where the reflected particle lands.
+
+        Parameters
+        ----------
+        discretization : LatticeDiscretization
+            The discretization of the lattice.
+        dim : int
+            The dimension that is *outside* the obstacle bounds at this
+            near-corner point (same convention as
+            :meth:`get_lbm_near_corner_velocity_indices_to_reflect`).
+        bounds : Tuple[bool, ...]
+            The bound combination identifying the specific near-corner
+            point.
+
+        Returns
+        -------
+        List[int]
+            The velocity indices whose cross-dimension ancilla needs
+            correction.
+
+        Raises
+        ------
+        LatticeException
+            If the discretization, dimension, or bounds are unsupported.
+        """
+        if discretization not in self.ab_sr_near_corner_cross_dim_indices:
+            raise LatticeException(
+                f"Discretization {discretization} not supported. "
+                f"Supported: {list(self.ab_sr_near_corner_cross_dim_indices.keys())}"
+            )
+
+        if dim not in self.ab_sr_near_corner_cross_dim_indices[discretization]:
+            raise LatticeException(
+                f"{dim} is not a valid dimension for {discretization}."
+            )
+
+        if bounds not in self.ab_sr_near_corner_cross_dim_indices[discretization][dim]:
+            raise LatticeException(
+                f"{bounds} is not a valid near-corner bound for {discretization}."
+            )
+
+        return self.ab_sr_near_corner_cross_dim_indices[discretization][dim][bounds]
+
+    def get_lbm_sr_inner_corner_non_entering_velocity_indices(
+        self,
+        discretization: LatticeDiscretization,
+        dim: int,
+        bound: bool,
+    ) -> List[int]:
+        """
+        Get velocity indices that do NOT enter through wall *dim* at a given bound.
+
+        At inner corner gridpoints Phase 1 sets ``a_d`` for all
+        velocities, but only those whose *d*-component points into the
+        obstacle through wall *d* should have ``a_d`` set.  This method
+        returns the velocities for which ``a_d`` should be toggled back
+        to 0.
+
+        Parameters
+        ----------
+        discretization : LatticeDiscretization
+            The discretization of the lattice.
+        dim : int
+            The dimension of the wall.
+        bound : bool
+            ``False`` for the lower wall, ``True`` for the upper wall.
+
+        Returns
+        -------
+        List[int]
+            The velocity indices that do not enter through wall *dim*.
+
+        Raises
+        ------
+        LatticeException
+            If the discretization, dimension, or bound are unsupported.
+        """
+        tbl = self.ab_sr_inner_corner_non_entering_velocity_indices
+        if discretization not in tbl:
+            raise LatticeException(
+                f"Discretization {discretization} not supported. "
+                f"Supported: {list(tbl.keys())}"
+            )
+
+        if dim not in tbl[discretization]:
+            raise LatticeException(
+                f"{dim} is not a valid dimension for {discretization}."
+            )
+
+        if bound not in tbl[discretization][dim]:
+            raise LatticeException(
+                f"{bound} is not a valid bound for dim={dim} in {discretization}."
+            )
+
+        return tbl[discretization][dim][bound]
+
+    @override
+    def get_lqlga_reflection_data_d1q2(self):
+        return self.get_lqlga_reflection_data_1d_from_points(
+            [tuple([self.bounds[0][0]])],
+            0,
+            1,
+            tuple([-1]),
+            self.num_gridpoints[0] + 1,
+        ) + self.get_lqlga_reflection_data_1d_from_points(
+            [tuple([self.bounds[0][1]])], 1, 0, tuple([1]), self.num_gridpoints[0] + 1
+        )
+
+    @override
+    def get_lqlga_reflection_data_d1q3(self):
+        return self.get_lqlga_reflection_data_1d_from_points(
+            [tuple([self.bounds[0][0]])],
+            1,
+            2,
+            tuple([-1]),
+            self.num_grid_qubits[0] + 1,
+        ) + self.get_lqlga_reflection_data_1d_from_points(
+            [tuple([self.bounds[0][1]])],
+            2,
+            1,
+            tuple([1]),
+            self.num_grid_qubits[0] + 1,
+        )
+
+    @override
+    def contains_gridpoint(self, gridpoint: Tuple[int, ...]) -> bool:
+        return all(
+            coord >= bound[0] and coord <= bound[1]
+            for coord, bound in zip(gridpoint, self.bounds)
+        )
+
+    @override
+    def stl_mesh(self) -> mesh.Mesh:
+        block = mesh.Mesh(np.zeros(self.mesh_indices.shape[0], dtype=mesh.Mesh.dtype))
+        for i, triangle_face in enumerate(self.mesh_indices):
+            for j in range(3):
+                block.vectors[i][j] = self.mesh_vertices[triangle_face[j]]
+
+        return block
+
+    @override
+    def to_json(self) -> str:
+        return dumps(self.to_dict())
+
+    @override
+    def name(self) -> str:
+        return "cuboid"
+
+    @override
+    def to_dict(self) -> Dict[str, List[int] | str]:
+        block_dict: Dict[str, List[int] | str] = {
+            dimension_letter(numeric_dim_index): list(self.bounds[numeric_dim_index])
+            for numeric_dim_index in range(self.num_dims)
+        }
+        block_dict["boundary"] = self.boundary_condition
+        block_dict["shape"] = self.name()
+
+        return block_dict

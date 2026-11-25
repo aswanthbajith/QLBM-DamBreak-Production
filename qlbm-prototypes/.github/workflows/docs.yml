@@ -1,0 +1,49 @@
+name: Build and deploy documentation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docs:
+    if: github.repository_owner == 'QCFD-Lab'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.5
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y -qq pandoc libglfw3-dev libgles2-mesa-dev
+
+      - name: Install qlbm
+        run: |
+          python -m pip install -U .[cpu,dev,docs]
+
+      - name: Build Docs
+        run: |
+          sphinx-build docs/source _build
+
+      - name: Deploy to GitHub Pages
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force_orphan: true
+          publish_dir: ./_build/
+          commit_message: ${{ github.event.head_commit.message }}
